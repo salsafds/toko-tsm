@@ -1,50 +1,107 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-gray-900">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Signin</title>
-  <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+  <title>signin</title>
+ <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
-<body class="h-full">
-  <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
-  <div class="sm:mx-auto sm:w-full sm:max-w-sm">
-    <img src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500" alt="Your Company" class="mx-auto h-10 w-auto" />
-    <h2 class="mt-10 text-center text-2xl/9 font-bold tracking-tight text-white">Sign in to your account</h2>
-  </div>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
 
-  <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-    <form action="#" method="POST" class="space-y-6">
-      <div>
-        <label for="email" class="block text-sm/6 font-medium text-gray-100">Email address</label>
-        <div class="mt-2">
-          <input id="email" type="email" name="email" required autocomplete="email" class="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6" />
-        </div>
+  <div class="flex w-full max-w-5xl shadow-lg rounded-2xl overflow-hidden bg-white">
+    
+    <!-- Bagian Kiri (gambar + overlay) -->
+    <div class="hidden md:flex w-1/2 relative bg-gray-200">
+      <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f" 
+           alt="Background" 
+           class="absolute inset-0 w-full h-full object-cover">
+      <div class="absolute inset-0 bg-blue-900 opacity-20"></div>
+      <div class="relative flex items-start p-6">
+        <a href="../" class="text-white font-semibold flex items-center gap-2 hover:underline">
+          <!-- ikon panah -->
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+          KEMBALI
+        </a>
+      </div>
+    </div>
+
+    <!-- Bagian Kanan (form login) -->
+    <div class="w-full md:w-1/2 p-8 flex flex-col justify-center">
+      <!-- Logo -->
+      <div class="flex justify-center mb-6">
+        <img src="https://dummyimage.com/80x80/000/fff&text=Logo" alt="Logo" class="h-16">
       </div>
 
-      <div>
-        <div class="flex items-center justify-between">
-          <label for="password" class="block text-sm/6 font-medium text-gray-100">Password</label>
-          <div class="text-sm">
-            <a href="#" class="font-semibold text-indigo-400 hover:text-indigo-300">Forgot password?</a>
+      <!-- Judul -->
+      <h2 class="text-center text-xl font-bold text-gray-700 mb-2">
+        Login
+      </h2>
+      <p class="text-center text-sm text-gray-600 mb-6">
+        Selamat datang di Aplikasi Koperasi Temprina Sejahtera Mandiri
+      </p>
+
+      <!-- Form -->
+      <form action="#" method="POST" class="space-y-5">
+        @csrf
+
+        <div>
+          <label class="block text-gray-700 mb-1">Username</label>
+          <input type="text" name="username" placeholder="Masukkan username"
+                 class="w-full border rounded-md px-3 py-2 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <div>
+          <label class="block text-gray-700 mb-1">Password</label>
+          <div class="relative">
+            <input type="password" id="password" name="password" placeholder="Password"
+                   class="w-full border rounded-md px-3 py-2 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <!-- tombol mata -->
+            <button type="button" id="togglePassword" 
+                    class="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700">
+              <!-- ikon default (mata tertutup) -->
+              <svg id="eyeClosed" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-5.523 0-10-4.477-10-10 0-1.036.158-2.035.45-2.975m3.15-3.15A9.959 9.959 0 0112 3c5.523 0 10 4.477 10 10 0 1.036-.158 2.035-.45 2.975m-3.15 3.15L4.5 4.5" />
+              </svg>
+              <!-- ikon mata terbuka -->
+              <svg id="eyeOpen" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+            </button>
           </div>
         </div>
-        <div class="mt-2">
-          <input id="password" type="password" name="password" required autocomplete="current-password" class="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6" />
-        </div>
-      </div>
 
-      <div>
-        <button type="submit" class="flex w-full justify-center rounded-md bg-indigo-500 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">Sign in</button>
-      </div>
-    </form>
+        <button type="submit" 
+                class="w-full bg-blue-700 text-white py-2 rounded-md font-semibold hover:bg-blue-800">
+          LOGIN
+        </button>
+      </form>
 
-    <p class="mt-10 text-center text-sm/6 text-gray-400">
-      Not a member?
-      <a href="#" class="font-semibold text-indigo-400 hover:text-indigo-300">Start a 14 day free trial</a>
-    </p>
+      <!-- Forgot password -->
+      <p class="text-center text-sm text-gray-600 mt-4">
+        Lupa password? <a href="#" class="text-blue-500 hover:underline">Click here</a>
+      </p>
+    </div>
   </div>
-</div>
+
+  <!-- Script toggle password -->
+  <script>
+    const togglePassword = document.querySelector("#togglePassword");
+    const password = document.querySelector("#password");
+    const eyeOpen = document.querySelector("#eyeOpen");
+    const eyeClosed = document.querySelector("#eyeClosed");
+
+    togglePassword.addEventListener("click", () => {
+      const type = password.getAttribute("type") === "password" ? "text" : "password";
+      password.setAttribute("type", type);
+
+      // ganti ikon
+      eyeOpen.classList.toggle("hidden");
+      eyeClosed.classList.toggle("hidden");
+    });
+  </script>
+
 </body>
 </html>
