@@ -1,17 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Koperasi Toko</title>
-  <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-</head>
-<body class="bg-gray-100">
+@extends('layouts.app')
 
+@section('title', 'Koperasi Toko')
+
+@section('content')
   <!-- Hero Section -->
   <section class="relative h-screen flex items-center justify-center">
     <!-- Background -->
-    <img src="../img/landing.png" 
+    <img src="{{ asset('img/landing.png') }}" 
           alt="Background"
           class="absolute inset-0 w-full h-full object-cover rounded-2xl shadow-lg">
 
@@ -35,6 +30,4 @@
       </div>
     </div>
   </section>
-
-</body>
-</html>
+@endsection
