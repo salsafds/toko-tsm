@@ -11,18 +11,18 @@
   <!-- Hero Section -->
   <section class="relative h-screen flex items-center justify-center">
     <!-- Background -->
-    <img src="https://images.unsplash.com/photo-1580910051074-cd1e7b3d0e09" 
-         alt="Background"
-         class="absolute inset-0 w-full h-full object-cover rounded-[30px] shadow-lg">
+    <img src="https://images.unsplash.com/photo-1580910051074-cd1e7b3d0e09?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80" 
+          alt="Background"
+          class="absolute inset-0 w-full h-full object-cover rounded-2xl shadow-lg">
 
     <!-- Overlay -->
-    <div class="absolute inset-0 bg-black bg-opacity-40 rounded-[30px]"></div>
+    <div class="absolute inset-0 bg-black bg-opacity-40 rounded-2xl"></div>
 
     <!-- Content -->
     <div class="relative text-center text-white max-w-3xl px-6">
-      <h1 class="text-4xl md:text-5xl font-bold leading-tight">
-        Selamat Datang di <span class="text-blue-800">Koperasi Toko</span><br>
-        Bersama Membangun <span class="italic">Kesejahteraan Anggota</span>
+      <h1 class="text-xl md:text-5xl font-bold leading-tight">
+        Selamat Datang di
+        <span class="block text-blue-800">Koperasi Tunas Sejahtera Mandiri </span>
       </h1>
       <p class="mt-4 text-lg text-gray-200">
         Koperasi kami hadir untuk mendukung kebutuhan anggota, meningkatkan kesejahteraan, 
