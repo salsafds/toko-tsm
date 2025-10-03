@@ -9,5 +9,5 @@ Route::get('/', function () {
 
 // Halaman login
 Route::get('/login', function () {
-    return view('Signin');
+    return view('login');
 })->name('login');
