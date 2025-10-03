@@ -35,21 +35,28 @@
       </div>
 
       <!-- Judul -->
-      <h2 class="text-center text-xl font-bold text-gray-700 mb-2">
-        Login
-      </h2>
       <p class="text-center text-lg font-bold text-gray-600 mb-6">
         Selamat datang di Aplikasi Koperasi Tunas Sejahtera Mandiri
       </p>
 
+      <!-- Error Message -->
+      @if ($errors->has('login'))
+        <div class="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+          {{ $errors->first('login') }}
+        </div>
+      @endif
+
       <!-- Form -->
-      <form action="#" method="POST" class="space-y-5">
-        @csrf
+      <form action="{{ route('login.post') }}" method="POST" class="space-y-5">
+      @csrf
 
         <div>
           <label class="block text-gray-700 mb-1">Username</label>
-          <input type="text" name="username" placeholder="Masukkan username"
-                 class="w-full border rounded-md px-3 py-2 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <input type="text" name="username" value="{{ old('username') }}" placeholder="Masukkan username"
+                class="w-full border rounded-md px-3 py-2 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          @error('username')
+            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+          @enderror
         </div>
 
         <div>
@@ -61,21 +68,19 @@
             <button type="button" id="togglePassword" 
                     class="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700">
               <!-- ikon default (mata tertutup) -->
-              <svg id="eyeClosed" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-5.523 0-10-4.477-10-10 0-1.036.158-2.035.45-2.975m3.15-3.15A9.959 9.959 0 0112 3c5.523 0 10 4.477 10 10 0 1.036-.158 2.035-.45 2.975m-3.15 3.15L4.5 4.5" />
-              </svg>
+              <img id="eyeClosed" src="{{ asset('img/eyeclosed.png') }}" alt="Hide Password" class="h-5 w-5 block">
               <!-- ikon mata terbuka -->
-              <svg id="eyeOpen" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-              </svg>
+              <img id="eyeOpen" src="{{ asset('img/eyeopen.png') }}" alt="Show Password" class="h-5 w-5 hidden">
             </button>
           </div>
+          @error('password')
+            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+          @enderror
         </div>
 
         <button type="submit" 
                 class="w-full bg-blue-700 text-white py-2 rounded-md font-semibold hover:bg-blue-800">
-          LOGIN
+          Log in
         </button>
       </form>
 

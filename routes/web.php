@@ -1,17 +1,17 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\WelcomeController;
+use App\Http\Controllers\AuthController;
 
 // Landing page
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
 
 // Halaman login
-Route::get('/login', function () {
-    return view('login');
-})->name('login');
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 
+// Dashboard Master (sementara statis dulu)
 Route::get('/dashboardmaster', function () {
-    return view('dashboardmaster'); // nanti kita bikin view dengan nama ini
+    return view('dashboardmaster');
 })->name('dashboardmaster');
