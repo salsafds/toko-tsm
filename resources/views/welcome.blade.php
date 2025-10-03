@@ -1,6 +1,6 @@
-@extends('layouts.app')
+@extends('layouts.guest')
 
-@section('title', 'Koperasi Toko')
+@section('title', 'Welcome')
 
 @section('content')
   <!-- Hero Section -->

@@ -1,14 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>login</title>
- <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-</head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+@extends('layouts.guest')
 
-  <div class="flex w-full max-w-5xl shadow-lg rounded-2xl overflow-hidden bg-white">
+@section('title', 'Login')
+
+@section('content')
+  <div class="flex w-full max-w-5xl shadow-lg rounded-2xl overflow-hidden bg-white mx-auto my-10">
     
     <!-- Bagian Kiri (gambar + overlay) -->
     <div class="hidden md:flex w-1/2 relative bg-gray-200">
@@ -17,7 +12,7 @@
            class="absolute inset-0 w-full h-full object-cover">
       <div class="absolute inset-0 bg-blue-900 opacity-20"></div>
       <div class="relative flex items-start p-6">
-        <a href="../" class="text-white font-semibold flex items-center gap-2 hover:underline">
+        <a href="{{ route('welcome') }}" class="text-white font-semibold flex items-center gap-2 hover:underline">
           <!-- ikon panah -->
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -28,7 +23,7 @@
     </div>
 
     <!-- Bagian Kanan (form login) -->
-    <div class="w-full md:w-1/2 p-8 flex flex-col justify-center">
+    <div class="w-full md:w-1/2 p-12 flex flex-col justify-center">
       <!-- Logo -->
       <div class="flex justify-center mb-6">
         <img src="https://dummyimage.com/80x80/000/fff&text=Logo" alt="Logo" class="h-16">
@@ -94,15 +89,18 @@
     const eyeOpen = document.querySelector("#eyeOpen");
     const eyeClosed = document.querySelector("#eyeClosed");
 
-    togglePassword.addEventListener("click", () => {
-      const type = password.getAttribute("type") === "password" ? "text" : "password";
-      password.setAttribute("type", type);
+    // safety: cek elemen sebelum menambahkan event listener
+    if (togglePassword && password) {
+      togglePassword.addEventListener("click", () => {
+        const type = password.getAttribute("type") === "password" ? "text" : "password";
+        password.setAttribute("type", type);
 
-      // ganti ikon
-      eyeOpen.classList.toggle("hidden");
-      eyeClosed.classList.toggle("hidden");
-    });
+        // ganti ikon (jika ada)
+        if (eyeOpen && eyeClosed) {
+          eyeOpen.classList.toggle("hidden");
+          eyeClosed.classList.toggle("hidden");
+        }
+      });
+    }
   </script>
-
-</body>
-</html>
+@endsection
