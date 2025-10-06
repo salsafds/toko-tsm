@@ -60,7 +60,7 @@
         <svg class="h-5 w-5 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z"/>
         </svg>
-        <span class="text-sm text-gray-700">Search</span>
+        <span class="text-sm text-gray-700">Dashboard</span>
       </a>
 
       <a href="{{ route('dashboard') ?? '#' }}" class="flex items-center gap-3 px-2 py-2 rounded hover:bg-gray-50">
@@ -68,7 +68,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8"/>
           <path stroke-linecap="round" stroke-linejoin="round" d="M21 8v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8"/>
         </svg>
-        <span class="text-sm text-gray-700">Inbox</span>
+        <span class="text-sm text-gray-700">Laporan</span>
       </a>
     </div>
   </div>
@@ -82,7 +82,7 @@
         <svg class="h-5 w-5 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l9-9 9 9v7a2 2 0 01-2 2h-4a2 2 0 01-2-2V12H9v7a2 2 0 01-2 2H3z"/>
         </svg>
-        <span class="text-sm text-gray-700">Home</span>
+        <span class="text-sm text-gray-700">CRUD Data Barang</span>
       </a>
 
       <a href="{{ route('dashboard') ?? '#' }}" class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50">
