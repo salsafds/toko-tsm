@@ -22,5 +22,9 @@
     @yield('content')
   </main>
 
+  {{-- Footer --}}
+  <main class="ml-72 p-2">
+    @include('layouts.partials.footer')
+  </main>
 </body>
 </html>

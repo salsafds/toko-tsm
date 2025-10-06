@@ -11,8 +11,9 @@
               aria-haspopup="true">
         <img src="{{ asset('img/logotsm.png') }}" alt="Logo" class="h-8 w-8 rounded object-contain">
         <div class="flex-1 text-left min-w-0">
-          <div class="truncate text-sm font-medium text-gray-900">Koperasi TSM</div>
-          <div class="truncate text-xs text-gray-500">Pilih Unit Kerja</div>
+          <div class="truncate text-sm font-medium text-gray-900">
+            {{ Auth::check() ? Auth::user()->username : 'Guest' }}
+          </div>
         </div>
         <!-- chevron -->
         <svg x-show="!open" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -119,14 +120,14 @@
 
       <div class="h-6"></div>
 
-      <div class="text-xs font-semibold text-gray-500 uppercase px-2">Support</div>
+      <div class="text-xs font-semibold text-gray-500 uppercase px-2">Data Konfigurasi</div>
 
-      <a href="{{ route('dashboard') ?? '#' }}" class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50">
+      <a href="{{ route('master.dataSatuan.index') ?? '#' }}" class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50">
         <svg class="h-5 w-5 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 2a10 10 0 110 20 10 10 0 010-20z"/>
           <path stroke-linecap="round" stroke-linejoin="round" d="M8 14s1.5 2 4 2 4-2 4-2"/>
         </svg>
-        <span class="text-sm text-gray-700">Support</span>
+        <span class="text-sm text-gray-700">Data Satuan</span>
       </a>
 
       <a href="{{ route('dashboard') ?? '#' }}" class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50">
@@ -181,13 +182,24 @@
           <span class="text-sm text-gray-700">Privacy policy</span>
         </a>
 
-        <a href="{{ route('dashboard') ?? '#' }}" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-50">
+        {{-- <a href="{{ route('dashboard') ?? '#' }}" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-50">
           <svg class="h-4 w-4 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15 12H3"/>
             <path stroke-linecap="round" stroke-linejoin="round" d="M10 17l5-5-5-5"/>
           </svg>
           <span class="text-sm text-gray-700">Sign out</span>
-        </a>
+        </a> --}}
+
+        <form action="{{ route('logout') }}" method="POST">
+          @csrf
+          <button type="submit" class="w-full flex items-center gap-3 px-3 py-2 hover:bg-gray-50 text-left">
+            <svg class="h-4 w-4 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12H3"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10 17l5-5-5-5"/>
+            </svg>
+            <span class="text-sm text-gray-700">Sign out</span>
+          </button>
+        </form>
       </div>
     </div>
   </div>
