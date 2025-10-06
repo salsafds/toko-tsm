@@ -5,18 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>@yield('title', 'Koperasi Tunas Sejahtera Mandiri')</title>
 
-  <!-- CSS -->
-  <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/app.css')}}">
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-50">
 
-  {{-- Konten halaman --}}
-  <main class="flex-1">
-    @yield('content')
+  {{-- Header --}}
+  <main class="ml-72 p-2">
+    @include('layouts.partials.header')
   </main>
 
-  {{-- Footer --}}
-  @include('layouts.partials.footer')
+  {{-- Sidebar partial --}}
+  @include('layouts.partials.sidebarmaster')
+
+  {{-- Konten halaman --}}
+  <main class="ml-72 p-6">
+    @yield('content')
+  </main>
 
 </body>
 </html>

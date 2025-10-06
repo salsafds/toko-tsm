@@ -12,6 +12,6 @@ Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 
 // Dashboard Master (sementara statis dulu)
-Route::get('/dashboardmaster', function () {
-    return view('dashboardmaster');
-})->name('dashboardmaster');
+Route::get('/dashboard', function () {
+    return view('master/dashboard');
+})->name('dashboard');

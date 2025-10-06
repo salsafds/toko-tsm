@@ -23,7 +23,7 @@ public function login(Request $request)
 
     if (Auth::attempt($credentials)) {
         $request->session()->regenerate();
-        return redirect()->intended('/dashboardmaster');
+        return redirect()->intended('/dashboard');
     }
 
     return back()->withErrors([
