@@ -6,7 +6,8 @@
   <title>@yield('title', 'Koperasi Tunas Sejahtera Mandiri')</title>
 
   <!-- CSS -->
-  <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
 </head>
 <body class="bg-gray-100">
 
