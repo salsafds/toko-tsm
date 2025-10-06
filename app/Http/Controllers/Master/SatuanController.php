@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Master;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Satuan;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class SatuanController extends Controller
@@ -25,7 +26,9 @@ class SatuanController extends Controller
 
     public function create()
     {
-        return view('master.dataSatuan.create');
+       // Generate preview ID untuk form (berurutan)
+        $nextId = $this->generateNextId();
+        return view('master.dataSatuan.create', compact('nextId'));
     }
 
     public function store(Request $request)
@@ -35,9 +38,10 @@ class SatuanController extends Controller
         ]);
 
         Satuan::create([
-            'id_satuan' => 'ST' . Str::upper(Str::random(6)),
+            'id_satuan' => $this->generateNextId(),  // Gunakan ID berurutan
             'nama_satuan' => $request->nama_satuan,
         ]);
+
 
         return redirect()->route('master.dataSatuan.index')
                          ->with('success', 'Data satuan berhasil ditambahkan.');
@@ -58,7 +62,7 @@ class SatuanController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'nama_satuan' => 'required|string|max:50|unique:satuan,nama_satuan,' . $id . ',id_satuan',
+            'nama_satuan' => 'required|string|max:50|unique:satuan,nama_satuan,' . $id,
         ]);
 
         $satuan = Satuan::findOrFail($id);
@@ -78,4 +82,19 @@ class SatuanController extends Controller
         return redirect()->route('master.dataSatuan.index')
                          ->with('success', 'Data satuan berhasil dihapus.');
     }
+    /**
+     * Generate ID satuan berurutan (ST0001, ST0002, dll.)
+     */
+    private function generateNextId()
+    {
+        // Ambil MAX angka dari id_satuan (SUBSTRING setelah 'ST', cast ke UNSIGNED)
+        // Jika table kosong, maxNum = null → fallback ke 0
+        $maxNum = Satuan::selectRaw('MAX(CAST(SUBSTRING(id_satuan, 3) AS UNSIGNED)) as max_num')
+                        ->value('max_num') ?? 0;
+        $nextNumber = $maxNum + 1;
+        
+        // Format: ST + 4 digit dengan leading zero (ST0001, ST0002, ..., ST0100, dll.)
+        return 'ST' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+    }
 }
+

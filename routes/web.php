@@ -20,18 +20,17 @@ Route::get('/dashboard', function () {
     return view('master/dashboard');
 })->name('dashboard');
 
-Route::middleware(['auth'])->prefix('master')->name('master.')->group(function () {
+Route::middleware(['auth'])->name('master.')->group(function () {
     Route::resource('dataSatuan', SatuanController::class);
 });
 
-Route::get('/dataSatuan', function () {
-    return view('master/dataSatuan/index');
-})->name('master.dataSatuan.index');
+// Route::get('/dataSatuan', function () {
+//     return view('master/dataSatuan/index');
+// })->name('master.dataSatuan.index');
 
-Route::get('/dataSatuan.create', function () {
-    return view('master/dataSatuan/create');
-})->name('master.dataSatuan.create');
-
+// Route::get('/dataSatuan.create', function () {
+//     return view('master/dataSatuan/create');
+// })->name('master.dataSatuan.create');
 
 
 // Route::middleware(['auth'])->prefix('master')->name('master.')->group(function () {
