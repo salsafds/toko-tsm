@@ -16,7 +16,7 @@
 
       <!-- Logo koperasi -->
       <div class="flex items-center">
-        <img src="{{ asset('img/logo.png') }}" alt="Logo Koperasi"
+        <img src="{{ asset('img/logotsm.png') }}" alt="Logo Koperasi"
              class="h-10 w-10 object-contain rounded-md shadow-sm">
       </div>
     </div>
