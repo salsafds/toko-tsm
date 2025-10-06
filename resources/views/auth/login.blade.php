@@ -36,7 +36,7 @@
 
       <!-- Error Message -->
       @if ($errors->has('login'))
-        <div class="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+        <div class="p-2 bg-red-100 border border-red-400 text-red-700 rounded">
           {{ $errors->first('login') }}
         </div>
       @endif
