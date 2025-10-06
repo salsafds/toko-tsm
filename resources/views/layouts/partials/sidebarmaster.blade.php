@@ -9,7 +9,7 @@
               :aria-expanded="open.toString()"
               class="w-full flex items-center gap-3 px-2 py-2 rounded hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
               aria-haspopup="true">
-        <img src="{{ asset('img/logo.png') }}" alt="Logo" class="h-8 w-8 rounded object-contain">
+        <img src="{{ asset('img/logotsm.png') }}" alt="Logo" class="h-8 w-8 rounded object-contain">
         <div class="flex-1 text-left min-w-0">
           <div class="truncate text-sm font-medium text-gray-900">Koperasi TSM</div>
           <div class="truncate text-xs text-gray-500">Pilih Unit Kerja</div>
