@@ -43,7 +43,7 @@
   @endif
 
   {{-- Table --}}
-  <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+  <div class="bg-white rounded-lg shadow-sm overflow-visible">
     <table class="min-w-full divide-y divide-gray-200">
       <thead class="bg-gray-50">
         <tr class="text-left text-xs text-gray-500 uppercase">
@@ -139,4 +139,42 @@
     </div>
   </div>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const searchInput = document.querySelector('input[name="q"]');
+  const tableBody = document.querySelector('tbody');
+  const perPageSelect = document.querySelector('#per_page');
+
+  <script>
+document.addEventListener('DOMContentLoaded', function () {
+  const searchInput = document.querySelector('input[name="q"]');
+  const tableBody = document.querySelector('tbody');
+  const perPageSelect = document.querySelector('#per_page');
+
+  // Fungsi untuk memuat data berdasarkan search
+  function fetchData() {
+    const query = searchInput.value;
+    const perPage = perPageSelect.value;
+
+    fetch(`{{ route('master.dataSatuan.index') }}?q=${encodeURIComponent(query)}&per_page=${perPage}`, {
+      headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(response => response.text())
+    .then(html => {
+      // Ambil isi tabel <tbody> dari hasil response
+      const parser = new DOMParser();
+      const newDoc = parser.parseFromString(html, 'text/html');
+      const newTbody = newDoc.querySelector('tbody');
+
+      if (newTbody) {
+        tableBody.innerHTML = newTbody.innerHTML;
+      }
+    })
+    .catch(error => console.error('Error:', error));
+  }
+
+  // Jalankan pencarian saat user mengetik (real-time)
+  searchInput.addEventListener('keyup', fetchData);
+});
+</script>
 @endsection
