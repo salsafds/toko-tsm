@@ -18,17 +18,26 @@
         {{ Auth::check() ? Auth::user()->nama_lengkap : 'Guest' }}
       </div>
     </div>
-    <button 
-      @click="isOpen = !isOpen" 
-      class="p-2 rounded hover:bg-gray-50"
-      x-tooltip="isOpen ? 'Close Sidebar' : 'Open Sidebar'"
-    >
-      <img 
-        :src="isOpen ? '{{ asset('img/icon/iconCloseSidebar.png') }}' : '{{ asset('img/icon/iconOpenSidebar.png') }}'" 
-        alt="Toggle Sidebar" 
-        class="h-5 w-5 object-contain block"
+    <!-- Toggle Sidebar Button -->
+    <div class="relative group">
+      <button 
+        @click="isOpen = !isOpen" 
+        class="p-2 rounded hover:bg-gray-50 flex items-center justify-center"
       >
-    </button>
+        <img 
+          :src="isOpen ? '{{ asset('img/icon/iconCloseSidebar.png') }}' : '{{ asset('img/icon/iconOpenSidebar.png') }}'" 
+          alt="Toggle Sidebar" 
+          class="h-5 w-5 object-contain block"
+        >
+      </button>
+
+      <!-- Tooltip -->
+      <span 
+        class="absolute left-full top-1/2 -translate-y-1/2 ml-2 whitespace-nowrap bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-2 pointer-events-none transition-all duration-150 z-50"
+      >
+        <span x-text="isOpen ? 'Close Sidebar' : 'Open Sidebar'"></span>
+      </span>
+    </div>
   </div>
 
   <hr class="mx-4 my-2 border-gray-200" x-show="isOpen">
@@ -67,7 +76,7 @@
   <hr class="mx-4 my-2 border-gray-200" x-show="isOpen">
 
   <!-- Sidebar Body -->
-  <div class="flex-1 overflow-y-auto overflow-x-hidden">
+  <div class="flex-1 overflow-y-auto">
     <nav class="p-4 space-y-2" aria-label="Main navigation" :class="{ 'px-2': !isOpen }">
       <div class="text-xs font-semibold text-gray-500 uppercase px-2" x-show="isOpen">Main</div>
 
@@ -81,9 +90,14 @@
         <span 
           x-show="!isOpen" 
           x-cloak
-          class="absolute left-full ml-2 bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-10"
-        >CRUD Data Barang</span>
-      </a>
+          x-ref="tooltip"
+          class="fixed left-[72px] bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
+          x-data="{ top: 0 }"
+          @mouseenter="
+            top = $el.parentElement.getBoundingClientRect().top;
+            $el.style.top = top + 'px';">
+            CRUD Data Barang
+        </span>
 
       <a 
         href="{{ route('dashboard') ?? '#' }}" 
@@ -95,8 +109,14 @@
         <span 
           x-show="!isOpen" 
           x-cloak
-          class="absolute left-full ml-2 bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-10"
-        >CRUD Data Supplier</span>
+          x-ref="tooltip"
+          class="fixed left-[72px] bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
+          x-data="{ top: 0 }"
+          @mouseenter="
+            top = $el.parentElement.getBoundingClientRect().top;
+            $el.style.top = top + 'px';">
+            CRUD Data Supplier
+        </span>
       </a>
 
       <a 
@@ -109,9 +129,14 @@
         <span 
           x-show="!isOpen" 
           x-cloak
-          class="absolute left-full ml-2 bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-10"
-        >CRUD Data Pelanggan</span>
-      </a>
+          x-ref="tooltip"
+          class="fixed left-[72px] bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
+          x-data="{ top: 0 }"
+          @mouseenter="
+            top = $el.parentElement.getBoundingClientRect().top;
+            $el.style.top = top + 'px';">
+          CRUD Data Pelanggan
+        </span>
 
       <a 
         href="{{ route('dashboard') ?? '#' }}" 
@@ -123,8 +148,14 @@
         <span 
           x-show="!isOpen" 
           x-cloak
-          class="absolute left-full ml-2 bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-10"
-        >CRUD Data Karyawan</span>
+          x-ref="tooltip"
+          class="fixed left-[72px] bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
+          x-data="{ top: 0 }"
+          @mouseenter="
+            top = $el.parentElement.getBoundingClientRect().top;
+            $el.style.top = top + 'px';">
+          CRUD Data Karyawan
+        </span>
       </a>
 
       <div class="h-2" x-show="isOpen"></div>
@@ -144,8 +175,14 @@
         <span 
           x-show="!isOpen" 
           x-cloak
-          class="absolute left-full ml-2 bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-10"
-        >Data Satuan</span>
+          x-ref="tooltip"
+          class="fixed left-[72px] bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
+          x-data="{ top: 0 }"
+          @mouseenter="
+            top = $el.parentElement.getBoundingClientRect().top;
+            $el.style.top = top + 'px';">
+          Data Satuan
+        </span>
       </a>
 
       <a 
@@ -156,12 +193,18 @@
         <svg class="h-5 w-5 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
         </svg>
-        <span class="text-sm text-gray-700" x-show="isOpen">Changelog</span>
+        <span class="text-sm text-gray-700" x-show="isOpen">Data Pendidikan</span>
         <span 
           x-show="!isOpen" 
           x-cloak
-          class="absolute left-full ml-2 bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-10"
-        >Changelog</span>
+          x-ref="tooltip"
+          class="fixed left-[72px] bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
+          x-data="{ top: 0 }"
+          @mouseenter="
+            top = $el.parentElement.getBoundingClientRect().top;
+            $el.style.top = top + 'px';">
+          Data Pendidikan
+        </span>
       </a>
     </nav>
   </div>
