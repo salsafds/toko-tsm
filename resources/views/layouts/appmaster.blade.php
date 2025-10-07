@@ -10,7 +10,7 @@
 <body class="bg-gray-50">
 
   {{-- Header --}}
-  <main class="ml-72 p-2">
+  <main class="ml-72">
     @include('layouts.partials.header')
   </main>
 
@@ -18,7 +18,7 @@
   @include('layouts.partials.sidebarmaster')
 
   {{-- Konten halaman --}}
-  <main class="ml-72 p-6 py-4">
+  <main class="ml-72 px-6">
     @yield('content')
   </main>
 

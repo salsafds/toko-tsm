@@ -1,5 +1,5 @@
 <header class="bg-white shadow-sm">
-  <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+  <div class="container mx-auto px-4 py-3 flex items-center justify-between">
 
     <!-- Left: brand name + alamat -->
     <div class="flex items-start gap-3">
