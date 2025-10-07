@@ -15,7 +15,10 @@ class SatuanController extends Controller
         $query = Satuan::query();
 
         if ($search = $request->query('q')) {
-            $query->where('nama_satuan', 'like', "%{$search}%");
+            $query->where(function ($q) use ($search) {
+                $q->where('nama_satuan', 'like', "%{$search}%")
+                ->orWhere('id_satuan', 'like', "%{$search}%");
+            });
         }
 
         $perPage = $request->query('per_page', 10);
