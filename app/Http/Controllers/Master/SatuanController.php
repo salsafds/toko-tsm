@@ -47,12 +47,6 @@ class SatuanController extends Controller
                          ->with('success', 'Data satuan berhasil ditambahkan.');
     }
 
-    public function show($id)
-    {
-        $satuan = Satuan::findOrFail($id);
-        return view('master.dataSatuan.show', compact('satuan'));
-    }
-
     public function edit($id)
     {
         $satuan = Satuan::findOrFail($id);
