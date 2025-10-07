@@ -58,57 +58,24 @@
               <td class="px-4 py-3 text-sm text-gray-700">{{ $item->id_satuan }}</td>
               <td class="px-4 py-3 text-sm text-gray-700">{{ $item->nama_satuan }}</td>
               <td class="px-4 py-3 text-sm text-gray-700 text-right">
-                  {{-- Dropdown Options dengan Alpine.js v3 (bundled via Vite) --}}
-                  <div x-data="{ open: false }" class="inline-block relative text-left">
-                      <button type="button" 
-                              class="inline-flex items-center justify-center gap-2 px-3 py-1.5 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors" 
-                              @click="open = !open"
-                              @keydown.escape.window="open = false">
-                          Options
-                          <svg class="h-4 w-4 transition-transform duration-200" 
-                              :class="{ 'rotate-180': open }" 
-                              xmlns="http://www.w3.org/2000/svg" 
-                              fill="none" 
-                              viewBox="0 0 24 24" 
-                              stroke="currentColor">
-                              <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
-                          </svg>
-                      </button>
+                <div class="flex items-center justify-end gap-2">
+                  <!-- Edit button -->
+                  <a href="{{ route('master.dataSatuan.edit', $item->id_satuan) }}"
+                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                    Edit
+                  </a>
 
-                      {{-- Dropdown Menu --}}
-                      <div x-show="open" 
-                          x-transition:enter="transition ease-out duration-100"
-                          x-transition:enter-start="transform opacity-0 scale-95"
-                          x-transition:enter-end="transform opacity-100 scale-100"
-                          x-transition:leave="transition ease-in duration-75"
-                          x-transition:leave-start="transform opacity-100 scale-100"
-                          x-transition:leave-end="transform opacity-0 scale-95"
-                          @click.away="open = false"
-                          class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50 ring-1 ring-black ring-opacity-5 focus:outline-none origin-top-right">
-                          
-                          {{-- Edit --}}
-                          <a href="{{ route('master.dataSatuan.edit', $item->id_satuan) }}" 
-                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none">
-                              Edit
-                          </a>
-                          
-                          {{-- Divider --}}
-                          <hr class="my-1 border-gray-200">
-                          
-                          {{-- Delete --}}
-                          <form action="{{ route('master.dataSatuan.destroy', $item->id_satuan) }}" 
-                                method="POST" 
-                                class="block"
-                                onsubmit="return confirm('Apakah Anda yakin ingin menghapus data satuan ini?')">
-                              @csrf
-                              @method('DELETE')
-                              <button type="submit" 
-                                      class="block w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-red-50 focus:bg-red-50 focus:outline-none">
-                                  Delete
-                              </button>
-                          </form>
-                      </div>
-                  </div>
+                  <!-- Delete button -->
+                  <form action="{{ route('master.dataSatuan.destroy', $item->id_satuan) }}" method="POST"
+                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus data satuan ini?');">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit"
+                            class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-rose-100 text-rose-700 hover:bg-rose-200 focus:outline-none focus:ring-2 focus:ring-rose-300">
+                      Delete
+                    </button>
+                  </form>
+                </div>
               </td>
           </tr>
       @empty
