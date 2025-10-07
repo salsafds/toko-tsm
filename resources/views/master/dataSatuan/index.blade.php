@@ -3,12 +3,18 @@
 @section('title', 'Data Satuan')
 
 @section('content')
-<div class="container mx-auto p-6">
+<div class="container mx-auto">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="text-2xl font-semibold text-gray-800">Data Satuan</h1>
+      <p class="text-sm text-gray-500 mt-1">Ringkasan aktivitas & statistik koperasi</p>
+    </div>
+  </div>
   <div class="flex items-center justify-between mb-4">
     <div class="flex items-center gap-3">
       <form method="GET" action="{{ route('master.dataSatuan.index') }}" class="flex items-center gap-2">
         <label for="per_page" class="text-sm text-gray-600">Show</label>
-        <select name="per_page" id="per_page" onchange="this.form.submit()" class="ml-2 rounded-md border-gray-200 text-sm px-2 py-1">
+        <select name="per_page" id="per_page" onchange="this.form.submit()" class="ml-2 rounded-md border text-sm px-2 py-1">
           @php $per = request()->query('per_page', 10); @endphp
           <option value="5" {{ $per==5 ? 'selected' : '' }}>5</option>
           <option value="10" {{ $per==10 ? 'selected' : '' }}>10</option>
@@ -20,7 +26,7 @@
 
     <div class="flex items-center gap-3">
       <form method="GET" action="{{ route('master.dataSatuan.index') }}" class="flex items-center gap-2">
-        <div class="relative">
+        <div class="relative border rounded-md">
           <svg class="absolute left-3 top-2.5 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z"/>
           </svg>
@@ -44,7 +50,7 @@
 
   {{-- Table --}}
   <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-    <table class="min-w-full divide-y divide-gray-200">
+    <table class="min-w-full divide-y divide-gray-200 border">
       <thead class="bg-gray-50">
         <tr class="text-left text-xs text-gray-500 uppercase">
           <th class="px-4 py-3">ID Satuan</th>  {{-- Ubah label --}}

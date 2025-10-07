@@ -18,7 +18,7 @@
   @include('layouts.partials.sidebarmaster')
 
   {{-- Konten halaman --}}
-  <main class="ml-72 p-6">
+  <main class="ml-72 p-6 py-4">
     @yield('content')
   </main>
 
