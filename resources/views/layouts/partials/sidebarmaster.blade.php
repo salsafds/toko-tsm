@@ -2,77 +2,35 @@
 <aside class="fixed left-0 top-0 h-full w-72 bg-white border-r shadow-sm z-40 flex flex-col"
        aria-label="Sidebar Master">
 
-  <!-- Sidebar Header (workspace / team dropdown) -->
-  <div class="px-4 py-4 border-b">
-    <div x-data="{ open: false }" class="relative">
-      <button @click="open = !open"
-              :aria-expanded="open.toString()"
-              class="w-full flex items-center gap-3 px-2 py-2 rounded hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              aria-haspopup="true">
-        <img src="{{ asset('img/logotsm.png') }}" alt="Logo" class="h-8 w-8 rounded object-contain">
-        <div class="flex-1 text-left min-w-0">
-          <div class="truncate text-sm font-medium text-gray-900">
-            {{ Auth::check() ? Auth::user()->username : 'Guest' }}
-          </div>
-        </div>
-        <!-- chevron -->
-        <svg x-show="!open" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/>
-        </svg>
-        <svg x-show="open" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M6 15l6-6 6 6"/>
-        </svg>
-      </button>
-
-      <!-- Dropdown menu -->
-      <div x-show="open" x-transition @click.outside="open = false"
-           class="mt-2 bg-white border rounded shadow-sm overflow-hidden"
-           style="min-width:220px;">
-        <a href="#" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-50">
-          <svg class="h-4 w-4 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M11 17a4 4 0 100-8 4 4 0 000 8z"/>
-            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35"/>
-          </svg>
-          <span class="text-sm text-gray-700">Unit 1</span>
-        </a>
-
-        <a href="#" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-50">
-          <svg class="h-4 w-4 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M11 17a4 4 0 100-8 4 4 0 000 8z"/>
-            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35"/>
-          </svg>
-          <span class="text-sm text-gray-700">Unit 2</span>
-        </a>
-
-        <div class="border-t"></div>
-
-        <a href="#" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-50">
-          <svg class="h-4 w-4 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16M4 12h16"/>
-          </svg>
-          <span class="text-sm text-gray-700">Buat Unit Baru</span>
-        </a>
+  <!-- Sidebar Header (username + logo tanpa dropdown unit) -->
+  <div class="flex items-center gap-3 px-8 pt-4 rounded">
+    <div class="flex-1 text-left min-w-0">
+      <div class="text-xs text-gray-500">
+        Selamat datang, 
+      </div>
+      <div class="text-lg font-semibold text-gray-900 truncate">
+        {{ Auth::check() ? Auth::user()->nama_lengkap : 'Guest' }}
       </div>
     </div>
+  </div>
+
+   <hr class="mx-4 my-2 border-gray-200">
 
     <!-- Quick links under header -->
-    <div class="mt-3 space-y-1">
+    <div class="p-4 space-y-2">
       <a href="{{ route('dashboard') ?? '#' }}" class="flex items-center gap-3 px-2 py-2 rounded hover:bg-gray-50">
-        <svg class="h-5 w-5 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z"/>
-        </svg>
+        <img src="{{ asset('img/icon/iconHome.png') }}" alt="Icon Home" class="h-5 w-5 object-contain">
         <span class="text-sm text-gray-700">Dashboard</span>
       </a>
 
       <a href="{{ route('dashboard') ?? '#' }}" class="flex items-center gap-3 px-2 py-2 rounded hover:bg-gray-50">
-        <svg class="h-5 w-5 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8"/>
-          <path stroke-linecap="round" stroke-linejoin="round" d="M21 8v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8"/>
-        </svg>
+        <img src="{{ asset('img/icon/iconLaporan.png') }}" alt="Icon Laporan" class="h-5 w-5 object-contain">
         <span class="text-sm text-gray-700">Laporan</span>
       </a>
     </div>
   </div>
+
+  <hr class="mx-4 my-2 border-gray-200">
 
   <!-- Sidebar Body -->
   <div class="flex-1 overflow-y-auto">
@@ -80,18 +38,23 @@
       <div class="text-xs font-semibold text-gray-500 uppercase px-2">Main</div>
 
       <a href="{{ route('dashboard') ?? '#' }}" class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50">
-        <svg class="h-5 w-5 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l9-9 9 9v7a2 2 0 01-2 2h-4a2 2 0 01-2-2V12H9v7a2 2 0 01-2 2H3z"/>
-        </svg>
+        <img src="{{ asset('img/icon/iconBarang.png') }}" alt="Icon Barang" class="h-5 w-5 object-contain">
         <span class="text-sm text-gray-700">CRUD Data Barang</span>
       </a>
 
       <a href="{{ route('dashboard') ?? '#' }}" class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50">
-        <svg class="h-5 w-5 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="3" y="4" width="18" height="18" rx="2"/>
-          <path stroke-linecap="round" stroke-linejoin="round" d="M16 2v4M8 2v4M3 10h18"/>
-        </svg>
-        <span class="text-sm text-gray-700">Events</span>
+        <img src="{{ asset('img/icon/iconSupplier.png') }}" alt="Icon Supplier" class="h-5 w-5 object-contain">
+        <span class="text-sm text-gray-700">CRUD Data Supplier</span>
+      </a>
+
+      <a href="{{ route('dashboard') ?? '#' }}" class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50">
+        <img src="{{ asset('img/icon/iconPelanggan.png') }}" alt="Icon Pelanggan" class="h-5 w-5 object-contain">
+        <span class="text-sm text-gray-700">CRUD Data Pelanggan</span>
+      </a>
+
+      <a href="{{ route('dashboard') ?? '#' }}" class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50">
+        <img src="{{ asset('img/icon/iconKaryawan.png') }}" alt="Icon Karyawan" class="h-5 w-5 object-contain">
+        <span class="text-sm text-gray-700">CRUD Data Karyawan</span>
       </a>
 
       <a href="{{ route('dashboard') ?? '#' }}" class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50">
@@ -139,14 +102,25 @@
     </nav>
   </div>
 
-  <!-- Sidebar Footer (profile dropdown) -->
+  <!-- Sidebar Footer (profile dropdown dari database) -->
   <div class="border-t p-4">
+    @php
+      $user = Auth::user();
+      $foto = $user && $user->foto_user
+          ? asset('storage/' . $user->foto_user)
+          : asset('img/iconProfil.jpg');
+    @endphp
+
     <div x-data="{ open: false }" class="relative">
       <button @click="open = !open" class="w-full flex items-center gap-3 px-2 py-2 rounded hover:bg-gray-50 focus:outline-none">
-        <img src="{{ asset('img/profile-photo.jpg') }}" alt="Profile" class="h-10 w-10 rounded object-cover">
+        <img src="{{ $foto }}" alt="Profile" class="h-10 w-10 rounded object-cover">
         <div class="min-w-0">
-          <div class="truncate text-sm font-medium text-gray-900">Erica</div>
-          <div class="truncate text-xs text-gray-500">erica@example.com</div>
+          <div class="truncate text-sm font-medium text-gray-900">
+            {{ $user ? $user->nama_lengkap : 'Guest' }}
+          </div>
+          <div class="truncate text-xs text-gray-500">
+            {{ $user ? ucfirst($user->role) : 'Role Tidak Dikenal' }}
+          </div>
         </div>
         <svg x-show="!open" class="h-4 w-4 text-gray-500" viewBox="0 0 20 20" fill="none" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 8l4 4 4-4"/>
@@ -181,14 +155,6 @@
           </svg>
           <span class="text-sm text-gray-700">Privacy policy</span>
         </a>
-
-        {{-- <a href="{{ route('dashboard') ?? '#' }}" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-50">
-          <svg class="h-4 w-4 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12H3"/>
-            <path stroke-linecap="round" stroke-linejoin="round" d="M10 17l5-5-5-5"/>
-          </svg>
-          <span class="text-sm text-gray-700">Sign out</span>
-        </a> --}}
 
         <form action="{{ route('logout') }}" method="POST">
           @csrf
