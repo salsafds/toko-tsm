@@ -10,7 +10,7 @@
 <body class="bg-gray-50" x-data="{ isOpen: true }">>
 
   {{-- Header --}}
-  <main class="transition-all duration-300" :class="{ 'ml-72': isOpen, 'ml-16': !isOpen }">
+  <main class="fixed top-0 right-0 left-0 transition-all duration-300" :class="{ 'ml-72': isOpen, 'ml-16': !isOpen }">
     @include('layouts.partials.header')
   </main>
 
@@ -18,7 +18,7 @@
   @include('layouts.partials.sidebarmaster')
 
   {{-- Konten halaman --}}
-  <main class="transition-all duration-300 px-6" :class="{ 'ml-72': isOpen, 'ml-16': !isOpen }">
+  <main class=" pt-16 transition-all duration-300 px-6" :class="{ 'ml-72': isOpen, 'ml-16': !isOpen }">
     @yield('content')
   </main>
 
