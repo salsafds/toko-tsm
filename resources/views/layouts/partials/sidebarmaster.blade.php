@@ -1,8 +1,9 @@
 ```html
 <aside 
-  class="fixed left-0 top-0 h-full bg-white border-r shadow-sm z-40 flex flex-col transition-all duration-300"
+  class="fixed left-0 top-0 h-full bg-white border-r shadow-sm z-40 flex flex-col "
   :class="{ 'w-72': isOpen, 'w-16': !isOpen }"
   aria-label="Sidebar Master">
+  
 
   <!-- Sidebar Header -->
   <div 
@@ -26,7 +27,7 @@
         <img 
           :src="isOpen ? '{{ asset('img/icon/iconCloseSidebar.png') }}' : '{{ asset('img/icon/iconOpenSidebar.png') }}'" 
           alt="Toggle Sidebar" 
-          class="h-5 w-5 object-contain block"
+          class="h-5 w-5 object-contain"
         >
       </button>
 
@@ -42,7 +43,7 @@
   <hr class="mx-4 my-2 border-gray-200" x-show="isOpen">
 
   <!-- Quick links under header -->
-  <div class="px-4 py-2 space-y-2" :class="{ 'px-2': !isOpen }">
+  <div class="p-4 space-y-2" :class="{ 'px-2': !isOpen }">
     <a 
       href="{{ route('dashboard') ?? '#' }}" 
       class="flex items-center gap-3 px-2 py-2 rounded hover:bg-gray-50 relative group"
