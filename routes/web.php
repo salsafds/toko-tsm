@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Master\SatuanController;
+use App\Http\Controllers\Master\RoleController;
 
 // Landing page
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
@@ -21,6 +22,10 @@ Route::get('/dashboard', function () {
 })->name('dashboard');
 
 Route::middleware(['auth'])->name('master.')->group(function () {
-    Route::resource('dataSatuan', SatuanController::class);
+    Route::resource('data-satuan', SatuanController::class);
+});
+
+Route::middleware(['auth'])->name('master.')->group(function () {
+    Route::resource('data-role', RoleController::class);
 });
 

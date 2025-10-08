@@ -26,12 +26,12 @@
     <div class="w-full md:w-1/2 p-12 flex flex-col justify-center">
       <!-- Logo -->
       <div class="flex justify-center mb-6">
-        <img src="https://dummyimage.com/80x80/000/fff&text=Logo" alt="Logo" class="h-16">
+        <img src="img/logotsm.png" alt="Logo" class="h-10">
       </div>
 
       <!-- Judul -->
       <p class="text-center text-lg font-bold text-gray-600 mb-6">
-        Selamat datang di Aplikasi Koperasi Tunas Sejahtera Mandiri
+        Selamat datang di Aplikasi Toko Koperasi Tunas Sejahtera Mandiri
       </p>
 
       <!-- Error Message -->

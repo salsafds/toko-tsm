@@ -23,8 +23,8 @@
       </div>
     @endif
 
-    @include('master.dataSatuan._form', [
-      'action' => route('master.dataSatuan.store'),
+    @include('master.data-satuan._form', [
+      'action' => route('master.data-satuan.store'),
       'method' => 'POST',
       'satuan' => null,
       'nextId' => $nextId

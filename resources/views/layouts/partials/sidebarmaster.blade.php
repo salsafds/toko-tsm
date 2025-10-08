@@ -163,7 +163,7 @@
       <div class="text-xs font-semibold text-gray-500 uppercase px-2" x-show="isOpen">Data Konfigurasi</div>
 
       <a 
-        href="{{ route('master.dataSatuan.index') ?? '#' }}" 
+        href="{{ route('master.data-satuan.index') ?? '#' }}" 
         class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
         :class="{ 'justify-center': !isOpen }"
       >
@@ -186,14 +186,14 @@
       </a>
 
       <a 
-        href="{{ route('dashboard') ?? '#' }}" 
+        href="{{ route('master.data-role.index') ?? '#' }}" 
         class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
         :class="{ 'justify-center': !isOpen }"
       >
         <svg class="h-5 w-5 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
         </svg>
-        <span class="text-sm text-gray-700" x-show="isOpen">Data Pendidikan</span>
+        <span class="text-sm text-gray-700" x-show="isOpen">Data Role</span>
         <span 
           x-show="!isOpen" 
           x-cloak
@@ -203,7 +203,7 @@
           @mouseenter="
             top = $el.parentElement.getBoundingClientRect().top;
             $el.style.top = top + 'px';">
-          Data Pendidikan
+          Data Role
         </span>
       </a>
     </nav>

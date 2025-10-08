@@ -1,18 +1,20 @@
+{{-- resources/views/master/data-role/index.blade.php --}}
 @extends('layouts.appmaster')
 
-@section('title', 'Data Satuan')
+@section('title', 'Data Role')
 
 @section('content')
 <div class="container mx-auto">
   <div class="flex items-center justify-between mb-6">
     <div>
-      <h1 class="text-2xl font-semibold text-gray-800">Data Satuan</h1>
-      <p class="text-sm text-gray-500 mt-1">Ringkasan aktivitas & statistik koperasi</p>
+      <h1 class="text-2xl font-semibold text-gray-800">Data Role</h1>
+      <p class="text-sm text-gray-500 mt-1">Daftar role dan keterangan</p>
     </div>
   </div>
+
   <div class="flex items-center justify-between mb-4">
     <div class="flex items-center gap-3">
-      <form method="GET" action="{{ route('master.dataSatuan.index') }}" class="flex items-center gap-2">
+      <form method="GET" action="{{ route('master.data-role.index') }}" class="flex items-center gap-2">
         <label for="per_page" class="text-sm text-gray-600">Show</label>
         <select name="per_page" id="per_page" onchange="this.form.submit()" class="ml-2 rounded-md border text-sm px-2 py-1">
           @php $per = request()->query('per_page', 10); @endphp
@@ -25,7 +27,7 @@
     </div>
 
     <div class="flex items-center gap-3">
-      <form method="GET" action="{{ route('master.dataSatuan.index') }}" class="flex items-center gap-2">
+      <form method="GET" action="{{ route('master.data-role.index') }}" class="flex items-center gap-2">
         <div class="relative border rounded-md">
           <svg class="absolute left-3 top-2.5 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z"/>
@@ -35,7 +37,7 @@
         </div>
       </form>
 
-      <a href="{{ route('master.dataSatuan.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-700 text-white rounded-md text-sm hover:bg-blue-800">
+      <a href="{{ route('master.data-role.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-700 text-white rounded-md text-sm hover:bg-blue-800">
         + Tambah
       </a>
     </div>
@@ -53,27 +55,29 @@
     <table class="min-w-full divide-y divide-gray-200 border">
       <thead class="bg-gray-50">
         <tr class="text-left text-xs text-gray-500 uppercase">
-          <th class="px-4 py-3">ID Satuan</th>  {{-- Ubah label --}}
-          <th class="px-4 py-3">Nama Satuan</th>
+          <th class="px-4 py-3">ID Role</th>
+          <th class="px-4 py-3">Nama Role</th>
+          <th class="px-4 py-3">Keterangan</th>
           <th class="px-4 py-3 text-right">Aksi</th>
         </tr>
-      </thead> 
+      </thead>
       <tbody class="bg-white divide-y divide-gray-100">
-      @forelse($satuans ?? collect() as $item)
+      @forelse($roles ?? collect() as $item)
           <tr>
-              <td class="px-4 py-3 text-sm text-gray-700">{{ $item->id_satuan }}</td>
-              <td class="px-4 py-3 text-sm text-gray-700">{{ $item->nama_satuan }}</td>
+              <td class="px-4 py-3 text-sm text-gray-700">{{ $item->id_role }}</td>
+              <td class="px-4 py-3 text-sm text-gray-700">{{ $item->nama_role }}</td>
+              <td class="px-4 py-3 text-sm text-gray-700">{{ \Illuminate\Support\Str::limit($item->keterangan, 80) }}</td>
               <td class="px-4 py-3 text-sm text-gray-700 text-right">
                 <div class="flex items-center justify-end gap-2">
                   <!-- Edit button -->
-                  <a href="{{ route('master.dataSatuan.edit', $item->id_satuan) }}"
+                  <a href="{{ route('master.data-role.edit', $item->id_role) }}"
                     class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300">
                     Edit
                   </a>
 
                   <!-- Delete button -->
-                  <form action="{{ route('master.dataSatuan.destroy', $item->id_satuan) }}" method="POST"
-                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus data satuan ini?');">
+                  <form action="{{ route('master.data-role.destroy', $item->id_role) }}" method="POST"
+                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus data role ini?');">
                     @csrf
                     @method('DELETE')
                     <button type="submit"
@@ -86,11 +90,11 @@
           </tr>
       @empty
           <tr>
-              <td colspan="3" class="px-4 py-8 text-center text-sm text-gray-500">
-                  Tidak ada data satuan.
+              <td colspan="4" class="px-4 py-8 text-center text-sm text-gray-500">
+                  Tidak ada data role.
               </td>
-              </tr>
-          @endforelse
+          </tr>
+      @endforelse
       </tbody>
     </table>
   </div>
@@ -98,37 +102,34 @@
   {{-- Pagination --}}
   <div class="mt-4 flex items-center justify-between">
     <div class="text-sm text-gray-600">
-      {{-- showing X to Y of Z --}}
-      @if(isset($satuans) && $satuans->total())
-        Menampilkan {{ $satuans->firstItem() }} sampai {{ $satuans->lastItem() }} dari {{ $satuans->total() }} data
+      @if(isset($roles) && $roles->total())
+        Menampilkan {{ $roles->firstItem() }} sampai {{ $roles->lastItem() }} dari {{ $roles->total() }} data
       @endif
     </div>
 
     <div>
-      {{-- Laravel paginator --}}
-      @if(isset($satuans) && method_exists($satuans, 'links'))
-        {{ $satuans->appends(request()->query())->links() }}
+      @if(isset($roles) && method_exists($roles, 'links'))
+        {{ $roles->appends(request()->query())->links() }}
       @endif
     </div>
   </div>
 </div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   const searchInput = document.querySelector('input[name="q"]');
   const tableBody = document.querySelector('tbody');
   const perPageSelect = document.querySelector('#per_page');
 
-  // Fungsi untuk memuat data berdasarkan search
   function fetchData() {
     const query = searchInput.value;
     const perPage = perPageSelect.value;
 
-    fetch(`{{ route('master.dataSatuan.index') }}?q=${encodeURIComponent(query)}&per_page=${perPage}`, {
+    fetch(`{{ route('master.data-role.index') }}?q=${encodeURIComponent(query)}&per_page=${perPage}`, {
       headers: { 'X-Requested-With': 'XMLHttpRequest' }
     })
     .then(response => response.text())
     .then(html => {
-      // Ambil isi tabel <tbody> dari hasil response
       const parser = new DOMParser();
       const newDoc = parser.parseFromString(html, 'text/html');
       const newTbody = newDoc.querySelector('tbody');
@@ -140,8 +141,7 @@ document.addEventListener('DOMContentLoaded', function () {
     .catch(error => console.error('Error:', error));
   }
 
-  // Jalankan pencarian saat user mengetik (real-time)
-  searchInput.addEventListener('keyup', fetchData);
+  if (searchInput) searchInput.addEventListener('keyup', fetchData);
 });
 </script>
 @endsection

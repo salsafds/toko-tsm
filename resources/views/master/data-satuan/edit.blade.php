@@ -24,8 +24,8 @@
     @endif
 
     {{-- $satuan harus diberikan oleh controller --}}
-    @include('master.dataSatuan._form', [
-      'action' => route('master.dataSatuan.update', $satuan->id_satuan),
+    @include('master.data-satuan._form', [
+      'action' => route('master.data-satuan.update', $satuan->id_satuan),
       'method' => 'PUT',
       'satuan' => $satuan
     ])

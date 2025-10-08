@@ -32,7 +32,7 @@
       id="nama_satuan"
       name="nama_satuan"
       value="{{ old('nama_satuan', isset($satuan) ? ($satuan->nama_satuan ?? '') : '') }}"  {{-- Diperbaiki: aman jika $satuan null --}}
-      class="w-full rounded-md px-3 py-2 text-sm {{ $errors->has('nama_satuan') ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-blue-500 focus:ring-blue-100' }}"
+      class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('nama_satuan') ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-blue-500 focus:ring-blue-100' }}"
       placeholder="Masukkan nama satuan"
       aria-invalid="{{ $errors->has('nama_satuan') ? 'true' : 'false' }}"
       autofocus
@@ -58,7 +58,7 @@
         Simpan
       @endif
     </button>
-    <a href="{{ url()->previous() ?? route('master.dataSatuan.index') }}" class="inline-flex items-center px-4 py-2 border rounded-md text-sm text-gray-700 hover:bg-gray-50">
+    <a href="{{ url()->previous() ?? route('master.data-satuan.index') }}" class="inline-flex items-center px-4 py-2 border rounded-md text-sm text-gray-700 hover:bg-gray-50">
       Batal
     </a>
   </div>

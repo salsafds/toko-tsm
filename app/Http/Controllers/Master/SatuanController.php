@@ -24,14 +24,14 @@ class SatuanController extends Controller
         $perPage = $request->query('per_page', 10);
         $satuans = $query->paginate($perPage);
 
-        return view('master.dataSatuan.index', compact('satuans'));
+        return view('master.data-satuan.index', compact('satuans'));
     }
 
     public function create()
     {
        // Generate preview ID untuk form (berurutan)
         $nextId = $this->generateNextId();
-        return view('master.dataSatuan.create', compact('nextId'));
+        return view('master.data-satuan.create', compact('nextId'));
     }
 
     public function store(Request $request)
@@ -46,14 +46,14 @@ class SatuanController extends Controller
         ]);
 
 
-        return redirect()->route('master.dataSatuan.index')
+        return redirect()->route('master.data-satuan.index')
                          ->with('success', 'Data satuan berhasil ditambahkan.');
     }
 
     public function edit($id)
     {
         $satuan = Satuan::findOrFail($id);
-        return view('master.dataSatuan.edit', compact('satuan'));
+        return view('master.data-satuan.edit', compact('satuan'));
     }
 
     public function update(Request $request, $id)
@@ -67,7 +67,7 @@ class SatuanController extends Controller
             'nama_satuan' => $request->nama_satuan,
         ]);
 
-        return redirect()->route('master.dataSatuan.index')
+        return redirect()->route('master.data-satuan.index')
                         ->with('success', 'Data satuan berhasil diperbarui.');
     }
 
@@ -76,7 +76,7 @@ class SatuanController extends Controller
         $satuan = Satuan::findOrFail($id);
         $satuan->delete();
 
-        return redirect()->route('master.dataSatuan.index')
+        return redirect()->route('master.data-satuan.index')
                          ->with('success', 'Data satuan berhasil dihapus.');
     }
     /**
