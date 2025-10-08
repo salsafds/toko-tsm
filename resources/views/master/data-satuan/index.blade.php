@@ -49,51 +49,53 @@
   @endif
 
   {{-- Table --}}
-  <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-    <table class="min-w-full divide-y divide-gray-200 border">
+  {{-- Table --}}
+   <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200">
+    <table class="min-w-full divide-y divide-gray-200 table-auto"> 
       <thead class="bg-gray-50">
-        <tr class="text-left text-xs text-gray-500 uppercase">
-          <th class="px-4 py-3">ID Satuan</th>  {{-- Ubah label --}}
-          <th class="px-4 py-3">Nama Satuan</th>
-          <th class="px-4 py-3 text-right">Aksi</th>
+        <tr class="text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+          <th class="w-32 px-4 py-3 border-r border-gray-200">ID Satuan</th> {{-- UBAH: Tambah 'w-16' untuk sempitkan ID --}}
+          <th class="w-auto flex-1 border-r px-4 py-3">Nama Satuan</th> {{-- UBAH: Tambah 'w-auto flex-1' untuk besarkan Nama (hapus border-r agar garis lebih dekat ke Aksi) --}}
+          <th class="w-32 px-4 py-3 border-r">Aksi</th> {{-- UBAH: Tambah 'w-32' untuk persempit Aksi --}}
         </tr>
-      </thead> 
+      </thead>
       <tbody class="bg-white divide-y divide-gray-100">
-      @forelse($satuans ?? collect() as $item)
-          <tr>
-              <td class="px-4 py-3 text-sm text-gray-700">{{ $item->id_satuan }}</td>
-              <td class="px-4 py-3 text-sm text-gray-700">{{ $item->nama_satuan }}</td>
-              <td class="px-4 py-3 text-sm text-gray-700 text-right">
-                <div class="flex items-center justify-end gap-2">
-                  <!-- Edit button -->
-                  <a href="{{ route('master.data-satuan.edit', $item->id_satuan) }}"
-                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300">
-                    Edit
-                  </a>
+        @forelse($satuans ?? collect() as $item)
+          <tr class="hover:bg-gray-50 transition-colors">
+            <td class="w-auto flex-1 border-r px-4 py-2 text-sm text-gray-700 border-gray-100">{{ $item->id_satuan }}</td> {{-- UBAH: Tambah 'w-16' --}}
+            <td class="w-auto flex-1 border-r px-4 py-2 text-sm text-gray-700"> {{ $item->nama_satuan }}</td> {{-- UBAH: Tambah 'w-auto flex-1' (hapus border-r) --}}
+            <td class="w-32 px-4 py-2 border-r text-center"> {{-- UBAH: Tambah 'w-32' --}}
+              <div class="flex justify-center items-center gap-2">
+                <!-- Tombol Edit -->
+                <a href="{{ route('master.data-satuan.edit', $item->id_satuan) }}"
+                   class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                  Edit
+                </a>
 
-                  <!-- Delete button -->
-                  <form action="{{ route('master.data-satuan.destroy', $item->id_satuan) }}" method="POST"
-                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus data satuan ini?');">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit"
-                            class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-rose-100 text-rose-700 hover:bg-rose-200 focus:outline-none focus:ring-2 focus:ring-rose-300">
-                      Delete
-                    </button>
-                  </form>
-                </div>
-              </td>
+                <!-- Tombol Hapus -->
+                <form action="{{ route('master.data-satuan.destroy', $item->id_satuan) }}" method="POST"
+                      onsubmit="return confirm('Apakah Anda yakin ingin menghapus data satuan ini?');">
+                  @csrf
+                  @method('DELETE')
+                  <button type="submit"
+                          class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-rose-100 text-rose-700 hover:bg-rose-200 focus:outline-none focus:ring-2 focus:ring-rose-300">
+                    Delete
+                  </button>
+                </form>
+              </div>
+            </td>
           </tr>
-      @empty
+        @empty
           <tr>
-              <td colspan="3" class="px-4 py-8 text-center text-sm text-gray-500">
-                  Tidak ada data satuan.
-              </td>
-              </tr>
-          @endforelse
+            <td colspan="3" class="px-4 py-8 text-center text-sm text-gray-500">
+              Tidak ada data satuan.
+            </td>
+          </tr>
+        @endforelse
       </tbody>
     </table>
   </div>
+
 
   {{-- Pagination --}}
   <div class="mt-4 flex items-center justify-between">
