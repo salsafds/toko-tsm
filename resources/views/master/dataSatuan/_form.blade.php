@@ -11,7 +11,7 @@
     <input
       type="text"
       name="id_satuan"
-      value="{{ old('id_satuan', isset($satuan) ? $satuan->id_satuan : $nextId) }}"  {{-- Preview nextId saat create --}}
+      value="{{ old('id_satuan', isset($satuan) ? $satuan->id_satuan : ($nextId ?? '')) }}"  {{-- Aman untuk create/edit --}}
       readonly
       class="w-full rounded-md border bg-gray-100 px-3 py-2 text-sm text-gray-700 cursor-not-allowed"
       aria-readonly="true"
@@ -20,7 +20,7 @@
       @if(isset($satuan))
         ID tidak dapat diubah.
       @else
-        ID dibuat otomatis secara berurutan. Preview: {{ $nextId }}.
+        ID dibuat otomatis secara berurutan. Preview: {{ $nextId ?? '' }}.
       @endif
     </p>
   </div>
@@ -31,7 +31,7 @@
     <input
       id="nama_satuan"
       name="nama_satuan"
-      value="{{ old('nama_satuan', $satuan->nama_satuan ?? '') }}"
+      value="{{ old('nama_satuan', isset($satuan) ? ($satuan->nama_satuan ?? '') : '') }}"  {{-- Diperbaiki: aman jika $satuan null --}}
       class="w-full rounded-md px-3 py-2 text-sm {{ $errors->has('nama_satuan') ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-blue-500 focus:ring-blue-100' }}"
       placeholder="Masukkan nama satuan"
       aria-invalid="{{ $errors->has('nama_satuan') ? 'true' : 'false' }}"
@@ -47,7 +47,11 @@
 
   {{-- Submit / Cancel --}}
   <div class="flex items-center gap-3">
-    <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-700 text-white text-sm rounded-md hover:bg-blue-800">
+    <button 
+      type="submit" 
+      onclick="return confirm(@if(isset($satuan)) 'Apakah Anda yakin ingin memperbarui data satuan ini?' @else 'Apakah Anda yakin ingin menyimpan data satuan ini?' @endif)"
+      class="inline-flex items-center px-4 py-2 bg-blue-700 text-white text-sm rounded-md hover:bg-blue-800"
+    >
       @if(isset($satuan))
         Update
       @else

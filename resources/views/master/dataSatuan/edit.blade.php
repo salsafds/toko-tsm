@@ -31,4 +31,21 @@
     ])
   </div>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const form = document.querySelector('form#satuanForm') || document.querySelector('form');
+  if (!form) return;
+
+  form.addEventListener('submit', function (e) {
+    const isEdit = form.querySelector('input[name="_method"]')?.value === 'PUT';
+    const message = isEdit 
+      ? 'Apakah Anda yakin ingin memperbarui data satuan ini?' 
+      : 'Apakah Anda yakin ingin menyimpan data satuan ini?';
+
+    if (!confirm(message)) {
+      e.preventDefault();
+    }
+  });
+});
+</script>
 @endsection

@@ -1,6 +1,5 @@
 ```html
 <aside 
-  x-data="{ isOpen: true }" 
   class="fixed left-0 top-0 h-full bg-white border-r shadow-sm z-40 flex flex-col transition-all duration-300"
   :class="{ 'w-72': isOpen, 'w-16': !isOpen }"
   aria-label="Sidebar Master">

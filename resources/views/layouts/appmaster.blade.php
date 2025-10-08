@@ -7,10 +7,10 @@
 
   @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-gray-50">
+<body class="bg-gray-50" x-data="{ isOpen: true }">>
 
   {{-- Header --}}
-  <main class="ml-72">
+  <main class="transition-all duration-300" :class="{ 'ml-72': isOpen, 'ml-16': !isOpen }">
     @include('layouts.partials.header')
   </main>
 
@@ -18,12 +18,12 @@
   @include('layouts.partials.sidebarmaster')
 
   {{-- Konten halaman --}}
-  <main class="ml-72 px-6">
+  <main class="transition-all duration-300 px-6" :class="{ 'ml-72': isOpen, 'ml-16': !isOpen }">
     @yield('content')
   </main>
 
   {{-- Footer --}}
-  <main class="ml-72 p-2">
+  <main class="transition-all duration-300 p-2" :class="{ 'ml-72': isOpen, 'ml-16': !isOpen }">
     @include('layouts.partials.footer')
   </main>
 </body>
