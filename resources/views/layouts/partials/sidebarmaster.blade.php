@@ -1,3 +1,18 @@
+<head>
+  <style>
+    [x-cloak] {
+      display: none !important;
+    }
+    aside {
+      width: 18rem; /* Fallback untuk w-72 */
+    }
+    aside.w-16 {
+      width: 4rem; /* Fallback untuk w-16 */
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+
 <style>
   /* Sembunyikan scrollbar saat sidebar ditutup, tapi tetap bisa scroll */
   aside:not(.w-72) .overflow-y-auto::-webkit-scrollbar {
@@ -11,19 +26,30 @@
 
 <aside 
   class="fixed left-0 top-0 h-full bg-white border-r shadow-sm z-40 flex flex-col"
+  x-data="{ isOpen: localStorage.getItem('sidebarOpen') === 'true' || true }"
+  x-init="console.log('Sidebar initialized, isOpen:', isOpen)"
   :class="{ 'w-72': isOpen, 'w-16': !isOpen }"
   aria-label="Sidebar Master"
   style="scrollbar-gutter: stable;"
 >
+  <style>
+    /* Sembunyikan scrollbar saat sidebar ditutup, tapi tetap bisa scroll */
+    aside:not(.w-72) .overflow-y-auto::-webkit-scrollbar {
+      display: none;
+    }
+    aside:not(.w-72) .overflow-y-auto {
+      -ms-overflow-style: none; /* Untuk Internet Explorer dan Edge */
+      scrollbar-width: none; /* Untuk Firefox */
+    }
+  </style>
+
   <!-- Sidebar Header -->
   <div 
     class="flex pt-4"
     :class="{ 'px-8 items-center gap-3': isOpen, 'px-2 justify-center': !isOpen }"
   >
-    <div class="flex-1 text-left min-w-0" x-show="isOpen">
-      <div class="text-xs text-gray-500">
-        Selamat datang,
-      </div>
+    <div class="flex-1 text-left min-w-0" x-show="isOpen" x-cloak>
+      <div class="text-xs text-gray-500">Selamat datang,</div>
       <div class="text-lg font-semibold text-gray-900 truncate">
         {{ Auth::check() ? Auth::user()->nama_lengkap : 'Guest' }}
       </div>
@@ -31,7 +57,7 @@
     <!-- Toggle Sidebar Button -->
     <div class="relative group">
       <button 
-        @click="isOpen = !isOpen" 
+        @click="isOpen = !isOpen; localStorage.setItem('sidebarOpen', isOpen); $dispatch('sidebar-toggled', { isOpen: isOpen })" 
         class="p-2 rounded hover:bg-gray-50 flex items-center justify-center"
       >
         <img 
@@ -40,8 +66,9 @@
           class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]"
         >
       </button>
-      <!-- Tooltip -->
       <span 
+        x-show="!isOpen" 
+        x-cloak
         class="absolute left-full top-1/2 -translate-y-1/2 ml-2 whitespace-nowrap bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-2 pointer-events-none transition-all duration-150 z-50"
       >
         <span x-text="isOpen ? 'Close Sidebar' : 'Open Sidebar'"></span>
@@ -49,7 +76,7 @@
     </div>
   </div>
 
-  <hr class="mx-4 my-2 border-gray-200" x-show="isOpen">
+  <hr class="mx-4 my-2 border-gray-200" x-show="isOpen" x-cloak>
 
   <!-- Quick links under header -->
   <div class="p-4 space-y-2" :class="{ 'px-2': !isOpen }">
@@ -59,7 +86,7 @@
       :class="{ 'justify-center': !isOpen }"
     >
       <img src="{{ asset('img/icon/iconHome.png') }}" alt="Icon Home" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-      <span class="text-sm text-gray-700" x-show="isOpen">Dashboard</span>
+      <span class="text-sm text-gray-700" x-show="isOpen" x-cloak>Dashboard</span>
       <span 
         x-show="!isOpen" 
         x-cloak
@@ -73,7 +100,7 @@
       :class="{ 'justify-center': !isOpen }"
     >
       <img src="{{ asset('img/icon/iconLaporan.png') }}" alt="Icon Laporan" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-      <span class="text-sm text-gray-700" x-show="isOpen">Laporan</span>
+      <span class="text-sm text-gray-700" x-show="isOpen" x-cloak>Laporan</span>
       <span 
         x-show="!isOpen" 
         x-cloak
@@ -82,20 +109,21 @@
     </a>
   </div>
 
-  <hr class="mx-4 my-2 border-gray-200" x-show="isOpen">
+  <hr class="mx-4 my-2 border-gray-200" x-show="isOpen" x-cloak>
 
   <!-- Sidebar Body -->
   <div class="flex-1 overflow-y-auto">
     <nav class="p-4 space-y-2" aria-label="Main navigation" :class="{ 'px-2': !isOpen }">
-      <div class="text-xs font-semibold text-gray-500 uppercase px-2" x-show="isOpen">Main</div>
+      <div class="text-xs font-semibold text-gray-500 uppercase px-2" x-show="isOpen" x-cloak>Main</div>
 
+      <!-- Tambahkan x-cloak pada elemen dengan x-show="isOpen" di seluruh nav -->
       <a 
         href="{{ route('dashboard-master') ?? '#' }}" 
         class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
         :class="{ 'justify-center': !isOpen }"
       >
         <img src="{{ asset('img/icon/iconBarang.png') }}" alt="Icon Barang" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen">CRUD Data Barang</span>
+        <span class="text-sm text-gray-700" x-show="isOpen" x-cloak>CRUD Data Barang</span>
         <span 
           x-show="!isOpen" 
           x-cloak
@@ -115,7 +143,7 @@
         :class="{ 'justify-center': !isOpen }"
       >
         <img src="{{ asset('img/icon/iconSupplier.png') }}" alt="Icon Supplier" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen">CRUD Data Supplier</span>
+        <span class="text-sm text-gray-700" x-show="isOpen" x-cloak>CRUD Data Supplier</span>
         <span 
           x-show="!isOpen" 
           x-cloak
@@ -135,7 +163,7 @@
         :class="{ 'justify-center': !isOpen }"
       >
         <img src="{{ asset('img/icon/iconPelanggan.png') }}" alt="Icon Pelanggan" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen">CRUD Data Pelanggan</span>
+        <span class="text-sm text-gray-700" x-show="isOpen" x-cloak>CRUD Data Pelanggan</span>
         <span 
           x-show="!isOpen" 
           x-cloak
@@ -155,7 +183,7 @@
         :class="{ 'justify-center': !isOpen }"
       >
         <img src="{{ asset('img/icon/iconKaryawan.png') }}" alt="Icon Karyawan" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen">CRUD Data Karyawan</span>
+        <span class="text-sm text-gray-700" x-show="isOpen" x-cloak>CRUD Data Karyawan</span>
         <span 
           x-show="!isOpen" 
           x-cloak
@@ -179,7 +207,7 @@
         :class="{ 'justify-center': !isOpen }"
       >
         <img src="{{ asset('img/icon/iconSatuan.png') }}" alt="Icon Satuan" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen">Data Satuan</span>
+        <span class="text-sm text-gray-700" x-show="isOpen" x-cloak>Data Satuan</span>
         <span 
           x-show="!isOpen" 
           x-cloak
@@ -199,7 +227,7 @@
         :class="{ 'justify-center': !isOpen }"
       >
         <img src="{{ asset('img/icon/iconRole.png') }}" alt="Icon Role" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen">Data Role</span>
+        <span class="text-sm text-gray-700" x-show="isOpen" x-cloak>Data Role</span>
         <span 
           x-show="!isOpen" 
           x-cloak
@@ -219,7 +247,7 @@
         :class="{ 'justify-center': !isOpen }"
       >
         <img src="{{ asset('img/icon/iconKategoriBarang.png') }}" alt="Icon Kategori Barang" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen">Data Kategori Barang</span>
+        <span class="text-sm text-gray-700" x-show="isOpen" x-cloak>Data Kategori Barang</span>
         <span 
           x-show="!isOpen" 
           x-cloak
@@ -239,7 +267,7 @@
         :class="{ 'justify-center': !isOpen }"
       >
         <img src="{{ asset('img/icon/iconPendidikan.png') }}" alt="Icon Pendidikan" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen">Data Pendidikan</span>
+        <span class="text-sm text-gray-700" x-show="isOpen" x-cloak>Data Pendidikan</span>
         <span 
           x-show="!isOpen" 
           x-cloak
@@ -259,7 +287,7 @@
         :class="{ 'justify-center': !isOpen }"
       >
         <img src="{{ asset('img/icon/iconNegara.png') }}" alt="Icon Negara" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen">Data Negara</span>
+        <span class="text-sm text-gray-700" x-show="isOpen" x-cloak>Data Negara</span>
         <span 
           x-show="!isOpen" 
           x-cloak
@@ -279,7 +307,7 @@
         :class="{ 'justify-center': !isOpen }"
       >
         <img src="{{ asset('img/icon/iconProvinsi.png') }}" alt="Icon Provinsi" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen">Data Provinsi</span>
+        <span class="text-sm text-gray-700" x-show="isOpen" x-cloak>Data Provinsi</span>
         <span 
           x-show="!isOpen" 
           x-cloak
@@ -299,7 +327,7 @@
         :class="{ 'justify-center': !isOpen }"
       >
         <img src="{{ asset('img/icon/iconKota.png') }}" alt="Icon Kota" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen">Data Kota</span>
+        <span class="text-sm text-gray-700" x-show="isOpen" x-cloak>Data Kota</span>
         <span 
           x-show="!isOpen" 
           x-cloak
@@ -319,7 +347,7 @@
         :class="{ 'justify-center': !isOpen }"
       >
         <img src="{{ asset('img/icon/iconBahasa.png') }}" alt="Icon Bahasa" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen">Data Bahasa</span>
+        <span class="text-sm text-gray-700" x-show="isOpen" x-cloak>Data Bahasa</span>
         <span 
           x-show="!isOpen" 
           x-cloak
@@ -339,7 +367,7 @@
         :class="{ 'justify-center': !isOpen }"
       >
         <img src="{{ asset('img/icon/iconAgenEkspedisi.png') }}" alt="Icon Agen Ekspedisi" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen">Data Agen Ekspedisi</span>
+        <span class="text-sm text-gray-700" x-show="isOpen" x-cloak>Data Agen Ekspedisi</span>
         <span 
           x-show="!isOpen" 
           x-cloak
@@ -355,7 +383,7 @@
     </nav>
   </div>
 
-<!-- Sidebar Footer -->
+  <!-- Sidebar Footer -->
   <div class="border-t p-4" :class="{ 'px-2': !isOpen }">
     @php
       $user = Auth::user();
@@ -364,14 +392,13 @@
           : asset('img/icon/iconProfil.png');
     @endphp
 
-    <div x-data="{ open: false }" class="relative">
+    <div x-data="{ open: false }" x-cloak class="relative">
       <button 
         @click="open = !open" 
         class="w-full flex items-center gap-3 px-2 py-2 rounded hover:bg-gray-50 focus:outline-none"
         :class="{ 'justify-center': !isOpen }"
         x-tooltip="!isOpen ? '{{ $user ? $user->username : 'Guest' }}' : ''"
       >
-        <!-- Foto profil dalam frame lingkaran -->
         <div class="relative h-10 w-10 rounded-full overflow-hidden ring-2 ring-gray-200 flex-shrink-0">
           <img 
             src="{{ $foto }}" 
@@ -380,8 +407,7 @@
             onerror="this.src='{{ asset('img/icon/iconProfil.png') }}'"
           >
         </div>
-
-        <div class="min-w-0" x-show="isOpen">
+        <div class="min-w-0" x-show="isOpen" x-cloak>
           <div class="truncate text-sm font-medium text-gray-900">
             {{ $user ? $user->username : 'Guest' }}
           </div>
@@ -389,7 +415,6 @@
             {{ $user ? ucfirst($user->role) : 'Role Tidak Dikenal' }}
           </div>
         </div>
-
         <svg x-show="!open && isOpen" class="h-4 w-4 text-gray-500" viewBox="0 0 20 20" fill="none" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 8l4 4 4-4"/>
         </svg>
@@ -397,9 +422,10 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 12l4-4 4 4"/>
         </svg>
       </button>
-
       <div 
         x-show="open && isOpen" 
+        x-cloak 
+        style="display: none;"
         x-transition 
         @click.outside="open = false" 
         class="absolute left-0 bottom-12 w-full bg-white border rounded shadow-md overflow-hidden z-10"
@@ -458,4 +484,4 @@
       </div>
     </div>
   </div>
-</aside>3
+</aside>

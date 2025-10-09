@@ -7,7 +7,10 @@
 
   @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-gray-50" x-data="{ isOpen: true }">>
+<body class="bg-gray-50" x-data="{ isOpen: true }"
+  x-data="{ isOpen: localStorage.getItem('sidebarOpen') === 'true' || true }" 
+  x-init="console.log('Body initialized, isOpen:', isOpen)"
+  @sidebar-toggled.window="isOpen = $event.detail.isOpen">
 
   {{-- Header --}}
   <main class="fixed top-0 right-0 left-0 transition-all duration-300" :class="{ 'ml-72': isOpen, 'ml-16': !isOpen }">
