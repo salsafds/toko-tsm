@@ -1,13 +1,13 @@
-@extends('layouts.appmaster')
+@extends('layouts.appadmin')
 
-@section('title', 'Dashboard Master')
+@section('title', 'Dashboard Admin')
 
 @section('content')
 <div class="container mx-auto">
   <!-- Breadcrumb / Title -->
   <div class="flex items-center justify-between mb-6">
     <div>
-      <h1 class="text-2xl font-semibold text-gray-800">Dashboard</h1>
+      <h1 class="text-2xl font-semibold text-gray-800">Dashboard Admin Toko</h1>
       <p class="text-sm text-gray-500 mt-1">Ringkasan aktivitas & statistik koperasi</p>
     </div>
   </div>

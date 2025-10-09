@@ -73,12 +73,12 @@
       :class="{ 'justify-center': !isOpen }"
     >
       <img src="{{ asset('img/icon/iconLaporan.png') }}" alt="Icon Laporan" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-      <span class="text-sm text-gray-700" x-show="isOpen">Laporan</span>
+      <span class="text-sm text-gray-700" x-show="isOpen">Laporan Harian</span>
       <span 
         x-show="!isOpen" 
         x-cloak
         class="absolute left-full ml-2 bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-10"
-      >Laporan</span>
+      >Laporan Harian</span>
     </a>
   </div>
 
@@ -94,28 +94,8 @@
         class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
         :class="{ 'justify-center': !isOpen }"
       >
-        <img src="{{ asset('img/icon/iconBarang.png') }}" alt="Icon Barang" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen">CRUD Data Barang</span>
-        <span 
-          x-show="!isOpen" 
-          x-cloak
-          x-ref="tooltip"
-          class="fixed left-[72px] bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
-          x-data="{ top: 0 }"
-          @mouseenter="
-            top = $el.parentElement.getBoundingClientRect().top;
-            $el.style.top = top + 'px';">
-          CRUD Data Barang
-        </span>
-      </a>
-
-      <a 
-        href="{{ route('dashboard-master') ?? '#' }}" 
-        class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
-        :class="{ 'justify-center': !isOpen }"
-      >
         <img src="{{ asset('img/icon/iconSupplier.png') }}" alt="Icon Supplier" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen">CRUD Data Supplier</span>
+        <span class="text-sm text-gray-700" x-show="isOpen">Penjualan</span>
         <span 
           x-show="!isOpen" 
           x-cloak
@@ -125,7 +105,7 @@
           @mouseenter="
             top = $el.parentElement.getBoundingClientRect().top;
             $el.style.top = top + 'px';">
-          CRUD Data Supplier
+          Penjualan
         </span>
       </a>
 
@@ -135,7 +115,7 @@
         :class="{ 'justify-center': !isOpen }"
       >
         <img src="{{ asset('img/icon/iconPelanggan.png') }}" alt="Icon Pelanggan" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen">CRUD Data Pelanggan</span>
+        <span class="text-sm text-gray-700" x-show="isOpen">Daftar Transaksi Penjualan</span>
         <span 
           x-show="!isOpen" 
           x-cloak
@@ -145,7 +125,7 @@
           @mouseenter="
             top = $el.parentElement.getBoundingClientRect().top;
             $el.style.top = top + 'px';">
-          CRUD Data Pelanggan
+          Daftar Transaksi Penjualan
         </span>
       </a>
 
@@ -155,7 +135,7 @@
         :class="{ 'justify-center': !isOpen }"
       >
         <img src="{{ asset('img/icon/iconKaryawan.png') }}" alt="Icon Karyawan" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen">CRUD Data Karyawan</span>
+        <span class="text-sm text-gray-700" x-show="isOpen">Pembelian</span>
         <span 
           x-show="!isOpen" 
           x-cloak
@@ -165,21 +145,21 @@
           @mouseenter="
             top = $el.parentElement.getBoundingClientRect().top;
             $el.style.top = top + 'px';">
-          CRUD Data Karyawan
+          Daftar Transaksi Pembelian
         </span>
       </a>
 
       <div class="h-2" x-show="isOpen"></div>
 
-      <div class="text-xs font-semibold text-gray-500 uppercase px-2" x-show="isOpen">Data Konfigurasi</div>
+      <div class="text-xs font-semibold text-gray-500 uppercase px-2" x-show="isOpen">Operasional</div>
 
       <a 
         href="{{ route('master.data-satuan.index') ?? '#' }}" 
         class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
         :class="{ 'justify-center': !isOpen }"
       >
-        <img src="{{ asset('img/icon/iconSatuan.png') }}" alt="Icon Satuan" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen">Data Satuan</span>
+        <img src="{{ asset('img/icon/iconBarang.png') }}" alt="Icon Barang" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
+        <span class="text-sm text-gray-700" x-show="isOpen">Update Stok Barang</span>
         <span 
           x-show="!isOpen" 
           x-cloak
@@ -189,167 +169,7 @@
           @mouseenter="
             top = $el.parentElement.getBoundingClientRect().top;
             $el.style.top = top + 'px';">
-          Data Satuan
-        </span>
-      </a>
-
-      <a 
-        href="{{ route('master.data-role.index') ?? '#' }}" 
-        class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
-        :class="{ 'justify-center': !isOpen }"
-      >
-        <img src="{{ asset('img/icon/iconRole.png') }}" alt="Icon Role" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen">Data Role</span>
-        <span 
-          x-show="!isOpen" 
-          x-cloak
-          x-ref="tooltip"
-          class="fixed left-[72px] bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
-          x-data="{ top: 0 }"
-          @mouseenter="
-            top = $el.parentElement.getBoundingClientRect().top;
-            $el.style.top = top + 'px';">
-          Data Role
-        </span>
-      </a>
-
-      <a 
-        href="{{ route('dashboard-master') ?? '#' }}" 
-        class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
-        :class="{ 'justify-center': !isOpen }"
-      >
-        <img src="{{ asset('img/icon/iconKategoriBarang.png') }}" alt="Icon Kategori Barang" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen">Data Kategori Barang</span>
-        <span 
-          x-show="!isOpen" 
-          x-cloak
-          x-ref="tooltip"
-          class="fixed left-[72px] bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
-          x-data="{ top: 0 }"
-          @mouseenter="
-            top = $el.parentElement.getBoundingClientRect().top;
-            $el.style.top = top + 'px';">
-          Data Kategori Barang
-        </span>
-      </a>
-
-      <a 
-        href="{{ route('dashboard-master') ?? '#' }}" 
-        class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
-        :class="{ 'justify-center': !isOpen }"
-      >
-        <img src="{{ asset('img/icon/iconPendidikan.png') }}" alt="Icon Pendidikan" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen">Data Pendidikan</span>
-        <span 
-          x-show="!isOpen" 
-          x-cloak
-          x-ref="tooltip"
-          class="fixed left-[72px] bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
-          x-data="{ top: 0 }"
-          @mouseenter="
-            top = $el.parentElement.getBoundingClientRect().top;
-            $el.style.top = top + 'px';">
-          Data Pendidikan
-        </span>
-      </a>
-
-      <a 
-        href="{{ route('dashboard-master') ?? '#' }}" 
-        class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
-        :class="{ 'justify-center': !isOpen }"
-      >
-        <img src="{{ asset('img/icon/iconNegara.png') }}" alt="Icon Negara" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen">Data Negara</span>
-        <span 
-          x-show="!isOpen" 
-          x-cloak
-          x-ref="tooltip"
-          class="fixed left-[72px] bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
-          x-data="{ top: 0 }"
-          @mouseenter="
-            top = $el.parentElement.getBoundingClientRect().top;
-            $el.style.top = top + 'px';">
-          Data Negara
-        </span>
-      </a>
-
-      <a 
-        href="{{ route('dashboard-master') ?? '#' }}" 
-        class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
-        :class="{ 'justify-center': !isOpen }"
-      >
-        <img src="{{ asset('img/icon/iconProvinsi.png') }}" alt="Icon Provinsi" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen">Data Provinsi</span>
-        <span 
-          x-show="!isOpen" 
-          x-cloak
-          x-ref="tooltip"
-          class="fixed left-[72px] bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
-          x-data="{ top: 0 }"
-          @mouseenter="
-            top = $el.parentElement.getBoundingClientRect().top;
-            $el.style.top = top + 'px';">
-          Data Provinsi
-        </span>
-      </a>
-
-      <a 
-        href="{{ route('dashboard-master') ?? '#' }}" 
-        class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
-        :class="{ 'justify-center': !isOpen }"
-      >
-        <img src="{{ asset('img/icon/iconKota.png') }}" alt="Icon Kota" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen">Data Kota</span>
-        <span 
-          x-show="!isOpen" 
-          x-cloak
-          x-ref="tooltip"
-          class="fixed left-[72px] bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
-          x-data="{ top: 0 }"
-          @mouseenter="
-            top = $el.parentElement.getBoundingClientRect().top;
-            $el.style.top = top + 'px';">
-          Data Kota
-        </span>
-      </a>
-
-      <a 
-        href="{{ route('dashboard-master') ?? '#' }}" 
-        class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
-        :class="{ 'justify-center': !isOpen }"
-      >
-        <img src="{{ asset('img/icon/iconBahasa.png') }}" alt="Icon Bahasa" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen">Data Bahasa</span>
-        <span 
-          x-show="!isOpen" 
-          x-cloak
-          x-ref="tooltip"
-          class="fixed left-[72px] bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
-          x-data="{ top: 0 }"
-          @mouseenter="
-            top = $el.parentElement.getBoundingClientRect().top;
-            $el.style.top = top + 'px';">
-          Data Bahasa
-        </span>
-      </a>
-
-      <a 
-        href="{{ route('dashboard-master') ?? '#' }}" 
-        class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
-        :class="{ 'justify-center': !isOpen }"
-      >
-        <img src="{{ asset('img/icon/iconAgenEkspedisi.png') }}" alt="Icon Agen Ekspedisi" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen">Data Agen Ekspedisi</span>
-        <span 
-          x-show="!isOpen" 
-          x-cloak
-          x-ref="tooltip"
-          class="fixed left-[72px] bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
-          x-data="{ top: 0 }"
-          @mouseenter="
-            top = $el.parentElement.getBoundingClientRect().top;
-            $el.style.top = top + 'px';">
-          Data Agen Ekspedisi
+          Update Stok Barang
         </span>
       </a>
     </nav>
