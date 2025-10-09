@@ -21,7 +21,7 @@
   @include('layouts.partials.sidebarmaster')
 
   {{-- Konten halaman --}}
-  <main class=" pt-16 transition-all duration-300 px-6" :class="{ 'ml-72': isOpen, 'ml-16': !isOpen }">
+  <main class="pt-20 transition-all duration-300 px-6" :class="{ 'ml-72': isOpen, 'ml-16': !isOpen }">
     @yield('content')
   </main>
 
