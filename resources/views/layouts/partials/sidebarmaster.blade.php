@@ -355,13 +355,13 @@
     </nav>
   </div>
 
-  <!-- Sidebar Footer -->
+<!-- Sidebar Footer -->
   <div class="border-t p-4" :class="{ 'px-2': !isOpen }">
     @php
       $user = Auth::user();
       $foto = $user && $user->foto_user
           ? asset('storage/' . $user->foto_user)
-          : asset('img/iconProfil.jpg');
+          : asset('img/icon/iconProfil.png');
     @endphp
 
     <div x-data="{ open: false }" class="relative">
@@ -369,17 +369,27 @@
         @click="open = !open" 
         class="w-full flex items-center gap-3 px-2 py-2 rounded hover:bg-gray-50 focus:outline-none"
         :class="{ 'justify-center': !isOpen }"
-        x-tooltip="!isOpen ? '{{ $user ? $user->nama_lengkap : 'Guest' }}' : ''"
+        x-tooltip="!isOpen ? '{{ $user ? $user->username : 'Guest' }}' : ''"
       >
-        <img src="{{ $foto }}" alt="Profile" class="h-10 w-10 rounded object-cover min-h-[40px] min-w-[40px]">
+        <!-- Foto profil dalam frame lingkaran -->
+        <div class="relative h-10 w-10 rounded-full overflow-hidden ring-2 ring-gray-200 flex-shrink-0">
+          <img 
+            src="{{ $foto }}" 
+            alt="Profile" 
+            class="h-full w-full object-cover"
+            onerror="this.src='{{ asset('img/icon/iconProfil.png') }}'"
+          >
+        </div>
+
         <div class="min-w-0" x-show="isOpen">
           <div class="truncate text-sm font-medium text-gray-900">
-            {{ $user ? $user->nama_lengkap : 'Guest' }}
+            {{ $user ? $user->username : 'Guest' }}
           </div>
           <div class="truncate text-xs text-gray-500">
             {{ $user ? ucfirst($user->role) : 'Role Tidak Dikenal' }}
           </div>
         </div>
+
         <svg x-show="!open && isOpen" class="h-4 w-4 text-gray-500" viewBox="0 0 20 20" fill="none" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 8l4 4 4-4"/>
         </svg>
@@ -448,4 +458,4 @@
       </div>
     </div>
   </div>
-</aside>
+</aside>3

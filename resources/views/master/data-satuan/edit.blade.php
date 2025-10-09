@@ -13,37 +13,66 @@
       </div>
     @endif
 
-    @if ($errors->any())
-      <div class="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded">
-        <ul class="list-disc list-inside">
-          @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
-          @endforeach
-        </ul>
-      </div>
-    @endif
-
-    {{-- $satuan harus diberikan oleh controller --}}
     @include('master.data-satuan._form', [
       'action' => route('master.data-satuan.update', $satuan->id_satuan),
       'method' => 'PUT',
-      'satuan' => $satuan
+      'satuan' => $satuan,
+      'isEdit' => true
     ])
   </div>
 </div>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-  const form = document.querySelector('form#satuanForm') || document.querySelector('form');
-  if (!form) return;
+  const form = document.querySelector('#satuanForm');
+  const namaSatuanInput = document.querySelector('#nama_satuan');
+  const submitButton = document.querySelector('#submitButton');
+  const errorMessage = document.querySelector('#nama_satuan_error');
 
+  if (!form || !namaSatuanInput || !submitButton || !errorMessage) return;
+
+  // Simpan nilai awal nama_satuan
+  const initialNamaSatuan = namaSatuanInput.value.trim();
+
+  // Fungsi untuk memeriksa perubahan
+  function checkChanges() {
+    const currentNamaSatuan = namaSatuanInput.value.trim();
+    if (currentNamaSatuan === initialNamaSatuan) {
+      submitButton.disabled = true;
+      submitButton.classList.add('opacity-50');
+    } else {
+      submitButton.disabled = false;
+      submitButton.classList.remove('opacity-50');
+    }
+  }
+
+  // Pantau perubahan pada input nama_satuan
+  namaSatuanInput.addEventListener('input', checkChanges);
+
+  // Validasi dan konfirmasi saat submit
   form.addEventListener('submit', function (e) {
+    e.preventDefault(); // Cegah submit default
+
+    // Validasi client-side
+    const namaSatuan = namaSatuanInput.value.trim();
+    if (!namaSatuan) {
+      errorMessage.textContent = 'Nama satuan wajib diisi.';
+      errorMessage.classList.remove('hidden');
+      namaSatuanInput.classList.add('border-red-500', 'bg-red-50');
+      return;
+    } else {
+      errorMessage.textContent = '';
+      errorMessage.classList.add('hidden');
+      namaSatuanInput.classList.remove('border-red-500', 'bg-red-50');
+    }
+
+    // Konfirmasi
     const isEdit = form.querySelector('input[name="_method"]')?.value === 'PUT';
     const message = isEdit 
-      ? 'Apakah Anda yakin ingin memperbarui data satuan ini?' 
+      ? 'Apakah Anda yakin ingin mengedit data satuan ini?' 
       : 'Apakah Anda yakin ingin menyimpan data satuan ini?';
 
-    if (!confirm(message)) {
-      e.preventDefault();
+    if (confirm(message)) {
+      form.submit(); // Lanjutkan submit jika dikonfirmasi
     }
   });
 });
