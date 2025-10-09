@@ -51,24 +51,24 @@
   @endif
 
   {{-- Table --}}
-  <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-    <table class="min-w-full divide-y divide-gray-200 border">
+   <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200">
+    <table class="min-w-full divide-y divide-gray-200 table-auto"> 
       <thead class="bg-gray-50">
-        <tr class="text-left text-xs text-gray-500 uppercase">
-          <th class="px-4 py-3">ID Role</th>
-          <th class="px-4 py-3">Nama Role</th>
-          <th class="px-4 py-3">Keterangan</th>
-          <th class="px-4 py-3 text-right">Aksi</th>
+        <tr class="text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+          <th class="w-28 px-4 py-3 border-r border-gray-200">ID Role</th> 
+          <th class="w-44 border-r px-4 py-3">Nama Role</th>
+          <th class="w-65 border-r px-4 py-3">Keterangan</th>
+          <th class="w-32 px-4 py-3 border-r">Aksi</th>
         </tr>
       </thead>
       <tbody class="bg-white divide-y divide-gray-100">
       @forelse($roles ?? collect() as $item)
-          <tr>
-              <td class="px-4 py-3 text-sm text-gray-700">{{ $item->id_role }}</td>
-              <td class="px-4 py-3 text-sm text-gray-700">{{ $item->nama_role }}</td>
-              <td class="px-4 py-3 text-sm text-gray-700">{{ \Illuminate\Support\Str::limit($item->keterangan, 80) }}</td>
-              <td class="px-4 py-3 text-sm text-gray-700 text-right">
-                <div class="flex items-center justify-end gap-2">
+          <tr class="hover:bg-gray-50 transition-colors">
+              <td class="w-28 border-r px-4 py-2 text-sm text-gray-700 border-gray-100">{{ $item->id_role }}</td>
+              <td class="w-44 border-r px-4 py-2 text-sm text-gray-700 border-gray-100">{{ $item->nama_role }}</td>
+              <td class="w-65 border-r px-4 py-2 text-sm text-gray-700">{{($item->keterangan) }}</td>
+              <td class="w-32 px-4 py-2 text-center"> 
+                <div class="flex justify-center items-center gap-2">
                   <!-- Edit button -->
                   <a href="{{ route('master.data-role.edit', $item->id_role) }}"
                     class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300">
