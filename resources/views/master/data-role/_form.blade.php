@@ -26,7 +26,7 @@
 
   {{-- Nama Role --}}
   <div class="grid grid-cols-1 gap-1">
-    <label for="nama_role" class="block text-sm font-medium text-gray-700">Nama Role</label>
+    <label for="nama_role" class="block text-sm font-medium text-gray-700">Nama Role <span class="text-rose-600">*</span></label>
     <input
       id="nama_role"
       name="nama_role"
@@ -46,7 +46,7 @@
 
   {{-- Keterangan --}}
   <div class="grid grid-cols-1 gap-1">
-    <label for="keterangan" class="block text-sm font-medium text-gray-700">Keterangan</label>
+    <label for="keterangan" class="block text-sm font-medium text-gray-700">Keterangan <span class="text-rose-600">*</span></label>
     <textarea
       id="keterangan"
       name="keterangan"
