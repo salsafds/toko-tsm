@@ -27,7 +27,7 @@
 
   {{-- Nama Satuan --}}
   <div class="grid grid-cols-1 gap-1">
-    <label for="nama_satuan" class="block text-sm font-medium text-gray-700">Nama Satuan</label>
+    <label for="nama_satuan" class="block text-sm font-medium text-gray-700">Nama Satuan <span class="text-rose-600">*</span></label>
     <input
       id="nama_satuan"
       name="nama_satuan"
