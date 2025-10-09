@@ -17,9 +17,9 @@ Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Dashboard Master (sementara statis dulu)
-Route::get('/dashboard', function () {
-    return view('master/dashboard');
-})->name('dashboard');
+Route::get('/dashboard-master', function () {
+    return view('master/dashboard-master');
+})->name('dashboard-master');
 
 Route::middleware(['auth'])->name('master.')->group(function () {
     Route::resource('data-satuan', SatuanController::class);

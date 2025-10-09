@@ -54,7 +54,7 @@
   <!-- Quick links under header -->
   <div class="p-4 space-y-2" :class="{ 'px-2': !isOpen }">
     <a 
-      href="{{ route('dashboard') ?? '#' }}" 
+      href="{{ route('dashboard-master') ?? '#' }}" 
       class="flex items-center gap-3 px-2 py-2 rounded hover:bg-gray-50 relative group"
       :class="{ 'justify-center': !isOpen }"
     >
@@ -68,7 +68,7 @@
     </a>
 
     <a 
-      href="{{ route('dashboard') ?? '#' }}" 
+      href="{{ route('dashboard-master') ?? '#' }}" 
       class="flex items-center gap-3 px-2 py-2 rounded hover:bg-gray-50 relative group"
       :class="{ 'justify-center': !isOpen }"
     >
@@ -90,7 +90,7 @@
       <div class="text-xs font-semibold text-gray-500 uppercase px-2" x-show="isOpen">Main</div>
 
       <a 
-        href="{{ route('dashboard') ?? '#' }}" 
+        href="{{ route('dashboard-master') ?? '#' }}" 
         class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
         :class="{ 'justify-center': !isOpen }"
       >
@@ -110,7 +110,7 @@
       </a>
 
       <a 
-        href="{{ route('dashboard') ?? '#' }}" 
+        href="{{ route('dashboard-master') ?? '#' }}" 
         class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
         :class="{ 'justify-center': !isOpen }"
       >
@@ -130,7 +130,7 @@
       </a>
 
       <a 
-        href="{{ route('dashboard') ?? '#' }}" 
+        href="{{ route('dashboard-master') ?? '#' }}" 
         class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
         :class="{ 'justify-center': !isOpen }"
       >
@@ -150,7 +150,7 @@
       </a>
 
       <a 
-        href="{{ route('dashboard') ?? '#' }}" 
+        href="{{ route('dashboard-master') ?? '#' }}" 
         class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
         :class="{ 'justify-center': !isOpen }"
       >
@@ -214,7 +214,7 @@
       </a>
 
       <a 
-        href="{{ route('dashboard') ?? '#' }}" 
+        href="{{ route('dashboard-master') ?? '#' }}" 
         class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
         :class="{ 'justify-center': !isOpen }"
       >
@@ -234,7 +234,7 @@
       </a>
 
       <a 
-        href="{{ route('dashboard') ?? '#' }}" 
+        href="{{ route('dashboard-master') ?? '#' }}" 
         class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
         :class="{ 'justify-center': !isOpen }"
       >
@@ -254,7 +254,7 @@
       </a>
 
       <a 
-        href="{{ route('dashboard') ?? '#' }}" 
+        href="{{ route('dashboard-master') ?? '#' }}" 
         class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
         :class="{ 'justify-center': !isOpen }"
       >
@@ -274,7 +274,7 @@
       </a>
 
       <a 
-        href="{{ route('dashboard') ?? '#' }}" 
+        href="{{ route('dashboard-master') ?? '#' }}" 
         class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
         :class="{ 'justify-center': !isOpen }"
       >
@@ -294,7 +294,7 @@
       </a>
 
       <a 
-        href="{{ route('dashboard') ?? '#' }}" 
+        href="{{ route('dashboard-master') ?? '#' }}" 
         class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
         :class="{ 'justify-center': !isOpen }"
       >
@@ -314,7 +314,7 @@
       </a>
 
       <a 
-        href="{{ route('dashboard') ?? '#' }}" 
+        href="{{ route('dashboard-master') ?? '#' }}" 
         class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
         :class="{ 'justify-center': !isOpen }"
       >
@@ -334,7 +334,7 @@
       </a>
 
       <a 
-        href="{{ route('dashboard') ?? '#' }}" 
+        href="{{ route('dashboard-master') ?? '#' }}" 
         class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
         :class="{ 'justify-center': !isOpen }"
       >
@@ -405,7 +405,7 @@
         class="absolute left-0 bottom-12 w-full bg-white border rounded shadow-md overflow-hidden z-10"
       >
         <a 
-          href="{{ route('dashboard') ?? '#' }}" 
+          href="{{ route('dashboard-master') ?? '#' }}" 
           class="flex items-center gap-3 px-3 py-2 hover:bg-gray-50"
           x-tooltip="!isOpen ? 'My profile' : ''"
         >
@@ -417,7 +417,7 @@
         </a>
 
         <a 
-          href="{{ route('dashboard') ?? '#' }}" 
+          href="{{ route('dashboard-master') ?? '#' }}" 
           class="flex items-center gap-3 px-3 py-2 hover:bg-gray-50"
           x-tooltip="!isOpen ? 'Settings' : ''"
         >
@@ -431,7 +431,7 @@
         <div class="border-t"></div>
 
         <a 
-          href="{{ route('dashboard') ?? '#' }}" 
+          href="{{ route('dashboard-master') ?? '#' }}" 
           class="flex items-center gap-3 px-3 py-2 hover:bg-gray-50"
           x-tooltip="!isOpen ? 'Privacy policy' : ''"
         >

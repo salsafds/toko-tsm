@@ -1,6 +1,6 @@
 @extends('layouts.appmaster')
 
-@section('title', 'Dashboard')
+@section('title', 'Dashboard Master')
 
 @section('content')
 <div class="container mx-auto">
