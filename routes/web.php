@@ -21,6 +21,10 @@ Route::get('/dashboard-master', function () {
     return view('master/dashboard-master');
 })->name('dashboard-master');
 
+Route::get('/dashboard-admin', function () {
+    return view('admin/dashboard-admin');
+})->name('dashboard-admin');
+
 Route::middleware(['auth'])->name('master.')->group(function () {
     Route::resource('data-satuan', SatuanController::class);
 });
