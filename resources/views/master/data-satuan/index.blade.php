@@ -47,24 +47,22 @@
       {{ session('success') }}
     </div>
   @endif
-
-  {{-- Table --}}
   {{-- Table --}}
    <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200">
     <table class="min-w-full divide-y divide-gray-200 table-auto"> 
       <thead class="bg-gray-50">
         <tr class="text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-          <th class="w-32 px-4 py-3 border-r border-gray-200">ID Satuan</th> {{-- UBAH: Tambah 'w-16' untuk sempitkan ID --}}
-          <th class="w-auto flex-1 border-r px-4 py-3">Nama Satuan</th> {{-- UBAH: Tambah 'w-auto flex-1' untuk besarkan Nama (hapus border-r agar garis lebih dekat ke Aksi) --}}
-          <th class="w-32 px-4 py-3 border-r">Aksi</th> {{-- UBAH: Tambah 'w-32' untuk persempit Aksi --}}
+          <th class="w-32 px-4 py-3 border-r border-gray-200">ID Satuan</th> 
+          <th class="w-auto flex-1 border-r px-4 py-3">Nama Satuan</th>
+          <th class="w-32 px-4 py-3 border-r">Aksi</th>
         </tr>
       </thead>
       <tbody class="bg-white divide-y divide-gray-100">
         @forelse($satuans ?? collect() as $item)
           <tr class="hover:bg-gray-50 transition-colors">
-            <td class="w-auto flex-1 border-r px-4 py-2 text-sm text-gray-700 border-gray-100">{{ $item->id_satuan }}</td> {{-- UBAH: Tambah 'w-16' --}}
-            <td class="w-auto flex-1 border-r px-4 py-2 text-sm text-gray-700"> {{ $item->nama_satuan }}</td> {{-- UBAH: Tambah 'w-auto flex-1' (hapus border-r) --}}
-            <td class="w-32 px-4 py-2 border-r text-center"> {{-- UBAH: Tambah 'w-32' --}}
+            <td class="w-auto flex-1 border-r px-4 py-2 text-sm text-gray-700 border-gray-100">{{ $item->id_satuan }}</td>
+            <td class="w-auto flex-1 border-r px-4 py-2 text-sm text-gray-700"> {{ $item->nama_satuan }}</td> 
+            <td class="w-32 px-4 py-2 border-r text-center"> 
               <div class="flex justify-center items-center gap-2">
                 <!-- Tombol Edit -->
                 <a href="{{ route('master.data-satuan.edit', $item->id_satuan) }}"
