@@ -33,6 +33,11 @@ document.addEventListener('DOMContentLoaded', function () {
   form.addEventListener('submit', function (e) {
     e.preventDefault(); // Cegah submit default
 
+    // Reset pesan error dan styling
+    errorMessage.textContent = '';
+    errorMessage.classList.add('hidden');
+    namaSatuanInput.classList.remove('border-red-500', 'bg-red-50');
+
     // Validasi client-side
     const namaSatuan = namaSatuanInput.value.trim();
     if (!namaSatuan) {
@@ -40,10 +45,12 @@ document.addEventListener('DOMContentLoaded', function () {
       errorMessage.classList.remove('hidden');
       namaSatuanInput.classList.add('border-red-500', 'bg-red-50');
       return;
-    } else {
-      errorMessage.textContent = '';
-      errorMessage.classList.add('hidden');
-      namaSatuanInput.classList.remove('border-red-500', 'bg-red-50');
+    }
+    if (namaSatuan.length > 50) {
+      errorMessage.textContent = 'Nama satuan tidak boleh lebih dari 50 karakter.';
+      errorMessage.classList.remove('hidden');
+      namaSatuanInput.classList.add('border-red-500', 'bg-red-50');
+      return;
     }
 
     // Konfirmasi

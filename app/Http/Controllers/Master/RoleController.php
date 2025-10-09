@@ -46,6 +46,13 @@ class RoleController extends Controller
         $request->validate([
             'nama_role' => 'required|string|max:100|unique:role,nama_role',
             'keterangan' => 'required|string',
+        ], [
+            'nama_role.required' => 'Nama role wajib diisi.',
+            'nama_role.string' => 'Nama role harus berupa teks.',
+            'nama_role.max' => 'Nama role tidak boleh lebih dari 100 karakter.',
+            'nama_role.unique' => 'Nama role sudah digunakan.',
+            'keterangan.required' => 'Keterangan wajib diisi.',
+            'keterangan.string' => 'Keterangan harus berupa teks.',
         ]);
 
         Role::create([
@@ -75,6 +82,13 @@ class RoleController extends Controller
         $request->validate([
             'nama_role' => 'required|string|max:100|unique:role,nama_role,' . $id . ',id_role',
             'keterangan' => 'required|string',
+        ], [
+            'nama_role.required' => 'Nama role wajib diisi.',
+            'nama_role.string' => 'Nama role harus berupa teks.',
+            'nama_role.max' => 'Nama role tidak boleh lebih dari 100 karakter.',
+            'nama_role.unique' => 'Nama role sudah digunakan.',
+            'keterangan.required' => 'Keterangan wajib diisi.',
+            'keterangan.string' => 'Keterangan harus berupa teks.',
         ]);
 
         $role = Role::findOrFail($id);

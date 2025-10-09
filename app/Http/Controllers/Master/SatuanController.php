@@ -29,7 +29,7 @@ class SatuanController extends Controller
 
     public function create()
     {
-       // Generate preview ID untuk form (berurutan)
+        // Generate preview ID untuk form (berurutan)
         $nextId = $this->generateNextId();
         return view('master.data-satuan.create', compact('nextId'));
     }
@@ -38,13 +38,17 @@ class SatuanController extends Controller
     {
         $request->validate([
             'nama_satuan' => 'required|string|max:50|unique:satuan,nama_satuan',
+        ], [
+            'nama_satuan.required' => 'Nama satuan wajib diisi.',
+            'nama_satuan.string' => 'Nama satuan harus berupa teks.',
+            'nama_satuan.max' => 'Nama satuan tidak boleh lebih dari 50 karakter.',
+            'nama_satuan.unique' => 'Nama satuan sudah digunakan.',
         ]);
 
         Satuan::create([
-            'id_satuan' => $this->generateNextId(),  // Gunakan ID berurutan
+            'id_satuan' => $this->generateNextId(),
             'nama_satuan' => $request->nama_satuan,
         ]);
-
 
         return redirect()->route('master.data-satuan.index')
                          ->with('success', 'Data satuan berhasil ditambahkan.');
@@ -60,6 +64,11 @@ class SatuanController extends Controller
     {
         $request->validate([
             'nama_satuan' => 'required|string|max:50|unique:satuan,nama_satuan,' . $id . ',id_satuan',
+        ], [
+            'nama_satuan.required' => 'Nama satuan wajib diisi.',
+            'nama_satuan.string' => 'Nama satuan harus berupa teks.',
+            'nama_satuan.max' => 'Nama satuan tidak boleh lebih dari 50 karakter.',
+            'nama_satuan.unique' => 'Nama satuan sudah digunakan.',
         ]);
 
         $satuan = Satuan::findOrFail($id);
@@ -79,6 +88,7 @@ class SatuanController extends Controller
         return redirect()->route('master.data-satuan.index')
                          ->with('success', 'Data satuan berhasil dihapus.');
     }
+
     /**
      * Generate ID satuan berurutan (ST0001, ST0002, dll.)
      */
@@ -94,4 +104,3 @@ class SatuanController extends Controller
         return 'ST' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
     }
 }
-

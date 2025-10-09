@@ -36,10 +36,10 @@
       aria-invalid="{{ $errors->has('nama_satuan') ? 'true' : 'false' }}"
       autofocus
     >
-    <p id="nama_satuan_error" class="text-sm text-red-600 mt-1 hidden"></p>
     @if ($errors->has('nama_satuan'))
       <p class="text-sm text-red-600 mt-1">{{ $errors->first('nama_satuan') }}</p>
     @else
+      <p id="nama_satuan_error" class="text-sm text-red-600 mt-1 hidden"></p>
       <p class="text-xs text-gray-500">Contoh: kg, liter, buah, pack.</p>
     @endif
   </div>
