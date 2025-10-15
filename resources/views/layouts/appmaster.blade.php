@@ -8,26 +8,29 @@
   @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-gray-50" x-data="{ isOpen: true }"
-  x-data="{ isOpen: localStorage.getItem('sidebarOpen') === 'true' || true }" 
-  x-init="console.log('Body initialized, isOpen:', isOpen)"
+  x-data="{ isOpen: localStorage.getItem('sidebarOpen') === 'true' }"
+  x-init="
+    if (isOpen === null) isOpen = true;
+    $dispatch('sidebar-toggled', { isOpen: isOpen }); // Dispatch awal untuk sync cepat
+  "
   @sidebar-toggled.window="isOpen = $event.detail.isOpen">
 
   {{-- Header --}}
-  <main class="fixed top-0 right-0 left-0 transition-all duration-300" :class="{ 'ml-72': isOpen, 'ml-16': !isOpen }">
-    @include('layouts.partials.header')
-  </main>
+  <main x-cloak class="fixed top-0 right-0 left-0 transition-all duration-300" :class="{ 'ml-72': isOpen, 'ml-16': !isOpen }">
+  @include('layouts.partials.header')
+</main>
 
   {{-- Sidebar partial --}}
   @include('layouts.partials.sidebarmaster')
 
   {{-- Konten halaman --}}
-  <main class="pt-20 transition-all duration-300 px-6" :class="{ 'ml-72': isOpen, 'ml-16': !isOpen }">
-    @yield('content')
-  </main>
+  <main x-cloak class="pt-20 transition-all duration-300 px-6" :class="{ 'ml-72': isOpen, 'ml-16': !isOpen }">
+  @yield('content')
+</main>
 
   {{-- Footer --}}
-  <main class="transition-all duration-300 p-2" :class="{ 'ml-72': isOpen, 'ml-16': !isOpen }">
-    @include('layouts.partials.footer')
-  </main>
+  <main x-cloak class="transition-all duration-300 p-2" :class="{ 'ml-72': isOpen, 'ml-16': !isOpen }">
+  @include('layouts.partials.footer')
+</main>
 </body>
 </html>

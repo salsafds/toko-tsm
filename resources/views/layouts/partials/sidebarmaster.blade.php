@@ -10,7 +10,6 @@
       width: 4rem; /* Fallback untuk w-16 */
     }
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 
 <style>
@@ -25,9 +24,18 @@
 </style>
 
 <aside 
+  x-cloak  
   class="fixed left-0 top-0 h-full bg-white border-r shadow-sm z-40 flex flex-col"
-  x-data="{ isOpen: localStorage.getItem('sidebarOpen') === 'true' || true }"
-  x-init="console.log('Sidebar initialized, isOpen:', isOpen)"
+  x-data="{ isOpen: localStorage.getItem('sidebarOpen') === 'true' }"
+  x-init="
+    if (isOpen === null) isOpen = true; // Default open jika belum ada (null, bukan undefined)
+    $watch('isOpen', value => {
+      localStorage.setItem('sidebarOpen', value);
+      $dispatch('sidebar-toggled', { isOpen: value });
+    });
+    console.log('Sidebar initialized, isOpen:', isOpen);
+    $dispatch('sidebar-toggled', { isOpen: isOpen });
+  "
   :class="{ 'w-72': isOpen, 'w-16': !isOpen }"
   aria-label="Sidebar Master"
   style="scrollbar-gutter: stable;"
@@ -57,7 +65,7 @@
     <!-- Toggle Sidebar Button -->
     <div class="relative group">
       <button 
-        @click="isOpen = !isOpen; localStorage.setItem('sidebarOpen', isOpen); $dispatch('sidebar-toggled', { isOpen: isOpen })" 
+        @click="isOpen = !isOpen; $dispatch('sidebar-toggled', { isOpen: isOpen })"
         class="p-2 rounded hover:bg-gray-50 flex items-center justify-center"
       >
         <img 
