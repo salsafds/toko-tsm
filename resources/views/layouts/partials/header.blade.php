@@ -5,7 +5,7 @@
     <div class="flex items-start gap-3">
       <div class="bg-transparent flex items-center">
         <img src="{{ asset('img/logotsm.png') }}" alt="Logo Koperasi"
-             class="h-10 w-10 object-contain rounded-md shadow-sm">
+             class="h-10 w-10 object-contain rounded-md">
       </div>
       <div>
         <div class="font-semibold text-base text-blue-800">
