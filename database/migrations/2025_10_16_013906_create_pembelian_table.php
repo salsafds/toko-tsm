@@ -15,7 +15,7 @@ return new class extends Migration
             $table->date('tanggal_kirim')->nullable();
             $table->timestamp('tanggal_terima')->nullable();
             $table->string('id_supplier', 11);
-            $table->string('id_karyawan', 11);
+            $table->string('id_user', 11);
             $table->string('jenis_pembayaran', 255);
             $table->decimal('jumlah_bayar', 10, 2);
             $table->timestamps();
