@@ -1,5 +1,5 @@
 <head>
-  <style>
+ <style>
     [x-cloak] {
       display: none !important;
     }
@@ -40,6 +40,13 @@
   aria-label="Sidebar Master"
   style="scrollbar-gutter: stable;"
 >
+<div 
+  x-show="isOpen && window.innerWidth < 1024"
+  x-transition.opacity
+  class="sidebar-overlay"
+  @click="isOpen = false; localStorage.setItem('sidebarOpen', false)"
+></div>
+
   <style>
     /* Sembunyikan scrollbar saat sidebar ditutup, tapi tetap bisa scroll */
     aside:not(.w-72) .overflow-y-auto::-webkit-scrollbar {
