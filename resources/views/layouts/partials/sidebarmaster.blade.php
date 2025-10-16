@@ -137,10 +137,14 @@
           x-cloak
           x-ref="tooltip"
           class="fixed left-[72px] bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
-          x-data="{ top: 0 }"
-          @mouseenter="
-            top = $el.parentElement.getBoundingClientRect().top;
-            $el.style.top = top + 'px';">
+          x-data="{ updatePosition() { 
+            const parentRect = this.$el.parentElement.getBoundingClientRect(); 
+            const scrollOffset = window.scrollY;
+            this.$el.style.top = (parentRect.top + scrollOffset + (parentRect.height / 2) - (this.$el.offsetHeight / 2)) + 'px'; 
+          } }"
+          @mouseover.window="updatePosition()"
+          @scroll.window="updatePosition()"
+          style="transform: translateY(-50%);">
           CRUD Data Barang
         </span>
       </a>
@@ -157,10 +161,14 @@
           x-cloak
           x-ref="tooltip"
           class="fixed left-[72px] bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
-          x-data="{ top: 0 }"
-          @mouseenter="
-            top = $el.parentElement.getBoundingClientRect().top;
-            $el.style.top = top + 'px';">
+          x-data="{ updatePosition() { 
+            const parentRect = this.$el.parentElement.getBoundingClientRect(); 
+            const scrollOffset = window.scrollY;
+            this.$el.style.top = (parentRect.top + scrollOffset + (parentRect.height / 2) - (this.$el.offsetHeight / 2)) + 'px'; 
+          } }"
+          @mouseover.window="updatePosition()"
+          @scroll.window="updatePosition()"
+          style="transform: translateY(-50%);">
           CRUD Data Supplier
         </span>
       </a>
@@ -177,10 +185,14 @@
           x-cloak
           x-ref="tooltip"
           class="fixed left-[72px] bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
-          x-data="{ top: 0 }"
-          @mouseenter="
-            top = $el.parentElement.getBoundingClientRect().top;
-            $el.style.top = top + 'px';">
+          x-data="{ updatePosition() { 
+            const parentRect = this.$el.parentElement.getBoundingClientRect(); 
+            const scrollOffset = window.scrollY;
+            this.$el.style.top = (parentRect.top + scrollOffset + (parentRect.height / 2) - (this.$el.offsetHeight / 2)) + 'px'; 
+          } }"
+          @mouseover.window="updatePosition()"
+          @scroll.window="updatePosition()"
+          style="transform: translateY(-50%);">
           CRUD Data Pelanggan
         </span>
       </a>
@@ -197,10 +209,14 @@
           x-cloak
           x-ref="tooltip"
           class="fixed left-[72px] bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
-          x-data="{ top: 0 }"
-          @mouseenter="
-            top = $el.parentElement.getBoundingClientRect().top;
-            $el.style.top = top + 'px';">
+          x-data="{ updatePosition() { 
+            const parentRect = this.$el.parentElement.getBoundingClientRect(); 
+            const scrollOffset = window.scrollY;
+            this.$el.style.top = (parentRect.top + scrollOffset + (parentRect.height / 2) - (this.$el.offsetHeight / 2)) + 'px'; 
+          } }"
+          @mouseover.window="updatePosition()"
+          @scroll.window="updatePosition()"
+          style="transform: translateY(-50%);">
           CRUD Data Karyawan
         </span>
       </a>
@@ -221,10 +237,14 @@
           x-cloak
           x-ref="tooltip"
           class="fixed left-[72px] bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
-          x-data="{ top: 0 }"
-          @mouseenter="
-            top = $el.parentElement.getBoundingClientRect().top;
-            $el.style.top = top + 'px';">
+          x-data="{ updatePosition() { 
+            const parentRect = this.$el.parentElement.getBoundingClientRect(); 
+            const scrollOffset = window.scrollY;
+            this.$el.style.top = (parentRect.top + scrollOffset + (parentRect.height / 2) - (this.$el.offsetHeight / 2)) + 'px'; 
+          } }"
+          @mouseover.window="updatePosition()"
+          @scroll.window="updatePosition()"
+          style="transform: translateY(-50%);">
           Data Satuan
         </span>
       </a>
@@ -241,10 +261,14 @@
           x-cloak
           x-ref="tooltip"
           class="fixed left-[72px] bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
-          x-data="{ top: 0 }"
-          @mouseenter="
-            top = $el.parentElement.getBoundingClientRect().top;
-            $el.style.top = top + 'px';">
+          x-data="{ updatePosition() { 
+            const parentRect = this.$el.parentElement.getBoundingClientRect(); 
+            const scrollOffset = window.scrollY;
+            this.$el.style.top = (parentRect.top + scrollOffset + (parentRect.height / 2) - (this.$el.offsetHeight / 2)) + 'px'; 
+          } }"
+          @mouseover.window="updatePosition()"
+          @scroll.window="updatePosition()"
+          style="transform: translateY(-50%);">
           Data Role
         </span>
       </a>
@@ -261,10 +285,14 @@
           x-cloak
           x-ref="tooltip"
           class="fixed left-[72px] bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
-          x-data="{ top: 0 }"
-          @mouseenter="
-            top = $el.parentElement.getBoundingClientRect().top;
-            $el.style.top = top + 'px';">
+          x-data="{ updatePosition() { 
+            const parentRect = this.$el.parentElement.getBoundingClientRect(); 
+            const scrollOffset = window.scrollY;
+            this.$el.style.top = (parentRect.top + scrollOffset + (parentRect.height / 2) - (this.$el.offsetHeight / 2)) + 'px'; 
+          } }"
+          @mouseover.window="updatePosition()"
+          @scroll.window="updatePosition()"
+          style="transform: translateY(-50%);">
           Data Kategori Barang
         </span>
       </a>
@@ -281,10 +309,14 @@
           x-cloak
           x-ref="tooltip"
           class="fixed left-[72px] bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
-          x-data="{ top: 0 }"
-          @mouseenter="
-            top = $el.parentElement.getBoundingClientRect().top;
-            $el.style.top = top + 'px';">
+          x-data="{ updatePosition() { 
+            const parentRect = this.$el.parentElement.getBoundingClientRect(); 
+            const scrollOffset = window.scrollY;
+            this.$el.style.top = (parentRect.top + scrollOffset + (parentRect.height / 2) - (this.$el.offsetHeight / 2)) + 'px'; 
+          } }"
+          @mouseover.window="updatePosition()"
+          @scroll.window="updatePosition()"
+          style="transform: translateY(-50%);">
           Data Pendidikan
         </span>
       </a>
@@ -301,10 +333,14 @@
           x-cloak
           x-ref="tooltip"
           class="fixed left-[72px] bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
-          x-data="{ top: 0 }"
-          @mouseenter="
-            top = $el.parentElement.getBoundingClientRect().top;
-            $el.style.top = top + 'px';">
+          x-data="{ updatePosition() { 
+            const parentRect = this.$el.parentElement.getBoundingClientRect(); 
+            const scrollOffset = window.scrollY;
+            this.$el.style.top = (parentRect.top + scrollOffset + (parentRect.height / 2) - (this.$el.offsetHeight / 2)) + 'px'; 
+          } }"
+          @mouseover.window="updatePosition()"
+          @scroll.window="updatePosition()"
+          style="transform: translateY(-50%);">
           Data Negara
         </span>
       </a>
@@ -321,10 +357,14 @@
           x-cloak
           x-ref="tooltip"
           class="fixed left-[72px] bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
-          x-data="{ top: 0 }"
-          @mouseenter="
-            top = $el.parentElement.getBoundingClientRect().top;
-            $el.style.top = top + 'px';">
+          x-data="{ updatePosition() { 
+            const parentRect = this.$el.parentElement.getBoundingClientRect(); 
+            const scrollOffset = window.scrollY;
+            this.$el.style.top = (parentRect.top + scrollOffset + (parentRect.height / 2) - (this.$el.offsetHeight / 2)) + 'px'; 
+          } }"
+          @mouseover.window="updatePosition()"
+          @scroll.window="updatePosition()"
+          style="transform: translateY(-50%);">
           Data Provinsi
         </span>
       </a>
@@ -341,10 +381,14 @@
           x-cloak
           x-ref="tooltip"
           class="fixed left-[72px] bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
-          x-data="{ top: 0 }"
-          @mouseenter="
-            top = $el.parentElement.getBoundingClientRect().top;
-            $el.style.top = top + 'px';">
+          x-data="{ updatePosition() { 
+            const parentRect = this.$el.parentElement.getBoundingClientRect(); 
+            const scrollOffset = window.scrollY;
+            this.$el.style.top = (parentRect.top + scrollOffset + (parentRect.height / 2) - (this.$el.offsetHeight / 2)) + 'px'; 
+          } }"
+          @mouseover.window="updatePosition()"
+          @scroll.window="updatePosition()"
+          style="transform: translateY(-50%);">
           Data Kota
         </span>
       </a>
@@ -361,10 +405,14 @@
           x-cloak
           x-ref="tooltip"
           class="fixed left-[72px] bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
-          x-data="{ top: 0 }"
-          @mouseenter="
-            top = $el.parentElement.getBoundingClientRect().top;
-            $el.style.top = top + 'px';">
+          x-data="{ updatePosition() { 
+            const parentRect = this.$el.parentElement.getBoundingClientRect(); 
+            const scrollOffset = window.scrollY;
+            this.$el.style.top = (parentRect.top + scrollOffset + (parentRect.height / 2) - (this.$el.offsetHeight / 2)) + 'px'; 
+          } }"
+          @mouseover.window="updatePosition()"
+          @scroll.window="updatePosition()"
+          style="transform: translateY(-50%);">
           Data Bahasa
         </span>
       </a>
@@ -381,10 +429,14 @@
           x-cloak
           x-ref="tooltip"
           class="fixed left-[72px] bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
-          x-data="{ top: 0 }"
-          @mouseenter="
-            top = $el.parentElement.getBoundingClientRect().top;
-            $el.style.top = top + 'px';">
+          x-data="{ updatePosition() { 
+            const parentRect = this.$el.parentElement.getBoundingClientRect(); 
+            const scrollOffset = window.scrollY;
+            this.$el.style.top = (parentRect.top + scrollOffset + (parentRect.height / 2) - (this.$el.offsetHeight / 2)) + 'px'; 
+          } }"
+          @mouseover.window="updatePosition()"
+          @scroll.window="updatePosition()"
+          style="transform: translateY(-50%);">
           Data Agen Ekspedisi
         </span>
       </a>
