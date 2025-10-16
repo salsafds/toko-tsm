@@ -126,7 +126,7 @@
 
       <!-- Tambahkan x-cloak pada elemen dengan x-show="isOpen" di seluruh nav -->
       <a 
-        href="{{ route('dashboard-master') ?? '#' }}" 
+        href="{{ route('master.data-barang.index') ?? '#' }}" 
         class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
         :class="{ 'justify-center': !isOpen }"
       >
@@ -146,7 +146,7 @@
       </a>
 
       <a 
-        href="{{ route('dashboard-master') ?? '#' }}" 
+        href="{{ route('master.data-supplier.index') ?? '#' }}" 
         class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
         :class="{ 'justify-center': !isOpen }"
       >
@@ -186,7 +186,7 @@
       </a>
 
       <a 
-        href="{{ route('dashboard-master') ?? '#' }}" 
+        href="{{ route('master.data-karyawan.index') ?? '#' }}" 
         class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
         :class="{ 'justify-center': !isOpen }"
       >

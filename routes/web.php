@@ -3,8 +3,17 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\Master\SatuanController;
+use App\Http\Controllers\Master\BahasaController;
+use App\Http\Controllers\Master\BarangController;
+use App\Http\Controllers\Master\JabatanController;
+use App\Http\Controllers\Master\KaryawanController;
+use App\Http\Controllers\Master\KotaController;
+use App\Http\Controllers\Master\NegaraController;
+use App\Http\Controllers\Master\PendidikanController;
+use App\Http\Controllers\Master\ProvinsiController;
 use App\Http\Controllers\Master\RoleController;
+use App\Http\Controllers\Master\SatuanController;
+use App\Http\Controllers\Master\SupplierController;
 
 // Landing page
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
@@ -26,35 +35,35 @@ Route::get('/dashboard-admin', function () {
 })->name('dashboard-admin');
 
 Route::middleware(['auth'])->name('master.')->group(function () {
-    Route::resource('data-bahasa', SatuanController::class);
+    Route::resource('data-bahasa', BahasaController::class);
 });
 
 Route::middleware(['auth'])->name('master.')->group(function () {
-    Route::resource('data-barang', RoleController::class);
+    Route::resource('data-barang', BarangController::class);
 });
 
 Route::middleware(['auth'])->name('master.')->group(function () {
-    Route::resource('data-jabatan', RoleController::class);
+    Route::resource('data-jabatan', JabatanController::class);
 });
 
 Route::middleware(['auth'])->name('master.')->group(function () {
-    Route::resource('data-karyawan', RoleController::class);
+    Route::resource('data-karyawan', KaryawanController::class);
 });
 
 Route::middleware(['auth'])->name('master.')->group(function () {
-    Route::resource('data-kota', RoleController::class);
+    Route::resource('data-kota', KotaController::class);
 });
 
 Route::middleware(['auth'])->name('master.')->group(function () {
-    Route::resource('data-negara', RoleController::class);
+    Route::resource('data-negara', NegaraController::class);
 });
 
 Route::middleware(['auth'])->name('master.')->group(function () {
-    Route::resource('data-pendidikan', RoleController::class);
+    Route::resource('data-pendidikan', PendidikanController::class);
 });
 
 Route::middleware(['auth'])->name('master.')->group(function () {
-    Route::resource('data-provinsi', RoleController::class);
+    Route::resource('data-provinsi', ProvinsiController::class);
 });
 
 Route::middleware(['auth'])->name('master.')->group(function () {
@@ -62,9 +71,9 @@ Route::middleware(['auth'])->name('master.')->group(function () {
 });
 
 Route::middleware(['auth'])->name('master.')->group(function () {
-    Route::resource('data-satuan', RoleController::class);
+    Route::resource('data-satuan', SatuanController::class);
 });
 
 Route::middleware(['auth'])->name('master.')->group(function () {
-    Route::resource('data-supplier', RoleController::class);
+    Route::resource('data-supplier', SupplierController::class);
 });
