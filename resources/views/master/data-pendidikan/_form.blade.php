@@ -40,7 +40,7 @@
       <p class="text-sm text-red-600 mt-1">{{ $errors->first('tingkat_pendidikan') }}</p>
     @else
       <p id="tingkat_pendidikan_error" class="text-sm text-red-600 mt-1 hidden"></p>
-      <p class="text-xs text-gray-500">Contoh: kg, liter, buah, pack.</p>
+      <p class="text-xs text-gray-500">Contoh: SMP, SMA, S1, S2.</p>
     @endif
   </div>
 

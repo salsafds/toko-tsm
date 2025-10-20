@@ -41,7 +41,7 @@ class JabatanController extends Controller
         ], [
             'nama_jabatan.required' => 'Nama jabatan wajib diisi.',
             'nama_jabatan.string' => 'Nama jabatan harus berupa teks.',
-            'nama_jabatan.max' => 'Nama jabatan tidak boleh lebih dari 50 karakter.',
+            'nama_jabatan.max' => 'Nama jabatan tidak boleh lebih dari 100 karakter.',
             'nama_jabatan.unique' => 'Nama jabatan sudah digunakan.',
         ]);
 

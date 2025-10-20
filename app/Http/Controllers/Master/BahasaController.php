@@ -37,7 +37,7 @@ class BahasaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama_bahasa' => 'required|string|max:100|unique:bahasa,nama_bahasa',
+            'nama_bahasa' => 'required|string|max:50|unique:bahasa,nama_bahasa',
         ], [
             'nama_bahasa.required' => 'Nama bahasa wajib diisi.',
             'nama_bahasa.string' => 'Nama bahasa harus berupa teks.',
