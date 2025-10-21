@@ -38,17 +38,17 @@ Route::middleware(['auth'])->name('master.')->group(function () {
     Route::resource('data-bahasa', BahasaController::class);
 });
 
-Route::middleware(['auth'])->name('master.')->group(function () {
-    Route::resource('data-barang', BarangController::class);
-});
+// Route::middleware(['auth'])->name('master.')->group(function () {
+//     Route::resource('data-barang', BarangController::class);
+// });
 
 Route::middleware(['auth'])->name('master.')->group(function () {
     Route::resource('data-jabatan', JabatanController::class);
 });
 
-Route::middleware(['auth'])->name('master.')->group(function () {
-    Route::resource('data-karyawan', KaryawanController::class);
-});
+// Route::middleware(['auth'])->name('master.')->group(function () {
+//     Route::resource('data-karyawan', KaryawanController::class);
+// });
 
 Route::middleware(['auth'])->name('master.')->group(function () {
     Route::resource('data-kota', KotaController::class);
