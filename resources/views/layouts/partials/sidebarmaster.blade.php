@@ -279,6 +279,29 @@
           Data Role
         </span>
       </a>
+            <a 
+        href="{{ route('master.data-jabatan.index') ?? '#' }}" 
+        class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
+        :class="{ 'justify-center': !isOpen }"
+      >
+        <img src="{{ asset('img/icon/iconJabatan.png') }}" alt="Icon Jabatan" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
+        <span class="text-sm text-gray-700" x-show="isOpen" x-cloak>Data Jabatan</span>
+        <span 
+          x-show="!isOpen" 
+          x-cloak
+          x-ref="tooltip"
+          class="fixed left-[72px] bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
+          x-data="{ updatePosition() { 
+            const parentRect = this.$el.parentElement.getBoundingClientRect(); 
+            const scrollOffset = window.scrollY;
+            this.$el.style.top = (parentRect.top + scrollOffset + (parentRect.height / 2) - (this.$el.offsetHeight / 2)) + 'px'; 
+          } }"
+          @mouseover.window="updatePosition()"
+          @scroll.window="updatePosition()"
+          style="transform: translateY(-50%);">
+          Data Jabatan
+        </span>
+      </a>
 
       <a 
         href="{{ route('dashboard-master') ?? '#' }}" 
@@ -305,7 +328,7 @@
       </a>
 
       <a 
-        href="{{ route('dashboard-master') ?? '#' }}" 
+        href="{{ route('master.data-pendidikan.index') ?? '#' }}" 
         class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
         :class="{ 'justify-center': !isOpen }"
       >
@@ -329,7 +352,7 @@
       </a>
 
       <a 
-        href="{{ route('dashboard-master') ?? '#' }}" 
+        href="{{ route('master.data-negara.index') ?? '#' }}" 
         class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
         :class="{ 'justify-center': !isOpen }"
       >
@@ -353,7 +376,7 @@
       </a>
 
       <a 
-        href="{{ route('dashboard-master') ?? '#' }}" 
+        href="{{ route('master.data-provinsi.index') ?? '#' }}" 
         class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
         :class="{ 'justify-center': !isOpen }"
       >
@@ -377,7 +400,7 @@
       </a>
 
       <a 
-        href="{{ route('dashboard-master') ?? '#' }}" 
+        href="{{ route('master.data-kota.index') ?? '#' }}" 
         class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
         :class="{ 'justify-center': !isOpen }"
       >
@@ -401,7 +424,7 @@
       </a>
 
       <a 
-        href="{{ route('dashboard-master') ?? '#' }}" 
+        href="{{ route('master.data-bahasa.index') ?? '#' }}" 
         class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
         :class="{ 'justify-center': !isOpen }"
       >

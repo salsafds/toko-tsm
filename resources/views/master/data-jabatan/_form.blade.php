@@ -40,7 +40,7 @@
       <p class="text-sm text-red-600 mt-1">{{ $errors->first('nama_jabatan') }}</p>
     @else
       <p id="nama_jabatan_error" class="text-sm text-red-600 mt-1 hidden"></p>
-      <p class="text-xs text-gray-500">Contoh: kg, liter, buah, pack.</p>
+      <p class="text-xs text-gray-500">Contoh: Kasir, Teknisi, Penjual, Pemilik.</p>
     @endif
   </div>
 

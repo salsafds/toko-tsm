@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
 
-class KaryawanController extends Controller
+class KategoriBarangController extends Controller
 {
     public function index()
     {
