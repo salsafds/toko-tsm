@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Master;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Kota;
+use App\Models\Negara;
+use App\Models\Provinsi;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -31,23 +33,36 @@ class KotaController extends Controller
     {
         // Generate preview ID untuk form (berurutan)
         $nextId = $this->generateNextId();
-        return view('master.data-kota.create', compact('nextId'));
+
+        // ambil daftar negara & provinsi untuk dropdown
+        $negara = Negara::orderBy('nama_negara')->get();
+        $provinsi = Provinsi::orderBy('nama_provinsi')->get();
+
+        return view('master.data-kota.create', compact('nextId', 'negara', 'provinsi'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'nama_kota' => 'required|string|max:100|unique:kota,nama_kota',
+            'nama_kota'  => 'required|string|max:100|unique:kota,nama_kota',
+            'id_negara'  => 'required|exists:negara,id_negara',
+            'id_provinsi'=> 'required|exists:provinsi,id_provinsi',
         ], [
             'nama_kota.required' => 'Nama kota wajib diisi.',
             'nama_kota.string' => 'Nama kota harus berupa teks.',
-            'nama_kota.max' => 'Nama kota tidak boleh lebih dari 50 karakter.',
+            'nama_kota.max' => 'Nama kota tidak boleh lebih dari 100 karakter.',
             'nama_kota.unique' => 'Nama kota sudah digunakan.',
+            'id_negara.required' => 'Negara wajib dipilih.',
+            'id_negara.exists' => 'Negara yang dipilih tidak valid.',
+            'id_provinsi.required' => 'Provinsi wajib dipilih.',
+            'id_provinsi.exists' => 'Provinsi yang dipilih tidak valid.',
         ]);
 
         Kota::create([
             'id_kota' => $this->generateNextId(),
             'nama_kota' => $request->nama_kota,
+            'id_negara' => $request->id_negara,
+            'id_provinsi' => $request->id_provinsi,
         ]);
 
         return redirect()->route('master.data-kota.index')
@@ -57,23 +72,36 @@ class KotaController extends Controller
     public function edit($id)
     {
         $kota = Kota::findOrFail($id);
-        return view('master.data-kota.edit', compact('kota'));
+
+        // ambil daftar negara & provinsi untuk dropdown
+        $negara = Negara::orderBy('nama_negara')->get();
+        $provinsi = Provinsi::orderBy('nama_provinsi')->get();
+
+        return view('master.data-kota.edit', compact('kota', 'negara', 'provinsi'));
     }
 
     public function update(Request $request, $id)
     {
         $request->validate([
-            'nama_kota' => 'required|string|max:100|unique:kota,nama_kota,' . $id . ',id_kota',
+            'nama_kota'  => 'required|string|max:100|unique:kota,nama_kota,' . $id . ',id_kota',
+            'id_negara'  => 'required|exists:negara,id_negara',
+            'id_provinsi'=> 'required|exists:provinsi,id_provinsi',
         ], [
             'nama_kota.required' => 'Nama kota wajib diisi.',
             'nama_kota.string' => 'Nama kota harus berupa teks.',
-            'nama_kota.max' => 'Nama kota tidak boleh lebih dari 50 karakter.',
+            'nama_kota.max' => 'Nama kota tidak boleh lebih dari 100 karakter.',
             'nama_kota.unique' => 'Nama kota sudah digunakan.',
+            'id_negara.required' => 'Negara wajib dipilih.',
+            'id_negara.exists' => 'Negara yang dipilih tidak valid.',
+            'id_provinsi.required' => 'Provinsi wajib dipilih.',
+            'id_provinsi.exists' => 'Provinsi yang dipilih tidak valid.',
         ]);
 
         $kota = Kota::findOrFail($id);
         $kota->update([
             'nama_kota' => $request->nama_kota,
+            'id_negara' => $request->id_negara,
+            'id_provinsi' => $request->id_provinsi,
         ]);
 
         return redirect()->route('master.data-kota.index')
@@ -82,7 +110,7 @@ class KotaController extends Controller
 
     public function destroy($id)
     {
-        $kota = kota::findOrFail($id);
+        $kota = Kota::findOrFail($id);
         $kota->delete();
 
         return redirect()->route('master.data-kota.index')

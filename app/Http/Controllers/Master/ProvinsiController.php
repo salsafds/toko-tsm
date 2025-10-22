@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Master;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Provinsi;
+use App\Models\Negara;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -31,23 +32,31 @@ class ProvinsiController extends Controller
     {
         // Generate preview ID untuk form (berurutan)
         $nextId = $this->generateNextId();
-        return view('master.data-provinsi.create', compact('nextId'));
+
+        // ambil daftar negara untuk dropdown
+        $negara = Negara::orderBy('nama_negara')->get();
+
+        return view('master.data-provinsi.create', compact('nextId', 'negara'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'nama_provinsi' => 'required|string|max:100|unique:provinsi,nama_provinsi',
+            'id_negara'     => 'required|exists:negara,id_negara',
         ], [
             'nama_provinsi.required' => 'Nama provinsi wajib diisi.',
             'nama_provinsi.string' => 'Nama provinsi harus berupa teks.',
             'nama_provinsi.max' => 'Nama provinsi tidak boleh lebih dari 50 karakter.',
             'nama_provinsi.unique' => 'Nama provinsi sudah digunakan.',
+            'id_negara.required' => 'Negara wajib dipilih.',
+            'id_negara.exists' => 'Negara yang dipilih tidak valid.',
         ]);
 
         Provinsi::create([
             'id_provinsi' => $this->generateNextId(),
             'nama_provinsi' => $request->nama_provinsi,
+            'id_negara' => $request->id_negara,
         ]);
 
         return redirect()->route('master.data-provinsi.index')
@@ -57,23 +66,31 @@ class ProvinsiController extends Controller
     public function edit($id)
     {
         $provinsi = Provinsi::findOrFail($id);
-        return view('master.data-provinsi.edit', compact('provinsi'));
+
+        // ambil daftar negara untuk dropdown
+        $negara = Negara::orderBy('nama_negara')->get();
+
+        return view('master.data-provinsi.edit', compact('provinsi', 'negara'));
     }
 
     public function update(Request $request, $id)
     {
         $request->validate([
             'nama_provinsi' => 'required|string|max:100|unique:provinsi,nama_provinsi,' . $id . ',id_provinsi',
+            'id_negara'     => 'required|exists:negara,id_negara',
         ], [
             'nama_provinsi.required' => 'Nama provinsi wajib diisi.',
             'nama_provinsi.string' => 'Nama provinsi harus berupa teks.',
             'nama_provinsi.max' => 'Nama provinsi tidak boleh lebih dari 50 karakter.',
             'nama_provinsi.unique' => 'Nama provinsi sudah digunakan.',
+            'id_negara.required' => 'Negara wajib dipilih.',
+            'id_negara.exists' => 'Negara yang dipilih tidak valid.',
         ]);
 
         $provinsi = Provinsi::findOrFail($id);
         $provinsi->update([
             'nama_provinsi' => $request->nama_provinsi,
+            'id_negara' => $request->id_negara,
         ]);
 
         return redirect()->route('master.data-provinsi.index')

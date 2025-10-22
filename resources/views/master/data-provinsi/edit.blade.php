@@ -17,26 +17,37 @@
       'action' => route('master.data-provinsi.update', $provinsi->id_provinsi),
       'method' => 'PUT',
       'provinsi' => $provinsi,
-      'isEdit' => true
+      'isEdit' => true,
+      'negara' => $negara
     ])
   </div>
 </div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   const form = document.querySelector('#provinsiForm');
   const namaProvinsiInput = document.querySelector('#nama_provinsi');
+  const negaraSelect = document.querySelector('#id_negara');
   const submitButton = document.querySelector('#submitButton');
-  const errorMessage = document.querySelector('#nama_provinsi_error');
 
-  if (!form || !namaProvinsiInput || !submitButton || !errorMessage) return;
+  const namaError = document.querySelector('#nama_provinsi_error');
+  const negaraError = document.querySelector('#id_negara_error');
 
-  // Simpan nilai awal nama_provinsi
-  const initialNamaProvinsi = namaProvinsiInput.value.trim();
+  if (!form || !namaProvinsiInput || !namaError || !negaraSelect || !negaraError || !submitButton) return;
 
-  // Fungsi untuk memeriksa perubahan
+  // Simpan nilai awal untuk mendeteksi perubahan
+  const initial = {
+    nama: namaProvinsiInput.value.trim(),
+    negara: negaraSelect.value || ''
+  };
+
   function checkChanges() {
-    const currentNamaProvinsi = namaProvinsiInput.value.trim();
-    if (currentNamaProvinsi === initialNamaProvinsi) {
+    const current = {
+      nama: namaProvinsiInput.value.trim(),
+      negara: negaraSelect.value || ''
+    };
+    const same = initial.nama === current.nama && initial.negara === current.negara;
+    if (same) {
       submitButton.disabled = true;
       submitButton.classList.add('opacity-50');
     } else {
@@ -45,32 +56,47 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  // Pantau perubahan pada input nama_provinsi
+  // Pasang listener perubahan
   namaProvinsiInput.addEventListener('input', checkChanges);
+  negaraSelect.addEventListener('change', checkChanges);
 
-  // Validasi dan konfirmasi saat submit
+  // Validasi + konfirmasi saat submit
   form.addEventListener('submit', function (e) {
-    e.preventDefault(); // Cegah submit default
+    e.preventDefault();
 
     // Reset pesan error dan styling
-    errorMessage.textContent = '';
-    errorMessage.classList.add('hidden');
+    namaError.textContent = '';
+    namaError.classList.add('hidden');
     namaProvinsiInput.classList.remove('border-red-500', 'bg-red-50');
 
-    // Validasi client-side
+    negaraError.textContent = '';
+    negaraError.classList.add('hidden');
+    negaraSelect.classList.remove('border-red-500', 'bg-red-50');
+
+    let hasError = false;
     const namaProvinsi = namaProvinsiInput.value.trim();
+    const idNegara = negaraSelect.value;
+
     if (!namaProvinsi) {
-      errorMessage.textContent = 'Nama provinsi wajib diisi.';
-      errorMessage.classList.remove('hidden');
+      namaError.textContent = 'Nama provinsi wajib diisi.';
+      namaError.classList.remove('hidden');
       namaProvinsiInput.classList.add('border-red-500', 'bg-red-50');
-      return;
-    }
-    if (namaProvinsi.length > 50) {
-      errorMessage.textContent = 'Nama provinsi tidak boleh lebih dari 50 karakter.';
-      errorMessage.classList.remove('hidden');
+      hasError = true;
+    } else if (namaProvinsi.length > 100) {
+      namaError.textContent = 'Nama provinsi tidak boleh lebih dari 100 karakter.';
+      namaError.classList.remove('hidden');
       namaProvinsiInput.classList.add('border-red-500', 'bg-red-50');
-      return;
+      hasError = true;
     }
+
+    if (!idNegara) {
+      negaraError.textContent = 'Negara wajib dipilih.';
+      negaraError.classList.remove('hidden');
+      negaraSelect.classList.add('border-red-500', 'bg-red-50');
+      hasError = true;
+    }
+
+    if (hasError) return;
 
     // Konfirmasi
     const isEdit = form.querySelector('input[name="_method"]')?.value === 'PUT';
@@ -79,9 +105,13 @@ document.addEventListener('DOMContentLoaded', function () {
       : 'Apakah Anda yakin ingin menyimpan data provinsi ini?';
 
     if (confirm(message)) {
-      form.submit(); // Lanjutkan submit jika dikonfirmasi
+      form.submit();
     }
   });
+
+  // initial check supaya tombol disable saat belum berubah
+  checkChanges();
 });
 </script>
+
 @endsection

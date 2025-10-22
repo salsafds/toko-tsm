@@ -17,26 +17,43 @@
       'action' => route('master.data-kota.update', $kota->id_kota),
       'method' => 'PUT',
       'kota' => $kota,
-      'isEdit' => true
+      'isEdit' => true,
+      'negara' => $negara,
+      'provinsi' => $provinsi
     ])
+
   </div>
 </div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   const form = document.querySelector('#kotaForm');
   const namaKotaInput = document.querySelector('#nama_kota');
+  const negaraSelect = document.querySelector('#id_negara');
+  const provinsiSelect = document.querySelector('#id_provinsi');
   const submitButton = document.querySelector('#submitButton');
-  const errorMessage = document.querySelector('#nama_kota_error');
 
-  if (!form || !namaKotaInput || !submitButton || !errorMessage) return;
+  const namaError = document.querySelector('#nama_kota_error');
+  const negaraError = document.querySelector('#id_negara_error');
+  const provinsiError = document.querySelector('#id_provinsi_error');
 
-  // Simpan nilai awal nama_kota
-  const initialNamakota = namaKotaInput.value.trim();
+  if (!form || !submitButton) return;
 
-  // Fungsi untuk memeriksa perubahan
+  // simpan nilai awal
+  const initial = {
+    nama: namaKotaInput?.value.trim() || '',
+    negara: negaraSelect?.value || '',
+    provinsi: provinsiSelect?.value || ''
+  };
+
   function checkChanges() {
-    const currentNamaKota = namaKotaInput.value.trim();
-    if (currentNamaKota === initialNamaKota) {
+    const current = {
+      nama: namaKotaInput?.value.trim() || '',
+      negara: negaraSelect?.value || '',
+      provinsi: provinsiSelect?.value || ''
+    };
+    const same = initial.nama === current.nama && initial.negara === current.negara && initial.provinsi === current.provinsi;
+    if (same) {
       submitButton.disabled = true;
       submitButton.classList.add('opacity-50');
     } else {
@@ -45,43 +62,65 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  // Pantau perubahan pada input nama_kota
-  namaKotaInput.addEventListener('input', checkChanges);
+  [namaKotaInput, negaraSelect, provinsiSelect].forEach(el => {
+    if (!el) return;
+    el.addEventListener('input', checkChanges);
+    el.addEventListener('change', checkChanges);
+  });
 
-  // Validasi dan konfirmasi saat submit
   form.addEventListener('submit', function (e) {
-    e.preventDefault(); // Cegah submit default
+    e.preventDefault();
 
-    // Reset pesan error dan styling
-    errorMessage.textContent = '';
-    errorMessage.classList.add('hidden');
-    namaKotaInput.classList.remove('border-red-500', 'bg-red-50');
+    // Reset
+    [namaError, negaraError, provinsiError].forEach(el => { if (el) { el.textContent=''; el.classList.add('hidden'); }});
+    [namaKotaInput, negaraSelect, provinsiSelect].forEach(el => { if (el) el.classList.remove('border-red-500', 'bg-red-50'); });
 
-    // Validasi client-side
-    const namaKota = namaKotaInput.value.trim();
-    if (!namaKota) {
-      errorMessage.textContent = 'Nama kota wajib diisi.';
-      errorMessage.classList.remove('hidden');
+    let hasError = false;
+    const nama = namaKotaInput?.value.trim() || '';
+    const negara = negaraSelect?.value || '';
+    const provinsi = provinsiSelect?.value || '';
+
+    if (!nama) {
+      namaError.textContent = 'Nama kota wajib diisi.';
+      namaError.classList.remove('hidden');
       namaKotaInput.classList.add('border-red-500', 'bg-red-50');
-      return;
-    }
-    if (namaKota.length > 50) {
-      errorMessage.textContent = 'Nama kota tidak boleh lebih dari 50 karakter.';
-      errorMessage.classList.remove('hidden');
+      hasError = true;
+    } else if (nama.length > 100) {
+      namaError.textContent = 'Nama kota tidak boleh lebih dari 100 karakter.';
+      namaError.classList.remove('hidden');
       namaKotaInput.classList.add('border-red-500', 'bg-red-50');
-      return;
+      hasError = true;
     }
 
-    // Konfirmasi
+    if (!negara) {
+      negaraError.textContent = 'Negara wajib dipilih.';
+      negaraError.classList.remove('hidden');
+      negaraSelect.classList.add('border-red-500', 'bg-red-50');
+      hasError = true;
+    }
+
+    if (!provinsi) {
+      provinsiError.textContent = 'Provinsi wajib dipilih.';
+      provinsiError.classList.remove('hidden');
+      provinsiSelect.classList.add('border-red-500', 'bg-red-50');
+      hasError = true;
+    }
+
+    if (hasError) return;
+
     const isEdit = form.querySelector('input[name="_method"]')?.value === 'PUT';
     const message = isEdit 
       ? 'Apakah Anda yakin ingin mengedit data kota ini?' 
       : 'Apakah Anda yakin ingin menyimpan data kota ini?';
 
     if (confirm(message)) {
-      form.submit(); // Lanjutkan submit jika dikonfirmasi
+      form.submit();
     }
   });
+
+  // initial check
+  checkChanges();
 });
 </script>
+
 @endsection

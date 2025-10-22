@@ -10,7 +10,7 @@
     <input
       type="text"
       name="id_kota"
-      value="{{ old('id_kota', isset($kota) ? $kota->kota : ($nextId ?? '')) }}"
+      value="{{ old('id_kota', isset($kota) ? $kota->id_kota : ($nextId ?? '')) }}"
       readonly
       class="w-full rounded-md border bg-gray-100 px-3 py-2 text-sm text-gray-700 cursor-not-allowed"
       aria-readonly="true"
@@ -22,6 +22,61 @@
         ID dibuat otomatis secara berurutan. Preview: {{ $nextId ?? '' }}.
       @endif
     </p>
+  </div>
+
+  {{-- Negara & Provinsi --}}
+  <div class="grid grid-cols-2 gap-3">
+    <div class="grid grid-cols-1 gap-1">
+      <label for="id_negara" class="block text-sm font-medium text-gray-700">Negara <span class="text-rose-600">*</span></label>
+      <select
+        id="id_negara"
+        name="id_negara"
+        class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('id_negara') ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-blue-500 focus:ring-blue-100' }}"
+        aria-invalid="{{ $errors->has('id_negara') ? 'true' : 'false' }}"
+      >
+        <option value="">-- Pilih Negara --</option>
+        @if(isset($negara))
+          @foreach($negara as $n)
+            <option value="{{ $n->id_negara }}" {{ old('id_negara', $kota->id_negara ?? '') == $n->id_negara ? 'selected' : '' }}>
+              {{ $n->nama_negara }}
+            </option>
+          @endforeach
+        @endif
+      </select>
+
+      @if ($errors->has('id_negara'))
+        <p class="text-sm text-red-600 mt-1">{{ $errors->first('id_negara') }}</p>
+      @else
+        <p id="id_negara_error" class="text-sm text-red-600 mt-1 hidden"></p>
+        <p class="text-xs text-gray-500">Pilih negara untuk kota ini.</p>
+      @endif
+    </div>
+
+    <div class="grid grid-cols-1 gap-1">
+      <label for="id_provinsi" class="block text-sm font-medium text-gray-700">Provinsi <span class="text-rose-600">*</span></label>
+      <select
+        id="id_provinsi"
+        name="id_provinsi"
+        class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('id_provinsi') ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-blue-500 focus:ring-blue-100' }}"
+        aria-invalid="{{ $errors->has('id_provinsi') ? 'true' : 'false' }}"
+      >
+        <option value="">-- Pilih Provinsi --</option>
+        @if(isset($provinsi))
+          @foreach($provinsi as $p)
+            <option value="{{ $p->id_provinsi }}" {{ old('id_provinsi', $kota->id_provinsi ?? '') == $p->id_provinsi ? 'selected' : '' }}>
+              {{ $p->nama_provinsi }}
+            </option>
+          @endforeach
+        @endif
+      </select>
+
+      @if ($errors->has('id_provinsi'))
+        <p class="text-sm text-red-600 mt-1">{{ $errors->first('id_provinsi') }}</p>
+      @else
+        <p id="id_provinsi_error" class="text-sm text-red-600 mt-1 hidden"></p>
+        <p class="text-xs text-gray-500">Pilih provinsi untuk kota ini.</p>
+      @endif
+    </div>
   </div>
 
   {{-- Nama Kota --}}
@@ -40,7 +95,6 @@
       <p class="text-sm text-red-600 mt-1">{{ $errors->first('nama_kota') }}</p>
     @else
       <p id="nama_kota_error" class="text-sm text-red-600 mt-1 hidden"></p>
-      <p class="text-xs text-gray-500">Contoh: kg, liter, buah, pack.</p>
     @endif
   </div>
 

@@ -18,51 +18,75 @@
       'method' => 'POST',
       'provinsi' => null,
       'nextId' => $nextId,
-      'isEdit' => false
+      'isEdit' => false,
+      'negara' => $negara
     ])
   </div>
 </div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   const form = document.querySelector('#provinsiForm');
   const namaProvinsiInput = document.querySelector('#nama_provinsi');
-  const errorMessage = document.querySelector('#nama_provinsi_error');
+  const negaraSelect = document.querySelector('#id_negara');
 
-  if (!form || !namaProvinsiInput || !errorMessage) return;
+  const namaError = document.querySelector('#nama_provinsi_error');
+  const negaraError = document.querySelector('#id_negara_error');
+
+  if (!form || !namaProvinsiInput || !namaError || !negaraSelect || !negaraError) return;
 
   form.addEventListener('submit', function (e) {
-    e.preventDefault(); // Cegah submit default
+    e.preventDefault(); // cegah submit default
 
     // Reset pesan error dan styling
-    errorMessage.textContent = '';
-    errorMessage.classList.add('hidden');
+    namaError.textContent = '';
+    namaError.classList.add('hidden');
     namaProvinsiInput.classList.remove('border-red-500', 'bg-red-50');
 
-    // Validasi client-side
+    negaraError.textContent = '';
+    negaraError.classList.add('hidden');
+    negaraSelect.classList.remove('border-red-500', 'bg-red-50');
+
+    // Ambil nilai
     const namaProvinsi = namaProvinsiInput.value.trim();
+    const idNegara = negaraSelect.value;
+
+    let hasError = false;
+
+    // Validasi nama provinsi
     if (!namaProvinsi) {
-      errorMessage.textContent = 'Nama provinsi wajib diisi.';
-      errorMessage.classList.remove('hidden');
+      namaError.textContent = 'Nama provinsi wajib diisi.';
+      namaError.classList.remove('hidden');
       namaProvinsiInput.classList.add('border-red-500', 'bg-red-50');
-      return;
-    }
-    if (namaProvinsi.length > 100) {
-      errorMessage.textContent = 'Nama provinsi tidak boleh lebih dari 100 karakter.';
-      errorMessage.classList.remove('hidden');
+      hasError = true;
+    } else if (namaProvinsi.length > 100) {
+      namaError.textContent = 'Nama provinsi tidak boleh lebih dari 100 karakter.';
+      namaError.classList.remove('hidden');
       namaProvinsiInput.classList.add('border-red-500', 'bg-red-50');
-      return;
+      hasError = true;
     }
 
-    // Konfirmasi
+    // Validasi negara
+    if (!idNegara) {
+      negaraError.textContent = 'Negara wajib dipilih.';
+      negaraError.classList.remove('hidden');
+      negaraSelect.classList.add('border-red-500', 'bg-red-50');
+      hasError = true;
+    }
+
+    if (hasError) return;
+
+    // Konfirmasi sebelum submit
     const isEdit = form.querySelector('input[name="_method"]')?.value === 'PUT';
     const message = isEdit 
       ? 'Apakah Anda yakin ingin mengedit data provinsi ini?' 
       : 'Apakah Anda yakin ingin menyimpan data provinsi ini?';
 
     if (confirm(message)) {
-      form.submit(); // Lanjutkan submit jika dikonfirmasi
+      form.submit();
     }
   });
 });
 </script>
+
 @endsection
