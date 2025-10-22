@@ -66,7 +66,6 @@ class SupplierController extends Controller
             'id_provinsi.required' => 'Provinsi wajib dipilih.',
             'id_kota.required' => 'Kota wajib dipilih.',
             'telepon_supplier.required' => 'Telepon wajib diisi.',
-            'email_supplier.required' => 'Email wajib diisi.',
             'email_supplier.email' => 'Format email tidak valid.',
         ]);
 
