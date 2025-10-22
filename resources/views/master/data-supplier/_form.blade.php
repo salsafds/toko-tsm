@@ -169,16 +169,24 @@
 
 
     <div>
-      <label for="email_supplier" class="block text-sm font-medium text-gray-700">Email</label>
-      <input id="email_supplier" name="email_supplier" value="{{ old('email_supplier', $supplier->email_supplier ?? '') }}"
-             class="w-full rounded-md border px-3 py-2 text-sm border-gray-200 focus:border-blue-500 focus:ring-blue-100"
-             placeholder="Masukkan email (opsional)">
+        <label for="email_supplier" class="block text-sm font-medium text-gray-700">Email</label>
+        <input id="email_supplier" name="email_supplier" value="{{ old('email_supplier', $supplier->email_supplier ?? '') }}"
+                class="w-full rounded-md border px-3 py-2 text-sm border-gray-200 focus:border-blue-500 focus:ring-blue-100"
+                placeholder="Masukkan email (opsional)">
+        <p id="email_supplier_error" class="text-sm text-red-600 mt-1 hidden"></p>
+        @if ($errors->has('email_supplier'))
+            <p class="text-sm text-red-600 mt-1">{{ $errors->first('email_supplier') }}</p>
+        @else
+            <!-- Elemen ini diperlukan oleh JS -->
+            <p id="email_supplier_error" class="text-sm text-red-600 mt-1 hidden"></p>
+        @endif
     </div>
+
   </div>
 
   {{-- Tombol --}}
   <div class="flex items-center gap-3">
-    <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-700 text-white text-sm rounded-md hover:bg-blue-800">
+    <button id="submitButton" type="submit" class="inline-flex items-center px-4 py-2 bg-blue-700 text-white text-sm rounded-md hover:bg-blue-800">
       @if(isset($supplier)) Update @else Simpan @endif
     </button>
     <a href="{{ route('master.data-supplier.index') }}" class="inline-flex items-center px-4 py-2 border rounded-md text-sm text-gray-700 hover:bg-gray-50">Batal</a>
