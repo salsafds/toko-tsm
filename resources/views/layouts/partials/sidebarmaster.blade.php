@@ -81,7 +81,7 @@
         <img 
           :src="isOpen ? '{{ asset('img/icon/iconCloseSidebar.png') }}' : '{{ asset('img/icon/iconOpenSidebar.png') }}'"
           alt="Toggle Sidebar" 
-          class="h-6 w-6 object-contain min-h-[24px] min-w-[24px]"
+          class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]"
         >
       </button>
       <span 
@@ -476,7 +476,7 @@
   </div>
 
   <!-- Sidebar Footer -->
-  <div class="border-t p-4" :class="{ 'px-2': !isOpen }" x-show="isOpen || isDesktop">
+  <div class="border-t p-2" :class="{ 'px-2': !isOpen }" x-show="isOpen || isDesktop">
     @php
       $user = Auth::user();
       $foto = $user && $user->foto_user ? asset('storage/' . $user->foto_user) : asset('img/icon/iconProfil.png');
@@ -488,10 +488,10 @@
         :class="{ 'justify-center': !isOpen && isDesktop }"
         x-tooltip="!isOpen && isDesktop ? '{{ $user ? $user->username : 'Guest' }}' : ''"
       >
-        <div class="relative h-10 w-10 rounded-full overflow-hidden ring-2 ring-gray-200 flex-shrink-0">
+        <div class="relative h-8 w-8 mx-2 rounded-full overflow-hidden ring-2 ring-gray-200 flex-shrink-0">
           <img src="{{ $foto }}" alt="Profile" class="h-full w-full object-cover" onerror="this.src='{{ asset('img/icon/iconProfil.png') }}'">
         </div>
-        <div class="min-w-0" x-show="isOpen" x-cloak>
+        <div class="min-w-0 text-left ml-2" x-show="isOpen" x-cloak>
           <div class="truncate text-sm font-medium text-gray-900">{{ $user ? $user->username : 'Guest' }}</div>
           <div class="truncate text-xs text-gray-500">{{ $user && $user->role ? ucfirst($user->role->nama_role) : 'Role Tidak Dikenal' }}</div>
         </div>
