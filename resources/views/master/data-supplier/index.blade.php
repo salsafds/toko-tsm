@@ -1,5 +1,4 @@
 @extends('layouts.appmaster')
-
 @section('title', 'Data Supplier')
 
 @section('content')
@@ -7,7 +6,7 @@
   <div class="flex items-center justify-between mb-6">
     <div>
       <h1 class="text-2xl font-semibold text-gray-800">Data Supplier</h1>
-      <p class="text-sm text-gray-500 mt-1">Daftar supplier</p>
+      <p class="text-sm text-gray-500 mt-1">Daftar supplier dan informasi kontak</p>
     </div>
   </div>
 
@@ -17,10 +16,10 @@
         <label for="per_page" class="text-sm text-gray-600">Show</label>
         <select name="per_page" id="per_page" onchange="this.form.submit()" class="ml-2 rounded-md border text-sm px-2 py-1">
           @php $per = request()->query('per_page', 10); @endphp
-          <option value="5" {{ $per==5 ? 'selected' : '' }}>5</option>
-          <option value="10" {{ $per==10 ? 'selected' : '' }}>10</option>
-          <option value="25" {{ $per==25 ? 'selected' : '' }}>25</option>
-          <option value="50" {{ $per==50 ? 'selected' : '' }}>50</option>
+          <option value="5" {{ $per==5?'selected':'' }}>5</option>
+          <option value="10" {{ $per==10?'selected':'' }}>10</option>
+          <option value="25" {{ $per==25?'selected':'' }}>25</option>
+          <option value="50" {{ $per==50?'selected':'' }}>50</option>
         </select>
       </form>
     </div>
@@ -31,8 +30,7 @@
           <svg class="absolute left-3 top-2.5 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z"/>
           </svg>
-          <input name="q" value="{{ request()->query('q', '') }}" placeholder="Search…" aria-label="Search"
-                 class="pl-10 pr-3 py-2 rounded-md border-gray-200 text-sm w-64" />
+          <input name="q" value="{{ request()->query('q','') }}" placeholder="Search…" class="pl-10 pr-3 py-2 rounded-md border-gray-200 text-sm w-64" />
         </div>
       </form>
 
@@ -42,63 +40,56 @@
     </div>
   </div>
 
-  {{-- Flash messages --}}
   @if(session('success'))
-    <div class="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded">
-      {{ session('success') }}
-    </div>
+    <div class="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded">{{ session('success') }}</div>
   @endif
 
-  {{-- Table --}}
   <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200">
     <table class="min-w-full divide-y divide-gray-200 table-auto">
       <thead class="bg-gray-50">
         <tr class="text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-          <th class="w-28 px-4 py-3 border-r border-gray-200">ID Supplier</th>
-          <th class="w-48 border-r px-4 py-3">Nama Supplier</th>
-          <th class="w-64 border-r px-4 py-3">Alamat</th>
-          <th class="w-36 border-r px-4 py-3">Kontak</th>
-          <th class="w-32 px-4 py-3 border-r">Aksi</th>
+          <th class="px-4 py-3 border-r">ID</th>
+          <th class="px-4 py-3 border-r">Nama</th>
+          <th class="px-4 py-3 border-r">Telepon</th>
+          <th class="px-4 py-3 border-r">Email</th>
+          <th class="px-4 py-3">Aksi</th>
         </tr>
       </thead>
       <tbody class="bg-white divide-y divide-gray-100">
-      @forelse($suppliers ?? collect() as $item)
+        @forelse($suppliers as $item)
           <tr class="hover:bg-gray-50 transition-colors">
-              <td class="w-28 border-r px-4 py-2 text-sm text-gray-700 border-gray-100">{{ $item->id_supplier }}</td>
-              <td class="w-48 border-r px-4 py-2 text-sm text-gray-700 border-gray-100">{{ $item->nama_supplier }}</td>
-              <td class="w-64 border-r px-4 py-2 text-sm text-gray-700">{{ $item->alamat }}</td>
-              <td class="w-36 border-r px-4 py-2 text-sm text-gray-700">
-                <div class="flex flex-col">
-                  <span class="text-sm">{{ $item->telepon_supplier }}</span>
-                  <span class="text-sm text-gray-500">{{ $item->email_supplier }}</span>
-                </div>
-              </td>
-              <td class="w-32 px-4 py-2 text-center">
-                <div class="flex justify-center items-center gap-2">
-                  <a href="{{ route('master.data-supplier.edit', $item->id_supplier) }}"
-                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300">
-                    Edit
-                  </a>
+            <td class="px-4 py-2 text-sm text-gray-700 border-r">{{ $item->id_supplier }}</td>
+            <td class="px-4 py-2 text-sm text-gray-700 border-r">{{ $item->nama_supplier }}</td>
+            <td class="px-4 py-2 text-sm text-gray-700 border-r">{{ $item->telepon_supplier }}</td>
+            <td class="px-4 py-2 text-sm text-gray-700 border-r">{{ $item->email_supplier }}</td>
+            <td class="px-4 py-2 text-center">
+              <div class="flex justify-center items-center gap-2">
+                <!-- Edit button -->
+                <a href="{{ route('master.data-supplier.edit', $item->id_supplier) }}"
+                  class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                  Edit
+                </a>
 
-                  <form action="{{ route('master.data-supplier.destroy', $item->id_supplier) }}" method="POST"
-                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus data supplier ini?');">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit"
-                            class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-rose-100 text-rose-700 hover:bg-rose-200 focus:outline-none focus:ring-2 focus:ring-rose-300">
-                      Delete
-                    </button>
-                  </form>
-                </div>
-              </td>
+                <!-- Delete button -->
+                <form action="{{ route('master.data-supplier.destroy', $item->id_supplier) }}" method="POST"
+                      onsubmit="return confirm('Apakah Anda yakin ingin menghapus data supplier ini?');">
+                  @csrf
+                  @method('DELETE')
+                  <button type="submit"
+                          class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-rose-100 text-rose-700 hover:bg-rose-200 focus:outline-none focus:ring-2 focus:ring-rose-300">
+                    Delete
+                  </button>
+                </form>
+              </div>
+            </td>
           </tr>
-      @empty
+        @empty
           <tr>
-              <td colspan="5" class="px-4 py-8 text-center text-sm text-gray-500">
-                  Tidak ada data supplier.
-              </td>
+            <td colspan="5" class="px-4 py-8 text-center text-sm text-gray-500">
+              Tidak ada data supplier.
+            </td>
           </tr>
-      @endforelse
+        @endforelse
       </tbody>
     </table>
   </div>

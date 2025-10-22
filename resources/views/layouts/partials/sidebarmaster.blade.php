@@ -96,7 +96,7 @@ x-cloak
     <nav class="p-4 space-y-2" aria-label="Main navigation" :class="{ 'px-2': !isOpen && isDesktop }">
       <div class="text-xs font-semibold text-gray-500 uppercase px-2" x-show="isOpen" x-cloak>Main</div>
       <a 
-        href="{{ route('master.data-barang.index') ?? '#' }}" 
+        href="{{ route('master.data-role.index') ?? '#' }}" 
         class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
         :class="{ 'justify-center': !isOpen && isDesktop }"
         @click="isDesktop ? (isOpen = false, $dispatch('sidebar-toggled', { isOpen: false }), localStorage.setItem('sidebarOpen', false), console.log('Data Barang link clicked, sidebar closed')) : null"
@@ -171,7 +171,7 @@ x-cloak
       </a>
 
       <a 
-        href="{{ route('master.data-karyawan.index') ?? '#' }}" 
+        href="{{ route('master.data-role.index') ?? '#' }}" 
         class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
         :class="{ 'justify-center': !isOpen && isDesktop }"
         @click="isDesktop ? (isOpen = false, $dispatch('sidebar-toggled', { isOpen: false }), localStorage.setItem('sidebarOpen', false), console.log('Data Karyawan link clicked, sidebar closed')) : null"

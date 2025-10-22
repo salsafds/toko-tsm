@@ -10,12 +10,12 @@ class Pendidikan extends Model
     use HasFactory;
 
     protected $table = 'pendidikan';
-    protected $primaryKey = 'id_barang';
+    protected $primaryKey = 'id_pendidikan';
     public $incrementing = false;
-    protected $keyType = 'int';
+    protected $keyType = 'string';
 
     protected $fillable = [
-        'id_barang',
+        'id_pendidikan',
         'tingkat_pendidikan',
     ];
 }

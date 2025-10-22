@@ -25,7 +25,7 @@ return new class extends Migration
             // Foreign keys
             $table->string('id_role', 10)->nullable();
             $table->string('id_jabatan', 11)->nullable();
-            $table->integer('id_pendidikan')->nullable();
+            $table->string('id_pendidikan')->nullable();
 
             // Tambahkan constraint FK
             $table->foreign('id_role')

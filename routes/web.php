@@ -14,6 +14,9 @@ use App\Http\Controllers\Master\ProvinsiController;
 use App\Http\Controllers\Master\RoleController;
 use App\Http\Controllers\Master\SatuanController;
 use App\Http\Controllers\Master\SupplierController;
+use App\Http\Controllers\Master\KategoriBarangController;
+use App\Http\Controllers\Master\AgenEkspedisiController;     
+use App\Http\Controllers\Master\PelangganController;     
 
 // Landing page
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
@@ -38,17 +41,21 @@ Route::middleware(['auth'])->name('master.')->group(function () {
     Route::resource('data-bahasa', BahasaController::class);
 });
 
+// Route::middleware(['auth'])->name('master.')->group(function () {
+//     Route::resource('data-barang', BarangController::class);
+// });
+
 Route::middleware(['auth'])->name('master.')->group(function () {
-    Route::resource('data-barang', BarangController::class);
+    Route::resource('data-kategori-barang', PelangganController::class);
 });
 
 Route::middleware(['auth'])->name('master.')->group(function () {
     Route::resource('data-jabatan', JabatanController::class);
 });
 
-Route::middleware(['auth'])->name('master.')->group(function () {
-    Route::resource('data-karyawan', KaryawanController::class);
-});
+// Route::middleware(['auth'])->name('master.')->group(function () {
+//     Route::resource('data-karyawan', KaryawanController::class);
+// });
 
 Route::middleware(['auth'])->name('master.')->group(function () {
     Route::resource('data-kota', KotaController::class);
@@ -76,4 +83,12 @@ Route::middleware(['auth'])->name('master.')->group(function () {
 
 Route::middleware(['auth'])->name('master.')->group(function () {
     Route::resource('data-supplier', SupplierController::class);
+});
+
+Route::middleware(['auth'])->name('master.')->group(function () {
+    Route::resource('data-kategori-barang', KategoriBarangController::class);
+});
+
+Route::middleware(['auth'])->name('master.')->group(function () {
+    Route::resource('data-kategori-barang', AgenEkspedisiController::class);
 });

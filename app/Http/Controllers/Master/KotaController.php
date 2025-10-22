@@ -90,17 +90,17 @@ class KotaController extends Controller
     }
 
     /**
-     * Generate ID kota berurutan (ST0001, ST0002, dll.)
+     * Generate ID kota berurutan (KT001, KT002, dll.)
      */
     private function generateNextId()
     {
-        // Ambil MAX angka dari id_kota (SUBSTRING setelah 'ST', cast ke UNSIGNED)
+        // Ambil MAX angka dari id_kota (SUBSTRING setelah 'KT', cast ke UNSIGNED)
         // Jika table kosong, maxNum = null → fallback ke 0
         $maxNum = Kota::selectRaw('MAX(CAST(SUBSTRING(id_kota, 3) AS UNSIGNED)) as max_num')
                         ->value('max_num') ?? 0;
         $nextNumber = $maxNum + 1;
         
-        // Format: ST + 4 digit dengan leading zero (ST0001, ST0002, ..., ST0100, dll.)
-        return 'ST' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        // Format: KT + 3 digit dengan leading zero (KT001, KT002, ..., KT100, dll.)
+        return 'KT' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
     }
 }

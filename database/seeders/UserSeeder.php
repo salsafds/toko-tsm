@@ -24,7 +24,7 @@ class UserSeeder extends Seeder
             'tanggal_keluar' => null,
             'id_role' => 'R01',         // FK ke role
             'id_jabatan' => 'J01',      // FK ke jabatan
-            'id_pendidikan' => 3,       // FK ke pendidikan (S1)
+            'id_pendidikan' => 'PD01',       // FK ke pendidikan (S1)
             'created_at' => now(),
             'updated_at' => now(),
         ]);

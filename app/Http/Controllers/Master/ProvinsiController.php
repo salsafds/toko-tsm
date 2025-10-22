@@ -90,17 +90,17 @@ class ProvinsiController extends Controller
     }
 
     /**
-     * Generate ID provinsi berurutan (ST0001, ST0002, dll.)
+     * Generate ID provinsi berurutan (PV001, PV002, dll.)
      */
     private function generateNextId()
     {
-        // Ambil MAX angka dari id_provinsi (SUBSTRING setelah 'ST', cast ke UNSIGNED)
+        // Ambil MAX angka dari id_provinsi (SUBSTRING setelah 'PV', cast ke UNSIGNED)
         // Jika table kosong, maxNum = null → fallback ke 0
         $maxNum = Provinsi::selectRaw('MAX(CAST(SUBSTRING(id_provinsi, 3) AS UNSIGNED)) as max_num')
                         ->value('max_num') ?? 0;
         $nextNumber = $maxNum + 1;
         
-        // Format: ST + 4 digit dengan leading zero (ST0001, ST0002, ..., ST0100, dll.)
-        return 'ST' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        // Format: PV + 3 digit dengan leading zero (PV001, PV002, ..., PV100, dll.)
+        return 'PV' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
     }
 }
