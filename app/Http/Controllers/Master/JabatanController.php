@@ -90,17 +90,17 @@ class JabatanController extends Controller
     }
 
     /**
-     * Generate ID jabatan berurutan (ST0001, ST0002, dll.)
+     * Generate ID jabatan berurutan (JB01, JB02, dll.)
      */
     private function generateNextId()
     {
-        // Ambil MAX angka dari id_jabatan (SUBSTRING setelah 'ST', cast ke UNSIGNED)
+        // Ambil MAX angka dari id_jabatan (SUBSTRING setelah 'JB', cast ke UNSIGNED)
         // Jika table kosong, maxNum = null → fallback ke 0
         $maxNum = Jabatan::selectRaw('MAX(CAST(SUBSTRING(id_jabatan, 3) AS UNSIGNED)) as max_num')
                         ->value('max_num') ?? 0;
         $nextNumber = $maxNum + 1;
         
-        // Format: ST + 4 digit dengan leading zero (ST0001, ST0002, ..., ST0100, dll.)
-        return 'ST' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        // Format: JB + 2 digit dengan leading zero (JB01, JB02, ..., JB10, dll.)
+        return 'JB' . str_pad($nextNumber, 2, '0', STR_PAD_LEFT);
     }
 }

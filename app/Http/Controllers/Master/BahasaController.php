@@ -90,17 +90,17 @@ class BahasaController extends Controller
     }
 
     /**
-     * Generate ID bahasa berurutan (ST0001, ST0002, dll.)
+     * Generate ID bahasa berurutan (BS01, BS02, dll.)
      */
     private function generateNextId()
     {
-        // Ambil MAX angka dari id_bahasa (SUBSTRING setelah 'ST', cast ke UNSIGNED)
+        // Ambil MAX angka dari id_bahasa (SUBSTRING setelah 'BS', cast ke UNSIGNED)
         // Jika table kosong, maxNum = null → fallback ke 0
         $maxNum = Bahasa::selectRaw('MAX(CAST(SUBSTRING(id_bahasa, 3) AS UNSIGNED)) as max_num')
                         ->value('max_num') ?? 0;
         $nextNumber = $maxNum + 1;
         
-        // Format: ST + 4 digit dengan leading zero (ST0001, ST0002, ..., ST0100, dll.)
-        return 'ST' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        // Format: BS + 2 digit dengan leading zero (BS01, BS02, ..., BS10, dll.)
+        return 'BS' . str_pad($nextNumber, 2, '0', STR_PAD_LEFT);
     }
 }

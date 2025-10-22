@@ -141,7 +141,7 @@ class SupplierController extends Controller
     }
 
     /**
-     * Generate next ID format SP0001, SP0002, ...
+     * Generate next ID format SP001, SP002, ...
      */
     private function generateNextId()
     {
@@ -149,6 +149,6 @@ class SupplierController extends Controller
                           ->value('max_num') ?? 0;
         $nextNumber = $maxNum + 1;
 
-        return 'SP' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        return 'SP' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
     }
 }

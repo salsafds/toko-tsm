@@ -114,7 +114,7 @@ class RoleController extends Controller
     }
 
     /**
-     * Generate next ID in format RL0001, RL0002, ...
+     * Generate next ID in format RL01, RL02, ...
      */
     private function generateNextId()
     {
@@ -122,6 +122,6 @@ class RoleController extends Controller
                       ->value('max_num') ?? 0;
         $nextNumber = $maxNum + 1;
 
-        return 'RL' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        return 'RL' . str_pad($nextNumber, 2, '0', STR_PAD_LEFT);
     }
 }

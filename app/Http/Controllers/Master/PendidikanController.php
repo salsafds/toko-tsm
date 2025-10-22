@@ -90,17 +90,17 @@ class PendidikanController extends Controller
     }
 
     /**
-     * Generate ID pendidikan berurutan (ST0001, ST0002, dll.)
+     * Generate ID pendidikan berurutan (PD01, PD02, dll.)
      */
     private function generateNextId()
     {
-        // Ambil MAX angka dari id_pendidikan (SUBSTRING setelah 'ST', cast ke UNSIGNED)
+        // Ambil MAX angka dari id_pendidikan (SUBSTRING setelah 'PD', cast ke UNSIGNED)
         // Jika table kosong, maxNum = null → fallback ke 0
         $maxNum = Pendidikan::selectRaw('MAX(CAST(SUBSTRING(id_pendidikan, 3) AS UNSIGNED)) as max_num')
                         ->value('max_num') ?? 0;
         $nextNumber = $maxNum + 1;
         
-        // Format: ST + 4 digit dengan leading zero (ST0001, ST0002, ..., ST0100, dll.)
-        return 'ST' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        // Format: PD + 2 digit dengan leading zero (PD01, PD02, ..., PD10, dll.)
+        return 'PD' . str_pad($nextNumber, 2, '0', STR_PAD_LEFT);
     }
 }

@@ -90,7 +90,7 @@ class SatuanController extends Controller
     }
 
     /**
-     * Generate ID satuan berurutan (ST0001, ST0002, dll.)
+     * Generate ID satuan berurutan (ST01, ST02, dll.)
      */
     private function generateNextId()
     {
@@ -100,7 +100,7 @@ class SatuanController extends Controller
                         ->value('max_num') ?? 0;
         $nextNumber = $maxNum + 1;
         
-        // Format: ST + 4 digit dengan leading zero (ST0001, ST0002, ..., ST0100, dll.)
-        return 'ST' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        // Format: ST + 2 digit dengan leading zero (ST01, ST02, ..., ST10, dll.)
+        return 'ST' . str_pad($nextNumber, 2, '0', STR_PAD_LEFT);
     }
 }
