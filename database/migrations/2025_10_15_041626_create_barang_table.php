@@ -24,7 +24,7 @@ return new class extends Migration
         $table->decimal('retail', 10, 2);
         $table->timestamps();
 
-        $table->foreign('id_kategori_barang')->references('id_kategori')->on('kategori_barang')->onDelete('cascade');
+        $table->foreign('id_kategori_barang')->references('id_kategori_barang')->on('kategori_barang')->onDelete('cascade');
         $table->foreign('id_supplier')->references('id_supplier')->on('supplier')->onDelete('cascade');
         $table->foreign('id_satuan')->references('id_satuan')->on('satuan')->onDelete('cascade');
     });

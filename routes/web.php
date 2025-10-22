@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Support\Facades\Route;
@@ -41,21 +42,21 @@ Route::middleware(['auth'])->name('master.')->group(function () {
     Route::resource('data-bahasa', BahasaController::class);
 });
 
-// Route::middleware(['auth'])->name('master.')->group(function () {
-//     Route::resource('data-barang', BarangController::class);
-// });
+ Route::middleware(['auth'])->name('master.')->group(function () {
+Route::resource('data-barang', BarangController::class);
+});
 
 Route::middleware(['auth'])->name('master.')->group(function () {
-    Route::resource('data-kategori-barang', PelangganController::class);
+    Route::resource('data-pelanggan', PelangganController::class);
 });
 
 Route::middleware(['auth'])->name('master.')->group(function () {
     Route::resource('data-jabatan', JabatanController::class);
 });
 
-// Route::middleware(['auth'])->name('master.')->group(function () {
-//     Route::resource('data-karyawan', KaryawanController::class);
-// });
+ Route::middleware(['auth'])->name('master.')->group(function () {
+  Route::resource('data-karyawan', KaryawanController::class);
+ });
 
 Route::middleware(['auth'])->name('master.')->group(function () {
     Route::resource('data-kota', KotaController::class);
@@ -90,5 +91,5 @@ Route::middleware(['auth'])->name('master.')->group(function () {
 });
 
 Route::middleware(['auth'])->name('master.')->group(function () {
-    Route::resource('data-kategori-barang', AgenEkspedisiController::class);
+    Route::resource('data-agen-ekspedisi', AgenEkspedisiController::class);
 });
