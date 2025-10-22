@@ -46,7 +46,7 @@ Route::middleware(['auth'])->name('master.')->group(function () {
 // });
 
 Route::middleware(['auth'])->name('master.')->group(function () {
-    Route::resource('data-kategori-barang', PelangganController::class);
+    Route::resource('data-pelanggan', PelangganController::class);
 });
 
 Route::middleware(['auth'])->name('master.')->group(function () {
@@ -90,5 +90,5 @@ Route::middleware(['auth'])->name('master.')->group(function () {
 });
 
 Route::middleware(['auth'])->name('master.')->group(function () {
-    Route::resource('data-kategori-barang', AgenEkspedisiController::class);
+    Route::resource('data-agen-ekspedisi', AgenEkspedisiController::class);
 });
