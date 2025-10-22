@@ -146,19 +146,15 @@ document.addEventListener('DOMContentLoaded', function () {
       hasError = true;
     }
 
-    if (!email) {
-      emailError.textContent = 'Email wajib diisi.';
-      emailError.classList.remove('hidden');
-      emailInput.classList.add('border-red-500', 'bg-red-50');
-      hasError = true;
-    } else {
-      const re = /\S+@\S+\.\S+/;
-      if (!re.test(email)) {
-        emailError.textContent = 'Format email tidak valid.';
-        emailError.classList.remove('hidden');
-        emailInput.classList.add('border-red-500', 'bg-red-50');
-        hasError = true;
-      }
+    // Email opsional — hanya verifikasi format bila ada isi
+    if (email) {
+        const re = /\S+@\S+\.\S+/;
+        if (!re.test(email)) {
+            emailError.textContent = 'Format email tidak valid.';
+            emailError.classList.remove('hidden');
+            emailInput.classList.add('border-red-500', 'bg-red-50');
+            hasError = true;
+        }
     }
 
     if (hasError) return;
