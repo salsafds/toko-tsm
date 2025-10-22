@@ -18,7 +18,7 @@
     </p>
   </div>
 
-  {{-- Nama Supplier --}}
+    {{-- Nama Supplier --}}
   <div class="grid grid-cols-1 gap-1">
     <label for="nama_supplier" class="block text-sm font-medium text-gray-700">
       Nama Supplier <span class="text-rose-600">*</span>
@@ -34,11 +34,13 @@
     @if ($errors->has('nama_supplier'))
       <p class="text-sm text-red-600 mt-1">{{ $errors->first('nama_supplier') }}</p>
     @else
+      <!-- Elemen ini diperlukan oleh JS -->
+      <p id="nama_supplier_error" class="text-sm text-red-600 mt-1 hidden"></p>
       <p class="text-xs text-gray-500">Contoh: PT Maju Jaya.</p>
     @endif
   </div>
 
-  {{-- Alamat --}}
+    {{-- Alamat --}}
   <div class="grid grid-cols-1 gap-1">
     <label for="alamat" class="block text-sm font-medium text-gray-700">
       Alamat <span class="text-rose-600">*</span>
@@ -54,11 +56,13 @@
     @if ($errors->has('alamat'))
       <p class="text-sm text-red-600 mt-1">{{ $errors->first('alamat') }}</p>
     @else
-      <p class="text-xs text-gray-500">Masukkan alamat lengkap supplier.</p>
+      <!-- Elemen ini diperlukan oleh JS -->
+      <p id="alamat_error" class="text-sm text-red-600 mt-1 hidden"></p>
+      <p class ="text-xs text-gray-500">Masukkan alamat lengkap supplier.</p>
     @endif
   </div>
 
-  {{-- Negara, Provinsi, Kota (WAJIB diisi seperti Alamat) --}}
+  {{-- Negara, Provinsi, Kota --}}
 <div class="grid grid-cols-3 gap-3">
   <div class="grid grid-cols-1 gap-1">
     <label for="id_negara" class="block text-sm font-medium text-gray-700">
@@ -81,7 +85,9 @@
     @if ($errors->has('id_negara'))
       <p class="text-sm text-red-600 mt-1">{{ $errors->first('id_negara') }}</p>
     @else
-      <p id="id_negara_error" class="text-xs text-gray-500 mt-1">Pilih negara supplier.</p>
+      <!-- Elemen ini diperlukan oleh JS -->
+      <p id="id_negara_error" class="text-sm text-red-600 mt-1 hidden"></p>
+      <p class="text-xs text-gray-500 mt-1">Pilih negara supplier.</p>
     @endif
   </div>
 
@@ -106,7 +112,9 @@
     @if ($errors->has('id_provinsi'))
       <p class="text-sm text-red-600 mt-1">{{ $errors->first('id_provinsi') }}</p>
     @else
-      <p id="id_provinsi_error" class="text-xs text-gray-500 mt-1">Pilih provinsi supplier.</p>
+      <!-- Elemen ini diperlukan oleh JS -->
+      <p id="id_provinsi_error" class="text-sm text-red-600 mt-1 hidden"></p>
+      <p class="text-xs text-gray-500 mt-1">Pilih provinsi supplier.</p>
     @endif
   </div>
 
@@ -131,7 +139,9 @@
     @if ($errors->has('id_kota'))
       <p class="text-sm text-red-600 mt-1">{{ $errors->first('id_kota') }}</p>
     @else
-      <p id="id_kota_error" class="text-xs text-gray-500 mt-1">Pilih kota supplier.</p>
+      <!-- Elemen ini diperlukan oleh JS -->
+      <p id="id_kota_error" class="text-sm text-red-600 mt-1 hidden"></p>
+      <p class="text-xs text-gray-500 mt-1">Pilih kota supplier.</p>
     @endif
   </div>
 </div>
@@ -151,9 +161,12 @@
       @if ($errors->has('telepon_supplier'))
         <p class="text-sm text-red-600 mt-1">{{ $errors->first('telepon_supplier') }}</p>
       @else
+        <!-- Elemen ini diperlukan oleh JS -->
+        <p id="telepon_supplier_error" class="text-sm text-red-600 mt-1 hidden"></p>
         <p class="text-xs text-gray-500">Gunakan format nomor yang valid (contoh: 08123456789).</p>
       @endif
     </div>
+
 
     <div>
       <label for="email_supplier" class="block text-sm font-medium text-gray-700">Email</label>
