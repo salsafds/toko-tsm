@@ -60,6 +60,7 @@ Route::middleware(['auth'])->name('master.')->group(function () {
 
 Route::middleware(['auth'])->name('master.')->group(function () {
     Route::resource('data-kota', KotaController::class);
+    Route::get('data-kota/provinsis/{id_negara}', [KotaController::class, 'getProvinsiByNegara'])->name('data-kota.provinsis');
 });
 
 Route::middleware(['auth'])->name('master.')->group(function () {

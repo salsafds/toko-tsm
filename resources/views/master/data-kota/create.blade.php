@@ -37,7 +37,51 @@ document.addEventListener('DOMContentLoaded', function () {
   const negaraError = document.querySelector('#id_negara_error');
   const provinsiError = document.querySelector('#id_provinsi_error');
 
-  if (!form) return;
+  if (!form || !negaraSelect || !provinsiSelect) return;
+
+  // Dynamic province loading
+  negaraSelect.addEventListener('change', function () {
+    const idNegara = this.value;
+    const provinsisUrl = form.dataset.provinsisUrl.replace(':id_negara', idNegara);
+    const selectedProvinsi = provinsiSelect.dataset.selected || '';
+
+    if (!idNegara) {
+      provinsiSelect.innerHTML = '<option value="">-- Pilih Provinsi --</option>';
+      provinsiSelect.disabled = true;
+      return;
+    }
+
+    fetch(provinsisUrl, {
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'Accept': 'application/json'
+      }
+    })
+      .then(response => response.json())
+      .then(provinsis => {
+        provinsiSelect.innerHTML = '<option value="">-- Pilih Provinsi --</option>';
+        provinsis.forEach(p => {
+          const option = document.createElement('option');
+          option.value = p.id_provinsi;
+          option.textContent = p.nama_provinsi;
+          if (p.id_provinsi === selectedProvinsi) {
+            option.selected = true;
+          }
+          provinsiSelect.appendChild(option);
+        });
+        provinsiSelect.disabled = provinsis.length === 0;
+      })
+      .catch(error => {
+        console.error('Error fetching provinsis:', error);
+        provinsiSelect.innerHTML = '<option value="">-- Tidak ada provinsi tersedia --</option>';
+        provinsiSelect.disabled = true;
+      });
+  });
+
+  // Trigger change event on load to populate provinsi if a country is pre-selected
+  if (negaraSelect.value) {
+    negaraSelect.dispatchEvent(new Event('change'));
+  }
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();

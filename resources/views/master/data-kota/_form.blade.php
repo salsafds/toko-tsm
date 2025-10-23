@@ -1,4 +1,4 @@
-<form action="{{ $action ?? '#' }}" method="POST" enctype="multipart/form-data" class="space-y-6" id="kotaForm">
+<form action="{{ $action ?? '#' }}" method="POST" enctype="multipart/form-data" class="space-y-6" id="kotaForm" data-provinsis-url="{{ route('master.data-kota.provinsis', ':id_negara') }}">
   @csrf
   @if(isset($method) && strtoupper($method) === 'PUT')
     @method('PUT')
@@ -59,6 +59,7 @@
         name="id_provinsi"
         class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('id_provinsi') ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-blue-500 focus:ring-blue-100' }}"
         aria-invalid="{{ $errors->has('id_provinsi') ? 'true' : 'false' }}"
+        data-selected="{{ old('id_provinsi', $kota->id_provinsi ?? '') }}"
       >
         <option value="">-- Pilih Provinsi --</option>
         @if(isset($provinsi))
