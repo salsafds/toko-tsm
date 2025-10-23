@@ -18,7 +18,6 @@ class Pelanggan extends Model
         'id_pelanggan',
         'nama_pelanggan',
         'nomor_telepon',
-        'tipe_pelanggan',
         'kategori_pelanggan',
         'email_pelanggan',
         'id_negara',
@@ -26,7 +25,7 @@ class Pelanggan extends Model
         'id_kota',
     ];
 
-    public function kategoriPelanggan() { return $this->belongsTo(KategoriPelanggan::class, 'kategori_pelanggan'); }
+    // relasi ke tabel lain
     public function negara() { return $this->belongsTo(Negara::class, 'id_negara'); }
     public function provinsi() { return $this->belongsTo(Provinsi::class, 'id_provinsi'); }
     public function kota() { return $this->belongsTo(Kota::class, 'id_kota'); }
