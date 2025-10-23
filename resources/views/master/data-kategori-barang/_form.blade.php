@@ -1,4 +1,4 @@
-<form action="{{ $action ?? '#' }}" method="POST" enctype="multipart/form-data" class="space-y-6" id="kategoriForm">
+<form action="{{ $action ?? '#' }}" method="POST" enctype="multipart/form-data" class="space-y-4 sm:space-y-6 max-w-3xl mx-auto px-4 sm:px-0">
   @csrf
   @if(isset($method) && strtoupper($method) === 'PUT')
     @method('PUT')
@@ -45,10 +45,10 @@
   </div>
 
   {{-- Submit / Cancel --}}
-  <div class="flex items-center gap-3">
+  <div class="flex items-center gap-3 justify-end sm:justify-start">
     <button 
       type="submit" 
-      class="inline-flex items-center px-4 py-2 bg-blue-700 text-white text-sm rounded-md hover:bg-blue-800 {{ isset($isEdit) && $isEdit ? 'disabled:opacity-50' : '' }}"
+      class="inline-flex items-center px-3 sm:px-4 py-2 bg-blue-700 text-white text-sm rounded-md hover:bg-blue-800 {{ isset($isEdit) && $isEdit ? 'disabled:opacity-50' : '' }}"
       {{ isset($isEdit) && $isEdit ? 'disabled' : '' }}
       id="submitButton"
     >
@@ -58,7 +58,7 @@
         Simpan
       @endif
     </button>
-    <a href="{{ route('master.data-kategori-barang.index') }}" class="inline-flex items-center px-4 py-2 border rounded-md text-sm text-gray-700 hover:bg-gray-50">
+    <a href="{{ route('master.data-kategori-barang.index') }}" class="inline-flex items-center px-3 sm:px-4 py-2 border rounded-md text-sm text-gray-700 hover:bg-gray-50">
       Batal
     </a>
   </div>
