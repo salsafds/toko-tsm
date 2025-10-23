@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('id_provinsi', 11);
             $table->string('id_kota', 11);
             $table->string('telepon_ekspedisi', 16);
-            $table->string('email_ekspedi', 255)->nullable();
+            $table->string('email_ekspedisi', 255)->nullable();
 
             $table->foreign('id_negara')->references('id_negara')->on('negara')->onDelete('cascade');
             $table->foreign('id_provinsi')->references('id_provinsi')->on('provinsi')->onDelete('cascade');
