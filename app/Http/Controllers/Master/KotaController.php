@@ -118,6 +118,18 @@ class KotaController extends Controller
     }
 
     /**
+     * Return JSON list kota untuk sebuah provinsi (AJAX).
+     */
+    public function kotaByProvinsi($id_provinsi)
+    {
+        $kotas = \App\Models\Kota::where('id_provinsi', $id_provinsi)
+                ->orderBy('nama_kota', 'asc')
+                ->get(['id_kota', 'nama_kota']);
+
+        return response()->json($kotas);
+    }
+
+    /**
      * Generate ID kota berurutan (KT001, KT002, dll.)
      */
     private function generateNextId()

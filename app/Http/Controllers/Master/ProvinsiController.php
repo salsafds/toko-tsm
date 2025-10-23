@@ -106,6 +106,19 @@ class ProvinsiController extends Controller
                          ->with('success', 'Data provinsi berhasil dihapus.');
     }
 
+        /**
+     * Return JSON list provinsi untuk sebuah negara (AJAX).
+     */
+    public function provinsiByNegara($id_negara)
+    {
+        $provinsis = \App\Models\Provinsi::where('id_negara', $id_negara)
+                    ->orderBy('nama_provinsi', 'asc')
+                    ->get(['id_provinsi', 'nama_provinsi']);
+
+        return response()->json($provinsis);
+    }
+
+
     /**
      * Generate ID provinsi berurutan (PV001, PV002, dll.)
      */

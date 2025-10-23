@@ -21,7 +21,7 @@ class AgenEkspedisi extends Model
         'id_provinsi',
         'id_kota',
         'telepon_ekspedisi',
-        'email_ekspedi',
+        'email_ekspedisi',
     ];
 
     public function negara()
