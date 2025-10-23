@@ -25,25 +25,33 @@
     </div>
 
     {{-- Kategori Pelanggan --}}
-    <div class="grid grid-cols-1 gap-1">
-        <label for="kategori_pelanggan" class="block text-sm font-medium text-gray-700">Kategori Pelanggan <span class="text-rose-600">*</span></label>
-        <select
-            id="kategori_pelanggan"
-            name="kategori_pelanggan"
-            class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('kategori_pelanggan') ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-blue-500 focus:ring-blue-100' }}"
-            aria-invalid="{{ $errors->has('kategori_pelanggan') ? 'true' : 'false' }}"
-        >
-            <option value="">-- Pilih Kategori --</option>
-            <option value="Badan Usaha" {{ old('kategori_pelanggan', isset($pelanggan) ? $pelanggan->kategori_pelanggan : '') == 'Badan Usaha' ? 'selected' : '' }}>Badan Usaha</option>
-            <option value="Perorangan" {{ old('kategori_pelanggan', isset($pelanggan) ? $pelanggan->kategori_pelanggan : '') == 'Perorangan' ? 'selected' : '' }}>Perorangan</option>
-            <option value="Pelanggan Umum" {{ old('kategori_pelanggan', isset($pelanggan) ? $pelanggan->kategori_pelanggan : '') == 'Pelanggan Umum' ? 'selected' : '' }}>Pelanggan Umum</option>
-        </select>
-        @if ($errors->has('kategori_pelanggan'))
-            <p class="text-sm text-red-600 mt-1">{{ $errors->first('kategori_pelanggan') }}</p>
-        @else
-            <p id="kategori_pelanggan_error" class="text-sm text-red-600 mt-1 hidden"></p>
-        @endif
-    </div>
+<div class="grid grid-cols-1 gap-1">
+    <label for="kategori_pelanggan" class="block text-sm font-medium text-gray-700">
+        Kategori Pelanggan <span class="text-rose-600">*</span>
+    </label>
+    <select
+        name="kategori_pelanggan"
+        id="kategori_pelanggan"
+        class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('kategori_pelanggan') ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-blue-500 focus:ring-blue-100' }}"
+        required
+        aria-invalid="{{ $errors->has('kategori_pelanggan') ? 'true' : 'false' }}"
+    >
+        <option value="">-- Pilih Kategori --</option>
+        @foreach($kategoriList as $value => $label)
+            <option value="{{ $value }}" 
+                {{ old('kategori_pelanggan', $pelanggan->kategori_pelanggan ?? '') == $value ? 'selected' : '' }}>
+                {{ $label }}
+            </option>
+        @endforeach
+    </select>
+
+    @if ($errors->has('kategori_pelanggan'))
+        <p class="text-sm text-red-600 mt-1">{{ $errors->first('kategori_pelanggan') }}</p>
+    @else
+        <p id="kategori_pelanggan_error" class="text-sm text-red-600 mt-1 hidden"></p>
+    @endif
+</div>
+
 
     {{-- Nama Pelanggan --}}
     <div class="grid grid-cols-1 gap-1">

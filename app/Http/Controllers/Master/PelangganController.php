@@ -32,21 +32,28 @@ class PelangganController extends Controller
     }
 
     public function create()
-    {
-        $nextId = $this->generateNextId();
-        $negara = Negara::orderBy('nama_negara')->get();
-        $provinsi = Provinsi::orderBy('nama_provinsi')->get();
-        $kota = Kota::orderBy('nama_kota')->get();
+{
+    $nextId = $this->generateNextId();
+    $negara = Negara::orderBy('nama_negara')->get();
+    $provinsi = Provinsi::orderBy('nama_provinsi')->get();
+    $kota = Kota::orderBy('nama_kota')->get();
 
-        return view('master.data-pelanggan.create', compact('nextId', 'negara', 'provinsi', 'kota'));
-    }
+    // Tambahkan ini
+    $kategoriList = [
+        'badan_usaha' => 'Badan Usaha',
+        'perorangan' => 'Perorangan',
+        'pelanggan_umum' => 'Pelanggan Umum',
+    ];
+
+    return view('master.data-pelanggan.create', compact('nextId', 'negara', 'provinsi', 'kota', 'kategoriList'));
+}
 
     public function store(Request $request)
     {
         $request->validate([
             'nama_pelanggan' => 'required|string|max:100',
             'nomor_telepon' => 'required|string|max:20',
-            'kategori_pelanggan' => 'required|in:Badan Usaha,Perorangan,Pelanggan Umum',
+            'kategori_pelanggan' => 'required|in:badan_usaha,perorangan,pelanggan_umum',
             'email_pelanggan' => 'nullable|email|max:100|unique:pelanggan,email_pelanggan',
             'id_negara' => 'required|exists:negara,id_negara',
             'id_provinsi' => 'required|exists:provinsi,id_provinsi',
@@ -90,22 +97,28 @@ class PelangganController extends Controller
     }
 
     public function edit($id)
-    {
-        $pelanggan = Pelanggan::findOrFail($id);
-        $negara = Negara::orderBy('nama_negara')->get();
-        $provinsi = Provinsi::orderBy('nama_provinsi')->get();
-        $kota = Kota::orderBy('nama_kota')->get();
+{
+    $pelanggan = Pelanggan::findOrFail($id);
+    $negara = Negara::orderBy('nama_negara')->get();
+    $provinsi = Provinsi::orderBy('nama_provinsi')->get();
+    $kota = Kota::orderBy('nama_kota')->get();
 
-        return view('master.data-pelanggan.edit', compact('pelanggan', 'negara', 'provinsi', 'kota'));
-    }
+    $kategoriList = [
+        'badan_usaha' => 'Badan Usaha',
+        'perorangan' => 'Perorangan',
+        'pelanggan_umum' => 'Pelanggan Umum',
+    ];
+
+    return view('master.data-pelanggan.edit', compact('pelanggan', 'negara', 'provinsi', 'kota', 'kategoriList'));
+}
 
     public function update(Request $request, $id)
     {
         $request->validate([
             'nama_pelanggan' => 'required|string|max:100',
             'nomor_telepon' => 'required|string|max:20',
-            'kategori_pelanggan' => 'required|in:Badan Usaha,Perorangan,Pelanggan Umum',
-            'email_pelanggan' => 'nullable|email|max:100|unique:pelanggan,email_pelanggan,' . $id . ',id_pelanggan',
+            'kategori_pelanggan' => 'required|in:badan_usaha,perorangan,pelanggan_umum',
+            'email_pelanggan' => 'nullable|email|max:100|unique:pelanggan,email_pelanggan',
             'id_negara' => 'required|exists:negara,id_negara',
             'id_provinsi' => 'required|exists:provinsi,id_provinsi',
             'id_kota' => 'required|exists:kota,id_kota',

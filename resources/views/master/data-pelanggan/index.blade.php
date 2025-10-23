@@ -67,7 +67,7 @@
                     <tr class="hover:bg-gray-50 transition-colors">
                         <td class="w-auto flex-1 border-r px-4 py-2 text-sm text-gray-700 border-gray-100">{{ $item->id_pelanggan }}</td>
                         <td class="w-auto flex-1 border-r px-4 py-2 text-sm text-gray-700">{{ $item->nama_pelanggan }}</td>
-                        <td class="w-32 border-r px-4 py-2 text-sm text-gray-700">{{ $item->kategori_pelanggan }}</td>
+                        <td class="w-32 border-r px-4 py-2 text-sm text-gray-700">{{ ucfirst(str_replace('_', ' ', $item->kategori_pelanggan)) }}</td>
                         <td class="w-32 border-r px-4 py-2 text-sm text-gray-700">{{ $item->kota->nama_kota ?? '-' }}</td>
                         <td class="w-48 border-r px-4 py-2 text-sm text-gray-700">{{ $item->alamat_pelanggan }}</td>
                         <td class="w-32 border-r px-4 py-2 text-sm text-gray-700">{{ $item->nomor_telepon }}</td>

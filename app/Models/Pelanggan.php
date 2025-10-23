@@ -20,6 +20,7 @@ class Pelanggan extends Model
         'nomor_telepon',
         'kategori_pelanggan',
         'email_pelanggan',
+        'alamat_pelanggan',
         'id_negara',
         'id_provinsi',
         'id_kota',
