@@ -48,6 +48,8 @@ Route::resource('data-barang', BarangController::class);
 
 Route::middleware(['auth'])->name('master.')->group(function () {
     Route::resource('data-pelanggan', PelangganController::class);
+    Route::get('data-pelanggan/provinsis/{id_negara}', [PelangganController::class, 'getProvinsiByNegara'])->name('data-pelanggan.provinsis');
+    Route::get('data-pelanggan/kotas/{id_provinsi}', [PelangganController::class, 'getKotaByProvinsi'])->name('data-pelanggan.kotas');
 });
 
 Route::middleware(['auth'])->name('master.')->group(function () {
@@ -85,6 +87,8 @@ Route::middleware(['auth'])->name('master.')->group(function () {
 
 Route::middleware(['auth'])->name('master.')->group(function () {
     Route::resource('data-supplier', SupplierController::class);
+    Route::get('data-supplier/provinsis/{id_negara}', [SupplierController::class, 'getProvinsiByNegara'])->name('data-supplier.provinsis');
+    Route::get('data-supplier/kotas/{id_provinsi}', [SupplierController::class, 'getKotaByProvinsi'])->name('data-supplier.kotas');
 });
 
 Route::middleware(['auth'])->name('master.')->group(function () {
@@ -93,4 +97,6 @@ Route::middleware(['auth'])->name('master.')->group(function () {
 
 Route::middleware(['auth'])->name('master.')->group(function () {
     Route::resource('data-agen-ekspedisi', AgenEkspedisiController::class);
+    Route::get('data-agen-ekspedisi/provinsis/{id_negara}', [AgenEkspedisiController::class, 'getProvinsiByNegara'])->name('data-agen-ekspedisi.provinsis');
+    Route::get('data-agen-ekspedisi/kotas/{id_provinsi}', [AgenEkspedisiController::class, 'getKotaByProvinsi'])->name('data-agen-ekspedisi.kotas');
 });

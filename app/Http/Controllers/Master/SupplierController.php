@@ -39,9 +39,9 @@ class SupplierController extends Controller
     public function create()
     {
         $nextId = $this->generateNextId();
-        $negara = Negara::all();
-        $provinsi = Provinsi::all();
-        $kota = Kota::all();
+        $negara = Negara::orderBy('nama_negara')->get();
+        $provinsi = collect([]); // Empty, populated via AJAX
+        $kota = collect([]); // Empty, populated via AJAX
 
         return view('master.data-supplier.create', compact('nextId', 'negara', 'provinsi', 'kota'));
     }
@@ -61,12 +61,20 @@ class SupplierController extends Controller
             'email_supplier' => 'nullable|email|max:100|unique:supplier,email_supplier',
         ], [
             'nama_supplier.required' => 'Nama supplier wajib diisi.',
+            'nama_supplier.max' => 'Nama supplier tidak boleh lebih dari 100 karakter.',
+            'nama_supplier.unique' => 'Nama supplier sudah digunakan.',
             'alamat.required' => 'Alamat wajib diisi.',
             'id_negara.required' => 'Negara wajib dipilih.',
+            'id_negara.exists' => 'Negara yang dipilih tidak valid.',
             'id_provinsi.required' => 'Provinsi wajib dipilih.',
+            'id_provinsi.exists' => 'Provinsi yang dipilih tidak valid.',
             'id_kota.required' => 'Kota wajib dipilih.',
+            'id_kota.exists' => 'Kota yang dipilih tidak valid.',
             'telepon_supplier.required' => 'Telepon wajib diisi.',
+            'telepon_supplier.max' => 'Telepon tidak boleh lebih dari 20 karakter.',
             'email_supplier.email' => 'Format email tidak valid.',
+            'email_supplier.max' => 'Email tidak boleh lebih dari 100 karakter.',
+            'email_supplier.unique' => 'Email sudah digunakan.',
         ]);
 
         Supplier::create([
@@ -90,9 +98,9 @@ class SupplierController extends Controller
     public function edit($id)
     {
         $supplier = Supplier::findOrFail($id);
-        $negara = Negara::all();
-        $provinsi = Provinsi::all();
-        $kota = Kota::all();
+        $negara = Negara::orderBy('nama_negara')->get();
+        $provinsi = Provinsi::where('id_negara', $supplier->id_negara)->orderBy('nama_provinsi')->get();
+        $kota = Kota::where('id_provinsi', $supplier->id_provinsi)->orderBy('nama_kota')->get();
 
         return view('master.data-supplier.edit', compact('supplier', 'negara', 'provinsi', 'kota'));
     }
@@ -110,6 +118,22 @@ class SupplierController extends Controller
             'id_kota' => 'required|exists:kota,id_kota',
             'telepon_supplier' => 'required|string|max:20',
             'email_supplier' => 'nullable|email|max:100|unique:supplier,email_supplier,' . $id . ',id_supplier',
+        ], [
+            'nama_supplier.required' => 'Nama supplier wajib diisi.',
+            'nama_supplier.max' => 'Nama supplier tidak boleh lebih dari 100 karakter.',
+            'nama_supplier.unique' => 'Nama supplier sudah digunakan.',
+            'alamat.required' => 'Alamat wajib diisi.',
+            'id_negara.required' => 'Negara wajib dipilih.',
+            'id_negara.exists' => 'Negara yang dipilih tidak valid.',
+            'id_provinsi.required' => 'Provinsi wajib dipilih.',
+            'id_provinsi.exists' => 'Provinsi yang dipilih tidak valid.',
+            'id_kota.required' => 'Kota wajib dipilih.',
+            'id_kota.exists' => 'Kota yang dipilih tidak valid.',
+            'telepon_supplier.required' => 'Telepon wajib diisi.',
+            'telepon_supplier.max' => 'Telepon tidak boleh lebih dari 20 karakter.',
+            'email_supplier.email' => 'Format email tidak valid.',
+            'email_supplier.max' => 'Email tidak boleh lebih dari 100 karakter.',
+            'email_supplier.unique' => 'Email sudah digunakan.',
         ]);
 
         $supplier = Supplier::findOrFail($id);
@@ -149,5 +173,27 @@ class SupplierController extends Controller
         $nextNumber = $maxNum + 1;
 
         return 'SP' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+    }
+
+    /**
+     * Fetch provinsi by negara
+     */
+    public function getProvinsiByNegara($id_negara)
+    {
+        $provinsis = Provinsi::where('id_negara', $id_negara)
+                             ->orderBy('nama_provinsi')
+                             ->get(['id_provinsi', 'nama_provinsi']);
+        return response()->json($provinsis);
+    }
+
+    /**
+     * Fetch kota by provinsi
+     */
+    public function getKotaByProvinsi($id_provinsi)
+    {
+        $kotas = Kota::where('id_provinsi', $id_provinsi)
+                     ->orderBy('nama_kota')
+                     ->get(['id_kota', 'nama_kota']);
+        return response()->json($kotas);
     }
 }

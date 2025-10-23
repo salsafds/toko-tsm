@@ -1,3 +1,4 @@
+
 @extends('layouts.appmaster')
 
 @section('title', 'Tambah Agen Ekspedisi')
@@ -35,6 +36,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const kotaSelect = document.querySelector('#id_kota');
   const teleponInput = document.querySelector('#telepon_ekspedisi');
   const emailInput = document.querySelector('#email_ekspedisi');
+  const submitButton = document.querySelector('#submitButton');
 
   const namaError = document.querySelector('#nama_ekspedisi_error');
   const negaraError = document.querySelector('#id_negara_error');
@@ -43,12 +45,156 @@ document.addEventListener('DOMContentLoaded', function () {
   const teleponError = document.querySelector('#telepon_ekspedisi_error');
   const emailError = document.querySelector('#email_ekspedisi_error');
 
-  if (!form) return;
+  if (!form || !negaraSelect || !provinsiSelect || !kotaSelect) {
+    console.error('Form or dropdown elements not found');
+    return;
+  }
 
+  // Store initial values for edit mode
+  const initial = {
+    nama: namaInput?.value.trim() || '',
+    negara: negaraSelect?.value || '',
+    provinsi: provinsiSelect?.value || '',
+    kota: kotaSelect?.value || '',
+    telepon: teleponInput?.value.trim() || '',
+    email: emailInput?.value.trim() || ''
+  };
+
+  // Dynamic dropdown logic
+  function updateProvinsiOptions(id_negara, selectedProvinsi = '') {
+    if (!id_negara) {
+      provinsiSelect.innerHTML = '<option value="">-- Pilih Provinsi --</option>';
+      kotaSelect.innerHTML = '<option value="">-- Pilih Kota --</option>';
+      return;
+    }
+
+    const url = form.dataset.provinsisUrl.replace(':id_negara', id_negara);
+    console.log('Fetching provinsi from:', url); // Debug log
+    fetch(url, {
+      headers: {
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+        'Accept': 'application/json'
+      }
+    })
+      .then(response => {
+        console.log('Provinsi response status:', response.status); // Debug log
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+        return response.json();
+      })
+      .then(data => {
+        console.log('Provinsi data:', data); // Debug log
+        provinsiSelect.innerHTML = '<option value="">-- Pilih Provinsi --</option>';
+        data.forEach(provinsi => {
+          const option = document.createElement('option');
+          option.value = provinsi.id_provinsi;
+          option.textContent = provinsi.nama_provinsi;
+          if (provinsi.id_provinsi === selectedProvinsi) {
+            option.selected = true;
+          }
+          provinsiSelect.appendChild(option);
+        });
+        if (selectedProvinsi) {
+          updateKotaOptions(selectedProvinsi, kotaSelect.dataset.selected || '');
+        } else {
+          kotaSelect.innerHTML = '<option value="">-- Pilih Kota --</option>';
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching provinsi:', error);
+        provinsiSelect.innerHTML = '<option value="">-- Pilih Provinsi --</option>';
+        kotaSelect.innerHTML = '<option value="">-- Pilih Kota --</option>';
+        provinsiError.textContent = 'Gagal memuat provinsi. Silakan coba lagi.';
+        provinsiError.classList.remove('hidden');
+      });
+  }
+
+  function updateKotaOptions(id_provinsi, selectedKota = '') {
+    if (!id_provinsi) {
+      kotaSelect.innerHTML = '<option value="">-- Pilih Kota --</option>';
+      return;
+    }
+
+    const url = form.dataset.kotasUrl.replace(':id_provinsi', id_provinsi);
+    console.log('Fetching kota from:', url); // Debug log
+    fetch(url, {
+      headers: {
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+        'Accept': 'application/json'
+      }
+    })
+      .then(response => {
+        console.log('Kota response status:', response.status); // Debug log
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+        return response.json();
+      })
+      .then(data => {
+        console.log('Kota data:', data); // Debug log
+        kotaSelect.innerHTML = '<option value="">-- Pilih Kota --</option>';
+        data.forEach(kota => {
+          const option = document.createElement('option');
+          option.value = kota.id_kota;
+          option.textContent = kota.nama_kota;
+          if (kota.id_kota === selectedKota) {
+            option.selected = true;
+          }
+          kotaSelect.appendChild(option);
+        });
+      })
+      .catch(error => {
+        console.error('Error fetching kota:', error);
+        kotaSelect.innerHTML = '<option value="">-- Pilih Kota --</option>';
+        kotaError.textContent = 'Gagal memuat kota. Silakan coba lagi.';
+        kotaError.classList.remove('hidden');
+      });
+  }
+
+  // Initialize dropdowns on page load
+  if (negaraSelect.value) {
+    console.log('Initializing with negara:', negaraSelect.value, 'provinsi:', provinsiSelect.dataset.selected); // Debug log
+    updateProvinsiOptions(negaraSelect.value, provinsiSelect.dataset.selected || '');
+  }
+
+  // Event listeners for dropdown changes
+  negaraSelect.addEventListener('change', () => {
+    console.log('Negara changed to:', negaraSelect.value); // Debug log
+    updateProvinsiOptions(negaraSelect.value);
+    checkChanges();
+  });
+
+  provinsiSelect.addEventListener('change', () => {
+    console.log('Provinsi changed to:', provinsiSelect.value); // Debug log
+    updateKotaOptions(provinsiSelect.value);
+    checkChanges();
+  });
+
+  // Check for changes in edit mode
+  function checkChanges() {
+    if (!submitButton) return;
+    const current = {
+      nama: namaInput?.value.trim() || '',
+      negara: negaraSelect?.value || '',
+      provinsi: provinsiSelect?.value || '',
+      kota: kotaSelect?.value || '',
+      telepon: teleponInput?.value.trim() || '',
+      email: emailInput?.value.trim() || ''
+    };
+    const same = Object.keys(initial).every(k => initial[k] === current[k]);
+    submitButton.disabled = same;
+    submitButton.classList.toggle('opacity-50', same);
+  }
+
+  // Add change listeners for inputs
+  [namaInput, negaraSelect, provinsiSelect, kotaSelect, teleponInput, emailInput].forEach(el => {
+    if (!el) return;
+    el.addEventListener('input', checkChanges);
+    el.addEventListener('change', checkChanges);
+  });
+
+  // Form submission with validation
   form.addEventListener('submit', function (e) {
     e.preventDefault();
 
-    // Reset
+    // Reset errors
     [namaError, negaraError, provinsiError, kotaError, teleponError, emailError].forEach(el => {
       if (el) { el.textContent = ''; el.classList.add('hidden'); }
     });
@@ -105,7 +251,6 @@ document.addEventListener('DOMContentLoaded', function () {
       hasError = true;
     }
 
-    // Email optional — only validate format if present
     if (email) {
       const re = /\S+@\S+\.\S+/;
       if (!re.test(email)) {

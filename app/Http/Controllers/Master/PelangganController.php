@@ -32,21 +32,19 @@ class PelangganController extends Controller
     }
 
     public function create()
-{
-    $nextId = $this->generateNextId();
-    $negara = Negara::orderBy('nama_negara')->get();
-    $provinsi = Provinsi::orderBy('nama_provinsi')->get();
-    $kota = Kota::orderBy('nama_kota')->get();
+    {
+        $nextId = $this->generateNextId();
+        $negara = Negara::orderBy('nama_negara')->get();
+        $provinsi = collect([]); // Empty, populated via AJAX
+        $kota = collect([]); // Empty, populated via AJAX
+        $kategoriList = [
+            'badan_usaha' => 'Badan Usaha',
+            'perorangan' => 'Perorangan',
+            'pelanggan_umum' => 'Pelanggan Umum',
+        ];
 
-    // Tambahkan ini
-    $kategoriList = [
-        'badan_usaha' => 'Badan Usaha',
-        'perorangan' => 'Perorangan',
-        'pelanggan_umum' => 'Pelanggan Umum',
-    ];
-
-    return view('master.data-pelanggan.create', compact('nextId', 'negara', 'provinsi', 'kota', 'kategoriList'));
-}
+        return view('master.data-pelanggan.create', compact('nextId', 'negara', 'provinsi', 'kota', 'kategoriList'));
+    }
 
     public function store(Request $request)
     {
@@ -97,20 +95,19 @@ class PelangganController extends Controller
     }
 
     public function edit($id)
-{
-    $pelanggan = Pelanggan::findOrFail($id);
-    $negara = Negara::orderBy('nama_negara')->get();
-    $provinsi = Provinsi::orderBy('nama_provinsi')->get();
-    $kota = Kota::orderBy('nama_kota')->get();
+    {
+        $pelanggan = Pelanggan::findOrFail($id);
+        $negara = Negara::orderBy('nama_negara')->get();
+        $provinsi = Provinsi::where('id_negara', $pelanggan->id_negara)->orderBy('nama_provinsi')->get();
+        $kota = Kota::where('id_provinsi', $pelanggan->id_provinsi)->orderBy('nama_kota')->get();
+        $kategoriList = [
+            'badan_usaha' => 'Badan Usaha',
+            'perorangan' => 'Perorangan',
+            'pelanggan_umum' => 'Pelanggan Umum',
+        ];
 
-    $kategoriList = [
-        'badan_usaha' => 'Badan Usaha',
-        'perorangan' => 'Perorangan',
-        'pelanggan_umum' => 'Pelanggan Umum',
-    ];
-
-    return view('master.data-pelanggan.edit', compact('pelanggan', 'negara', 'provinsi', 'kota', 'kategoriList'));
-}
+        return view('master.data-pelanggan.edit', compact('pelanggan', 'negara', 'provinsi', 'kota', 'kategoriList'));
+    }
 
     public function update(Request $request, $id)
     {
@@ -118,7 +115,7 @@ class PelangganController extends Controller
             'nama_pelanggan' => 'required|string|max:100',
             'nomor_telepon' => 'required|string|max:20',
             'kategori_pelanggan' => 'required|in:badan_usaha,perorangan,pelanggan_umum',
-            'email_pelanggan' => 'nullable|email|max:100|unique:pelanggan,email_pelanggan',
+            'email_pelanggan' => 'nullable|email|max:100|unique:pelanggan,email_pelanggan,' . $id . ',id_pelanggan',
             'id_negara' => 'required|exists:negara,id_negara',
             'id_provinsi' => 'required|exists:provinsi,id_provinsi',
             'id_kota' => 'required|exists:kota,id_kota',
@@ -175,5 +172,27 @@ class PelangganController extends Controller
                            ->value('max_num') ?? 0;
         $nextNumber = $maxNum + 1;
         return 'PLG' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+    }
+
+    /**
+     * Fetch provinsi by negara
+     */
+    public function getProvinsiByNegara($id_negara)
+    {
+        $provinsis = Provinsi::where('id_negara', $id_negara)
+                             ->orderBy('nama_provinsi')
+                             ->get(['id_provinsi', 'nama_provinsi']);
+        return response()->json($provinsis);
+    }
+
+    /**
+     * Fetch kota by provinsi
+     */
+    public function getKotaByProvinsi($id_provinsi)
+    {
+        $kotas = Kota::where('id_provinsi', $id_provinsi)
+                     ->orderBy('nama_kota')
+                     ->get(['id_kota', 'nama_kota']);
+        return response()->json($kotas);
     }
 }

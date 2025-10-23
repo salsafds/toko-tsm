@@ -1,4 +1,7 @@
-<form action="{{ $action ?? '#' }}" method="POST" class="space-y-6" id="agenForm">
+
+<form action="{{ $action ?? '#' }}" method="POST" class="space-y-6" id="agenForm"
+      data-provinsis-url="{{ route('master.data-agen-ekspedisi.provinsis', ':id_negara') }}"
+      data-kotas-url="{{ route('master.data-agen-ekspedisi.kotas', ':id_provinsi') }}">
   @csrf
   @if(isset($method) && strtoupper($method) === 'PUT')
     @method('PUT')
@@ -43,7 +46,8 @@
   <div class="grid grid-cols-3 gap-3">
     <div class="grid grid-cols-1 gap-1">
       <label for="id_negara" class="block text-sm font-medium text-gray-700">Negara <span class="text-rose-600">*</span></label>
-      <select id="id_negara" name="id_negara" class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('id_negara') ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-blue-500 focus:ring-blue-100' }}">
+      <select id="id_negara" name="id_negara" class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('id_negara') ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-blue-500 focus:ring-blue-100' }}"
+              data-selected="{{ old('id_negara', $agen->id_negara ?? '') }}">
         <option value="">-- Pilih Negara --</option>
         @foreach($negara as $n)
           <option value="{{ $n->id_negara }}" {{ old('id_negara', $agen->id_negara ?? '') == $n->id_negara ? 'selected' : '' }}>
@@ -61,13 +65,16 @@
 
     <div class="grid grid-cols-1 gap-1">
       <label for="id_provinsi" class="block text-sm font-medium text-gray-700">Provinsi <span class="text-rose-600">*</span></label>
-      <select id="id_provinsi" name="id_provinsi" class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('id_provinsi') ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-blue-500 focus:ring-blue-100' }}">
+      <select id="id_provinsi" name="id_provinsi" class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('id_provinsi') ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-blue-500 focus:ring-blue-100' }}"
+              data-selected="{{ old('id_provinsi', $agen->id_provinsi ?? '') }}">
         <option value="">-- Pilih Provinsi --</option>
-        @foreach($provinsi as $p)
-          <option value="{{ $p->id_provinsi }}" {{ old('id_provinsi', $agen->id_provinsi ?? '') == $p->id_provinsi ? 'selected' : '' }}>
-            {{ $p->nama_provinsi }}
-          </option>
-        @endforeach
+        @if(isset($provinsi))
+          @foreach($provinsi as $p)
+            <option value="{{ $p->id_provinsi }}" {{ old('id_provinsi', $agen->id_provinsi ?? '') == $p->id_provinsi ? 'selected' : '' }}>
+              {{ $p->nama_provinsi }}
+            </option>
+          @endforeach
+        @endif
       </select>
       @if ($errors->has('id_provinsi'))
         <p class="text-sm text-red-600 mt-1">{{ $errors->first('id_provinsi') }}</p>
@@ -79,13 +86,16 @@
 
     <div class="grid grid-cols-1 gap-1">
       <label for="id_kota" class="block text-sm font-medium text-gray-700">Kota <span class="text-rose-600">*</span></label>
-      <select id="id_kota" name="id_kota" class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('id_kota') ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-blue-500 focus:ring-blue-100' }}">
+      <select id="id_kota" name="id_kota" class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('id_kota') ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-blue-500 focus:ring-blue-100' }}"
+              data-selected="{{ old('id_kota', $agen->id_kota ?? '') }}">
         <option value="">-- Pilih Kota --</option>
-        @foreach($kota as $k)
-          <option value="{{ $k->id_kota }}" {{ old('id_kota', $agen->id_kota ?? '') == $k->id_kota ? 'selected' : '' }}>
-            {{ $k->nama_kota }}
-          </option>
-        @endforeach
+        @if(isset($kota))
+          @foreach($kota as $k)
+            <option value="{{ $k->id_kota }}" {{ old('id_kota', $agen->id_kota ?? '') == $k->id_kota ? 'selected' : '' }}>
+              {{ $k->nama_kota }}
+            </option>
+          @endforeach
+        @endif
       </select>
       @if ($errors->has('id_kota'))
         <p class="text-sm text-red-600 mt-1">{{ $errors->first('id_kota') }}</p>
@@ -125,7 +135,8 @@
 
   {{-- Tombol --}}
   <div class="flex items-center gap-3">
-    <button id="submitButton" type="submit" class="inline-flex items-center px-4 py-2 bg-blue-700 text-white text-sm rounded-md hover:bg-blue-800">
+    <button id="submitButton" type="submit" class="inline-flex items-center px-4 py-2 bg-blue-700 text-white text-sm rounded-md hover:bg-blue-800 {{ isset($isEdit) && $isEdit ? 'disabled:opacity-50' : '' }}"
+            {{ isset($isEdit) && $isEdit ? 'disabled' : '' }}>
       @if(isset($agen)) Update @else Simpan @endif
     </button>
     <a href="{{ route('master.data-agen-ekspedisi.index') }}" class="inline-flex items-center px-4 py-2 border rounded-md text-sm text-gray-700 hover:bg-gray-50">Batal</a>
