@@ -9,7 +9,7 @@
     <p class="text-xs sm:text-sm text-gray-500 mt-1 text-left">Ringkasan data jabatan koperasi</p>
   </div>
 
-  <div class="flex flex-col items-start mb-4 gap-3">
+  <div class="flex flex-col items-start mb-4 gap-2 sm:flex-row sm:items-center sm:justify-between">
     <div class="flex items-center gap-2 w-full sm:w-auto">
       <form method="GET" action="{{ route('master.data-jabatan.index') }}" class="flex items-center gap-2">
         <label for="per_page" class="text-xs sm:text-sm text-gray-600">Show</label>
