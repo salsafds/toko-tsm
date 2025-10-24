@@ -249,6 +249,11 @@ document.addEventListener('DOMContentLoaded', function () {
       teleponError.classList.remove('hidden');
       teleponInput.classList.add('border-red-500', 'bg-red-50');
       hasError = true;
+    } else if (telepon.length > 20) {
+      teleponError.textContent = 'Telepon tidak boleh lebih dari 20 karakter.';
+      teleponError.classList.remove('hidden');
+      teleponInput.classList.add('border-red-500', 'bg-red-50');
+      hasError = true;
     }
 
     if (email) {
