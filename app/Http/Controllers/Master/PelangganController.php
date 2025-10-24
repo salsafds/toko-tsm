@@ -50,7 +50,7 @@ class PelangganController extends Controller
     {
         $request->validate([
             'nama_pelanggan' => 'required|string|max:100',
-            'nomor_telepon' => 'required|string|max:20',
+            'nomor_telepon' => 'required|string|min:10|max:20', 
             'kategori_pelanggan' => 'required|in:badan_usaha,perorangan,pelanggan_umum',
             'email_pelanggan' => 'nullable|email|max:100|unique:pelanggan,email_pelanggan',
             'id_negara' => 'required|exists:negara,id_negara',
@@ -62,7 +62,8 @@ class PelangganController extends Controller
             'nama_pelanggan.string' => 'Nama pelanggan harus berupa teks.',
             'nama_pelanggan.max' => 'Nama pelanggan tidak boleh lebih dari 100 karakter.',
             'nomor_telepon.required' => 'Nomor telepon wajib diisi.',
-            'nomor_telepon.max' => 'Nomor telepon tidak boleh lebih dari 20 karakter.',
+            'nomor_telepon.min' => 'Nomor telepon minimal 10 karakter.',
+            'nomor_telepon.max' => 'Nomor telepon maksimal 20 karakter.',
             'kategori_pelanggan.required' => 'Kategori pelanggan wajib dipilih.',
             'kategori_pelanggan.in' => 'Kategori pelanggan tidak valid.',
             'email_pelanggan.email' => 'Email tidak valid.',
@@ -113,7 +114,7 @@ class PelangganController extends Controller
     {
         $request->validate([
             'nama_pelanggan' => 'required|string|max:100',
-            'nomor_telepon' => 'required|string|max:20',
+            'nomor_telepon' => 'required|string|min:10|max:20', 
             'kategori_pelanggan' => 'required|in:badan_usaha,perorangan,pelanggan_umum',
             'email_pelanggan' => 'nullable|email|max:100|unique:pelanggan,email_pelanggan,' . $id . ',id_pelanggan',
             'id_negara' => 'required|exists:negara,id_negara',
@@ -125,7 +126,8 @@ class PelangganController extends Controller
             'nama_pelanggan.string' => 'Nama pelanggan harus berupa teks.',
             'nama_pelanggan.max' => 'Nama pelanggan tidak boleh lebih dari 100 karakter.',
             'nomor_telepon.required' => 'Nomor telepon wajib diisi.',
-            'nomor_telepon.max' => 'Nomor telepon tidak boleh lebih dari 20 karakter.',
+            'nomor_telepon.min' => 'Nomor telepon minimal 10 karakter.',
+            'nomor_telepon.max' => 'Nomor telepon maksimal 20 karakter.',
             'kategori_pelanggan.required' => 'Kategori pelanggan wajib dipilih.',
             'kategori_pelanggan.in' => 'Kategori pelanggan tidak valid.',
             'email_pelanggan.email' => 'Email tidak valid.',

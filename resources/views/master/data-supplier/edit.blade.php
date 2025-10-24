@@ -247,15 +247,20 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     if (!telepon) {
-      teleponError.textContent = 'Telepon wajib diisi.';
-      teleponError.classList.remove('hidden');
-      teleponInput.classList.add('border-red-500', 'bg-red-50');
-      hasError = true;
-    } else if (telepon.length > 20) {
-      teleponError.textContent = 'Telepon tidak boleh lebih dari 20 karakter.';
-      teleponError.classList.remove('hidden');
-      teleponInput.classList.add('border-red-500', 'bg-red-50');
-      hasError = true;
+    teleponError.textContent = 'Nomor telepon wajib diisi.';
+    teleponError.classList.remove('hidden');
+    teleponInput.classList.add('border-red-500', 'bg-red-50');  
+    hasError = true;
+    } else if (telepon.length < 10) {  
+        teleponError.textContent = 'Nomor telepon minimal 10 karakter.';
+        teleponError.classList.remove('hidden');
+        teleponInput.classList.add('border-red-500', 'bg-red-50');
+        hasError = true;
+    } else if (telepon.length > 20) {  
+        teleponError.textContent = 'Nomor telepon maksimal 16 karakter.';
+        teleponError.classList.remove('hidden');
+        teleponInput.classList.add('border-red-500', 'bg-red-50');
+        hasError = true;
     }
 
     if (email) {

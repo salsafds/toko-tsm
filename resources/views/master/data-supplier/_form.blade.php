@@ -1,5 +1,6 @@
 
 <form action="{{ $action ?? '#' }}" method="POST" class="space-y-6" id="supplierForm"
+      novalidate  {{-- Tambahkan ini untuk mencegah popup browser --}}
       data-provinsis-url="{{ route('master.data-supplier.provinsis', ':id_negara') }}"
       data-kotas-url="{{ route('master.data-supplier.kotas', ':id_provinsi') }}">
   @csrf
