@@ -11,7 +11,7 @@
   </div>
 
   <div class="flex items-center justify-between mb-4">
-    <div class="flex items-center gap-3">
+    <div class="flex flex-col items-start mb-4 gap-2 sm:flex-row sm:items-center sm:justify-between">
       <form method="GET" action="{{ route('master.data-agen-ekspedisi.index') }}" class="flex items-center gap-2">
         <label for="per_page" class="text-sm text-gray-600">Show</label>
         <select name="per_page" id="per_page" onchange="this.form.submit()" class="ml-2 rounded-md border text-sm px-2 py-1">

@@ -24,7 +24,7 @@
             </form>
         </div>
 
-        <div class="flex items-center gap-3">
+        <div class="flex flex-col items-start mb-4 gap-2 sm:flex-row sm:items-center sm:justify-between">
             <form method="GET" action="{{ route('master.data-pelanggan.index') }}" class="flex items-center gap-2">
                 <div class="relative border rounded-md">
                     <svg class="absolute left-3 top-2.5 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
