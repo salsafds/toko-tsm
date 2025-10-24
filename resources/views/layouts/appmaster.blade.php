@@ -89,12 +89,20 @@
 
   <!-- Konten halaman -->
   <main 
-    x-cloak 
-    class="pt-20 px-6 transition-all duration-300 z-0"
-    :style="isDesktop ? { 'margin-left': isOpen ? '18rem' : '4rem' } : { 'margin-left': '0' }"
-  >
-    @yield('content')
-  </main>
+  x-cloak 
+  class="pt-20 px-6 transition-all duration-300 z-0"
+  :style="isDesktop
+    ? {
+        'margin-left': isOpen ? '18rem' : '8rem',
+        'margin-right': isOpen ? '0' : '4rem'
+      }
+    : {
+        'margin-left': '0',
+        'margin-right': '0'
+      }"
+>
+  @yield('content')
+</main>
 
   <!-- Footer -->
   <footer 

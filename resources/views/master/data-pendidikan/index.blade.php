@@ -3,9 +3,9 @@
 @section('title', 'Data Pendidikan')
 
 @section('content')
-<div class="container mx-auto px-4 sm:px-6 lg:px-8">
+<div class="container mx-auto">
   <div class="flex flex-col items-start mb-4 sm:mb-6">
-    <h1 class="text-xl sm:text-2xl font-semibold text-gray-800 text-left">Data Pendidikan</h1>
+    <h1 class="text-2xl sm:text-2xl font-semibold text-gray-800 text-left">Data Pendidikan</h1>
     <p class="text-xs sm:text-sm text-gray-500 mt-1 text-left">Ringkasan data pendidikan koperasi</p>
   </div>
 
