@@ -1,7 +1,8 @@
-
 <form action="{{ $action ?? '#' }}" method="POST" class="space-y-6" id="pelangganForm"
+      novalidate
       data-provinsis-url="{{ route('master.data-pelanggan.provinsis', ':id_negara') }}"
       data-kotas-url="{{ route('master.data-pelanggan.kotas', ':id_provinsi') }}">
+
     @csrf
     @if(isset($method) && strtoupper($method) === 'PUT')
         @method('PUT')
@@ -30,7 +31,7 @@
     {{-- Kategori Pelanggan --}}
     <div class="grid grid-cols-1 gap-1">
         <label for="kategori_pelanggan" class="block text-sm font-medium text-gray-700">
-            Kategori Pelanggan <span class="text-rose-600">*</span>
+            Kategori Pelanggan <span class="text-rose-600"></span>
         </label>
         <select
             name="kategori_pelanggan"
@@ -101,7 +102,8 @@
 
     {{-- Email Pelanggan --}}
     <div class="grid grid-cols-1 gap-1">
-        <label for="email_pelanggan" class="block text-sm font-medium text-gray-700">Email</label>
+            <label for="email" class="block text-sm font-medium text-gray-700">
+                Email <span class="text-rose-600"></span></label>
         <input
             id="email_pelanggan"
             name="email_pelanggan"

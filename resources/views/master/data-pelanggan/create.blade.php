@@ -172,6 +172,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         let hasError = false;
+
         const nama = namaPelangganInput?.value.trim() || '';
         const telepon = nomorTeleponInput?.value.trim() || '';
         const kategori = kategoriPelangganSelect?.value || '';
@@ -212,18 +213,15 @@ document.addEventListener('DOMContentLoaded', function () {
             hasError = true;
         }
 
-        if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            emailError.textContent = 'Email tidak valid.';
-            emailError.classList.remove('hidden');
-            emailPelangganInput.classList.add('border-red-500', 'bg-red-50');
-            hasError = true;
-        } else if (email.length > 100) {
-            emailError.textContent = 'Email tidak boleh lebih dari 100 karakter.';
-            emailError.classList.remove('hidden');
-            emailPelangganInput.classList.add('border-red-500', 'bg-red-50');
-            hasError = true;
+        if (email) {
+            const re = /\S+@\S+\.\S+/;
+            if (!re.test(email)) {
+                emailError.textContent = 'Format email tidak valid.';
+                emailError.classList.remove('hidden');
+                emailPelangganInput.classList.add('border-red-500', 'bg-red-50');
+                hasError = true;
+            }
         }
-
         if (!negara) {
             negaraError.textContent = 'Negara wajib dipilih.';
             negaraError.classList.remove('hidden');
