@@ -532,7 +532,7 @@
             </a>
             <div class="border-t"></div>
             <a 
-                href="{{ route('dashboard-master') ?? '#' }}" 
+                href="{{ route('privacy-policy') ?? '#' }}" 
                 class="flex items-center gap-3 px-3 py-2 hover:bg-gray-50"
                 x-tooltip="!isOpen && isDesktop ? 'Privacy Policy' : ''"
             >

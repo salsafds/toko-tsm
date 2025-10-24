@@ -18,10 +18,14 @@ use App\Http\Controllers\Master\SupplierController;
 use App\Http\Controllers\Master\KategoriBarangController;
 use App\Http\Controllers\Master\AgenEkspedisiController;     
 use App\Http\Controllers\Master\PelangganController;
-use App\Http\Controllers\Master\UserController;     
+use App\Http\Controllers\Master\UserController;
+use App\Http\Controllers\PrivacyPolicyController;
 
 // Landing page
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
+
+//Privacy Policy
+Route::middleware(['auth'])->get('/privacy-policy', [PrivacyPolicyController::class, 'index'])->name('privacy-policy');
 
 // Halaman login
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
