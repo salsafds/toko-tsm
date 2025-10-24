@@ -17,13 +17,13 @@ return new class extends Migration
             $table->string('username', 100)->unique();
             $table->string('password', 255);
             $table->string('foto_user', 255)->nullable();
-            $table->enum('jenis_kelamin', ['L', 'P'])->nullable();
-            $table->enum('status', ['aktif', 'nonaktif'])->default('aktif');
-            $table->date('tanggal_masuk')->nullable();
+            $table->string('jenis_kelamin', 10);
+            $table->enum('status', ['aktif', 'nonaktif', 'cuti'])->default('aktif');
+            $table->date('tanggal_masuk');
             $table->date('tanggal_keluar')->nullable();
 
             // Foreign keys
-            $table->string('id_role', 10)->nullable();
+            $table->string('id_role', 10);
             $table->string('id_jabatan', 11)->nullable();
             $table->string('id_pendidikan')->nullable();
 
@@ -32,7 +32,7 @@ return new class extends Migration
                 ->references('id_role')
                 ->on('role')
                 ->onUpdate('cascade')
-                ->onDelete('set null');
+                ->onDelete('cascade');
 
             $table->foreign('id_jabatan')
                 ->references('id_jabatan')

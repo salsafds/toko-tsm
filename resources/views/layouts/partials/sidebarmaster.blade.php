@@ -206,7 +206,7 @@
       </a>
 
       <a 
-        href="{{ route('master.data-role.index') ?? '#' }}" 
+        href="{{ route('master.data-user.index') ?? '#' }}" 
         class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
         :class="{ 'justify-center': !isOpen && isDesktop }"
       >

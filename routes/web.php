@@ -17,7 +17,8 @@ use App\Http\Controllers\Master\SatuanController;
 use App\Http\Controllers\Master\SupplierController;
 use App\Http\Controllers\Master\KategoriBarangController;
 use App\Http\Controllers\Master\AgenEkspedisiController;     
-use App\Http\Controllers\Master\PelangganController;     
+use App\Http\Controllers\Master\PelangganController;
+use App\Http\Controllers\Master\UserController;     
 
 // Landing page
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
@@ -99,4 +100,8 @@ Route::middleware(['auth'])->name('master.')->group(function () {
     Route::resource('data-agen-ekspedisi', AgenEkspedisiController::class);
     Route::get('data-agen-ekspedisi/provinsis/{id_negara}', [AgenEkspedisiController::class, 'getProvinsiByNegara'])->name('data-agen-ekspedisi.provinsis');
     Route::get('data-agen-ekspedisi/kotas/{id_provinsi}', [AgenEkspedisiController::class, 'getKotaByProvinsi'])->name('data-agen-ekspedisi.kotas');
+});
+
+Route::middleware(['auth'])->name('master.')->group(function () {
+    Route::resource('data-user', UserController::class);
 });
