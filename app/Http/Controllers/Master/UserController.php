@@ -157,9 +157,9 @@ class UserController extends Controller
 
     private function generateNextId()
     {
-        $maxNum = User::selectRaw('MAX(CAST(SUBSTRING(id_user, 3) AS UNSIGNED)) as max_num')
+        $maxNum = User::selectRaw('MAX(CAST(SUBSTRING(id_user, 4) AS UNSIGNED)) as max_num')
                       ->value('max_num') ?? 0;
         $nextNumber = $maxNum + 1;
-        return 'US' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+        return 'USR' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
     }
 }
