@@ -18,7 +18,7 @@ class UserSeeder extends Seeder
             'username' => 'admin',
             'password' => Hash::make('password123'),
             'foto_user' => null,
-            'jenis_kelamin' => 'L',
+            'jenis_kelamin' => 'Laki-laki',
             'status' => 'aktif',
             'tanggal_masuk' => '2024-01-01',
             'tanggal_keluar' => null,

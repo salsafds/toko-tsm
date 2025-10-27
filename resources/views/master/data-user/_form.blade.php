@@ -32,21 +32,20 @@
     @endif
   </div>
 
-  {{-- Alamat --}}
-  <div class="grid grid-cols-1 gap-1">
-    <label for="alamat_user" class="block text-sm font-medium text-gray-700">Alamat</label>
-    <textarea id="alamat_user" name="alamat_user" rows="2"
-      class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('alamat_user') ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-blue-500 focus:ring-blue-100' }}"
-      placeholder="Masukkan alamat (opsional)">{{ old('alamat_user', $user->alamat_user ?? '') }}</textarea>
-    @if($errors->has('alamat_user'))
-      <p class="text-sm text-red-600 mt-1">{{ $errors->first('alamat_user') }}</p>
-    @else
-      <p class="text-xs text-gray-500">Alamat lengkap (opsional).</p>
-    @endif
-  </div>
-
-  {{-- Telepon dan Username --}}
+  {{-- Alamat dan Telepon --}}
   <div class="grid grid-cols-2 gap-3">
+    <div class="grid grid-cols-1 gap-1">
+        <label for="alamat_user" class="block text-sm font-medium text-gray-700">Alamat</label>
+        <textarea id="alamat_user" name="alamat_user" rows="2"
+        class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('alamat_user') ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-blue-500 focus:ring-blue-100' }}"
+        placeholder="Masukkan alamat (opsional)">{{ old('alamat_user', $user->alamat_user ?? '') }}</textarea>
+        @if($errors->has('alamat_user'))
+            <p class="text-sm text-red-600 mt-1">{{ $errors->first('alamat_user') }}</p>
+        @else
+            <p class="text-xs text-gray-500">Alamat lengkap (opsional).</p>
+        @endif
+    </div>
+    
     <div class="grid grid-cols-1 gap-1">
       <label for="telepon" class="block text-sm font-medium text-gray-700">Telepon</label>
       <input id="telepon" name="telepon" value="{{ old('telepon', $user->telepon ?? '') }}"
@@ -59,7 +58,10 @@
         <p class="text-xs text-gray-500">Contoh: 08123456789 (opsional).</p>
       @endif
     </div>
+  </div>
 
+  {{-- Username dan Password --}}
+  <div class="grid grid-cols-2 gap-3">
     <div class="grid grid-cols-1 gap-1">
       <label for="username" class="block text-sm font-medium text-gray-700">Username <span class="text-rose-600">*</span></label>
       <input id="username" name="username" value="{{ old('username', $user->username ?? '') }}"
@@ -71,60 +73,60 @@
         <p id="username_error" class="text-sm text-red-600 mt-1 hidden"></p>
       @endif
     </div>
-  </div>
 
-  {{-- Password --}}
-  <div class="grid grid-cols-1 gap-1">
-    <label for="password" class="block text-sm font-medium text-gray-700">
-      Password <span class="text-rose-600">*</span> @if(isset($user)) <span class="text-xs text-gray-500"> (biarkan kosong jika tidak ingin mengganti)</span> @endif
-    </label>
-    <input id="password" name="password" type="password"
-           class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('password') ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-blue-500 focus:ring-blue-100' }}"
-           placeholder="@if(isset($user)) Masukkan password baru (opsional) @else Masukkan password @endif">
-    @if($errors->has('password'))
-      <p class="text-sm text-red-600 mt-1">{{ $errors->first('password') }}</p>
-    @else
-      <p id="password_error" class="text-sm text-red-600 mt-1 hidden"></p>
-    @endif
-  </div>
-
-  {{-- Jenis Kelamin (radio) --}}
-  <div class="grid grid-cols-1 gap-1">
-    <label class="block text-sm font-medium text-gray-700">Jenis Kelamin <span class="text-rose-600">*</span></label>
-    <div class="flex items-center gap-4 mt-1">
-      @php $jk = old('jenis_kelamin', $user->jenis_kelamin ?? '') @endphp
-      <label class="inline-flex items-center gap-2">
-        <input type="radio" name="jenis_kelamin" value="laki-laki" {{ $jk === 'laki-laki' ? 'checked' : '' }} class="form-radio">
-        <span class="text-sm text-gray-700">Laki-laki</span>
-      </label>
-      <label class="inline-flex items-center gap-2">
-        <input type="radio" name="jenis_kelamin" value="perempuan" {{ $jk === 'perempuan' ? 'checked' : '' }} class="form-radio">
-        <span class="text-sm text-gray-700">Perempuan</span>
-      </label>
+    <div class="grid grid-cols-1 gap-1">
+        <label for="password" class="block text-sm font-medium text-gray-700">
+        Password <span class="text-rose-600">*</span> @if(isset($user)) <span class="text-xs text-gray-500"> (biarkan kosong jika tidak ingin mengganti)</span> @endif
+        </label>
+        <input id="password" name="password" type="password"
+            class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('password') ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-blue-500 focus:ring-blue-100' }}"
+            placeholder="@if(isset($user)) Masukkan password baru (opsional) @else Masukkan password @endif">
+        @if($errors->has('password'))
+        <p class="text-sm text-red-600 mt-1">{{ $errors->first('password') }}</p>
+        @else
+        <p id="password_error" class="text-sm text-red-600 mt-1 hidden"></p>
+        @endif
     </div>
-    @if ($errors->has('jenis_kelamin'))
-      <p class="text-sm text-red-600 mt-1">{{ $errors->first('jenis_kelamin') }}</p>
-    @else
-      <p id="jenis_kelamin_error" class="text-sm text-red-600 mt-1 hidden"></p>
-    @endif
   </div>
 
-  {{-- Status (dropdown) --}}
-  <div class="grid grid-cols-1 gap-1">
-    <label for="status" class="block text-sm font-medium text-gray-700">Status <span class="text-rose-600">*</span></label>
-    <select id="status" name="status" class="w-full rounded-md border px-3 py-2 text-sm">
-      @php $st = old('status', $user->status ?? 'aktif') @endphp
-      <option value="aktif" {{ $st === 'aktif' ? 'selected' : '' }}>Aktif</option>
-      <option value="nonaktif" {{ $st === 'nonaktif' ? 'selected' : '' }}>Nonaktif</option>
-      <option value="cuti" {{ $st === 'cuti' ? 'selected' : '' }}>Cuti</option>
-    </select>
-    @if ($errors->has('status'))
-      <p class="text-sm text-red-600 mt-1">{{ $errors->first('status') }}</p>
-    @else
-      <p id="status_error" class="text-sm text-red-600 mt-1 hidden"></p>
-    @endif
+  {{-- Jenis Kelamin dan Status --}}
+  <div class="grid grid-cols-2 gap-3">
+    <div class="grid grid-cols-1 gap-1">
+        <label for="status" class="block text-sm font-medium text-gray-700">Status <span class="text-rose-600">*</span></label>
+        <select id="status" name="status" class="w-full rounded-md border px-3 py-2 text-sm">
+            @php $st = old('status', $user->status ?? 'aktif') @endphp
+            <option value="aktif" {{ $st === 'aktif' ? 'selected' : '' }}>Aktif</option>
+            <option value="nonaktif" {{ $st === 'nonaktif' ? 'selected' : '' }}>Nonaktif</option>
+            <option value="cuti" {{ $st === 'cuti' ? 'selected' : '' }}>Cuti</option>
+        </select>
+        @if ($errors->has('status'))
+            <p class="text-sm text-red-600 mt-1">{{ $errors->first('status') }}</p>
+        @else
+            <p id="status_error" class="text-sm text-red-600 mt-1 hidden"></p>
+        @endif
+    </div>
+    
+    <div class="grid grid-cols-1 gap-1">
+        <label class="block text-sm font-medium text-gray-700">Jenis Kelamin <span class="text-rose-600">*</span></label>
+        <div class="flex items-center gap-5">
+            @php $jk = old('jenis_kelamin', $user->jenis_kelamin ?? '') @endphp
+            <label class="inline-flex items-center gap-2">
+                <input type="radio" name="jenis_kelamin" value="laki-laki" {{ $jk === 'laki-laki' ? 'checked' : '' }} class="form-radio">
+                <span class="text-sm text-gray-700">Laki-laki</span>
+            </label>
+            <label class="inline-flex items-center gap-2">
+                <input type="radio" name="jenis_kelamin" value="perempuan" {{ $jk === 'perempuan' ? 'checked' : '' }} class="form-radio">
+                <span class="text-sm text-gray-700">Perempuan</span>
+            </label>
+        </div>
+        @if ($errors->has('jenis_kelamin'))
+            <p class="text-sm text-red-600 mt-1">{{ $errors->first('jenis_kelamin') }}</p>
+        @else
+            <p id="jenis_kelamin_error" class="text-sm text-red-600 mt-1 hidden"></p>
+        @endif
+    </div>
   </div>
-
+  
   {{-- Tanggal Masuk / Keluar --}}
   <div class="grid grid-cols-2 gap-3">
     <div>
@@ -192,7 +194,7 @@
         <option value="">-- Pilih Pendidikan (opsional) --</option>
         @foreach($pendidikans as $p)
           <option value="{{ $p->id_pendidikan }}" {{ old('id_pendidikan', $user->id_pendidikan ?? '') == $p->id_pendidikan ? 'selected' : '' }}>
-            {{ $p->nama_pendidikan }}
+            {{ $p->tingkat_pendidikan }}
           </option>
         @endforeach
       </select>
