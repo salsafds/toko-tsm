@@ -10,20 +10,20 @@
             Diperbarui pada 24 Oktober 2025 • Koperasi Tunas Sejahtera Mandiri
         </p>
 
-        <div x-data="{ openSection: null }" class="space-y-4">
+        <div x-data="{ openSections: {1: false, 2: false, 3: false, 4: false, 5: false, 6: false} }" class="space-y-4">
 
             {{-- Pengenalan --}}
             <div class="border border-gray-200 rounded-xl overflow-hidden">
                 <button 
-                    @click="openSection === 1 ? openSection = null : openSection = 1"
+                    @click="openSections[1] = !openSections[1]"
                     class="w-full flex justify-between items-center px-5 py-3 bg-gray-50 hover:bg-gray-100 text-gray-800 font-semibold transition-all">
                     <span>Pengenalan</span>
-                    <svg :class="openSection === 1 ? 'rotate-180' : ''" class="w-5 h-5 text-gray-500 transition-transform duration-200"
+                    <svg :class="openSections[1] ? 'rotate-180' : ''" class="w-5 h-5 text-gray-500 transition-transform duration-200"
                          xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                     </svg>
                 </button>
-                <div x-show="openSection === 1" x-collapse class="px-6 py-5 text-sm text-gray-700 leading-relaxed bg-white">
+                <div x-show="openSections[1]" x-collapse class="px-6 py-5 text-sm text-gray-700 leading-relaxed bg-white">
                     <p>Kami di <strong>Koperasi Tunas Sejahtera Mandiri</strong> menghormati dan menjaga privasi setiap anggota, karyawan, dan pengguna sistem kami. 
                     Dokumen ini menjelaskan bagaimana kami mengelola data pribadi yang dikumpulkan, disimpan, digunakan, dan dilindungi ketika Anda menggunakan sistem internal koperasi.</p>
 
@@ -36,15 +36,15 @@
             {{-- Informasi yang Kami Kumpulkan --}}
             <div class="border border-gray-200 rounded-xl overflow-hidden">
                 <button 
-                    @click="openSection === 2 ? openSection = null : openSection = 2"
+                    @click="openSections[2] = !openSections[2]"
                     class="w-full flex justify-between items-center px-5 py-3 bg-gray-50 hover:bg-gray-100 text-gray-800 font-semibold transition-all">
                     <span>Informasi yang Kami Kumpulkan</span>
-                    <svg :class="openSection === 2 ? 'rotate-180' : ''" class="w-5 h-5 text-gray-500 transition-transform duration-200"
+                    <svg :class="openSections[2] ? 'rotate-180' : ''" class="w-5 h-5 text-gray-500 transition-transform duration-200"
                          xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                     </svg>
                 </button>
-                <div x-show="openSection === 2" x-collapse class="px-6 py-5 text-sm text-gray-700 leading-relaxed bg-white space-y-3">
+                <div x-show="openSections[2]" x-collapse class="px-6 py-5 text-sm text-gray-700 leading-relaxed bg-white space-y-3">
                     <p>Kami mengumpulkan data untuk memberikan pengalaman yang lebih aman, efisien, dan sesuai kebutuhan Anda. Informasi dikumpulkan saat Anda 
                     mengakses sistem, melakukan login, memperbarui data, atau menggunakan fitur tertentu.</p>
 
@@ -63,15 +63,15 @@
             {{-- Penggunaan Informasi --}}
             <div class="border border-gray-200 rounded-xl overflow-hidden">
                 <button 
-                    @click="openSection === 3 ? openSection = null : openSection = 3"
+                    @click="openSections[3] = !openSections[3]"
                     class="w-full flex justify-between items-center px-5 py-3 bg-gray-50 hover:bg-gray-100 text-gray-800 font-semibold transition-all">
                     <span>Bagaimana Kami Menggunakan Informasi</span>
-                    <svg :class="openSection === 3 ? 'rotate-180' : ''" class="w-5 h-5 text-gray-500 transition-transform duration-200"
+                    <svg :class="openSections[3] ? 'rotate-180' : ''" class="w-5 h-5 text-gray-500 transition-transform duration-200"
                          xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                     </svg>
                 </button>
-                <div x-show="openSection === 3" x-collapse class="px-6 py-5 text-sm text-gray-700 leading-relaxed bg-white space-y-3">
+                <div x-show="openSections[3]" x-collapse class="px-6 py-5 text-sm text-gray-700 leading-relaxed bg-white space-y-3">
                     <p>Kami menggunakan data Anda untuk memastikan sistem koperasi berjalan dengan lancar dan layanan dapat diberikan dengan akurat. 
                     Penggunaan data ini juga membantu kami memahami kebutuhan pengguna dan meningkatkan pengalaman administrasi serta efisiensi layanan internal.</p>
 
@@ -91,15 +91,15 @@
             {{-- Keamanan Data --}}
             <div class="border border-gray-200 rounded-xl overflow-hidden">
                 <button 
-                    @click="openSection === 4 ? openSection = null : openSection = 4"
+                    @click="openSections[4] = !openSections[4]"
                     class="w-full flex justify-between items-center px-5 py-3 bg-gray-50 hover:bg-gray-100 text-gray-800 font-semibold transition-all">
                     <span>Keamanan Data</span>
-                    <svg :class="openSection === 4 ? 'rotate-180' : ''" class="w-5 h-5 text-gray-500 transition-transform duration-200"
+                    <svg :class="openSections[4] ? 'rotate-180' : ''" class="w-5 h-5 text-gray-500 transition-transform duration-200"
                          xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                     </svg>
                 </button>
-                <div x-show="openSection === 4" x-collapse class="px-6 py-5 text-sm text-gray-700 leading-relaxed bg-white space-y-3">
+                <div x-show="openSections[4]" x-collapse class="px-6 py-5 text-sm text-gray-700 leading-relaxed bg-white space-y-3">
                     <p>Kami menerapkan berbagai langkah keamanan untuk memastikan data Anda terlindungi dari akses tidak sah, penyalahgunaan, atau kebocoran. 
                     Sistem kami dilengkapi dengan firewall, enkripsi SSL, dan metode otentikasi berlapis untuk melindungi data dalam setiap transaksi.</p>
 
@@ -114,15 +114,15 @@
             {{-- Hak Anda --}}
             <div class="border border-gray-200 rounded-xl overflow-hidden">
                 <button 
-                    @click="openSection === 5 ? openSection = null : openSection = 5"
+                    @click="openSections[5] = !openSections[5]"
                     class="w-full flex justify-between items-center px-5 py-3 bg-gray-50 hover:bg-gray-100 text-gray-800 font-semibold transition-all">
                     <span>Hak Anda</span>
-                    <svg :class="openSection === 5 ? 'rotate-180' : ''" class="w-5 h-5 text-gray-500 transition-transform duration-200"
+                    <svg :class="openSections[5] ? 'rotate-180' : ''" class="w-5 h-5 text-gray-500 transition-transform duration-200"
                          xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                     </svg>
                 </button>
-                <div x-show="openSection === 5" x-collapse class="px-6 py-5 text-sm text-gray-700 leading-relaxed bg-white space-y-3">
+                <div x-show="openSections[5]" x-collapse class="px-6 py-5 text-sm text-gray-700 leading-relaxed bg-white space-y-3">
                     <p>Kami percaya setiap pengguna berhak mengetahui bagaimana data mereka digunakan dan memiliki kendali penuh atas informasi pribadi mereka. 
                     Oleh karena itu, kami memberikan hak berikut kepada Anda:</p>
 
@@ -141,15 +141,15 @@
             {{-- Hubungi Kami --}}
             <div class="border border-gray-200 rounded-xl overflow-hidden">
                 <button 
-                    @click="openSection === 6 ? openSection = null : openSection = 6"
+                    @click="openSections[6] = !openSections[6]"
                     class="w-full flex justify-between items-center px-5 py-3 bg-gray-50 hover:bg-gray-100 text-gray-800 font-semibold transition-all">
                     <span>Hubungi Kami</span>
-                    <svg :class="openSection === 6 ? 'rotate-180' : ''" class="w-5 h-5 text-gray-500 transition-transform duration-200"
+                    <svg :class="openSections[6] ? 'rotate-180' : ''" class="w-5 h-5 text-gray-500 transition-transform duration-200"
                          xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                     </svg>
                 </button>
-                <div x-show="openSection === 6" x-collapse class="px-6 py-5 text-sm text-gray-700 leading-relaxed bg-white space-y-2">
+                <div x-show="openSections[6]" x-collapse class="px-6 py-5 text-sm text-gray-700 leading-relaxed bg-white space-y-2">
                     <p>Jika Anda memiliki pertanyaan, saran, atau keluhan mengenai kebijakan privasi ini, tim kami siap membantu. 
                     Kami menghargai setiap masukan untuk meningkatkan keamanan dan pengalaman pengguna di lingkungan digital koperasi.</p>
                     <ul class="mt-3 leading-relaxed list-none">
