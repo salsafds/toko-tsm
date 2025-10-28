@@ -64,15 +64,15 @@
 <div class="grid grid-cols-2 gap-3">
   <div class="grid grid-cols-1 gap-1">
     <label for="username_input" class="block text-sm font-medium text-gray-700">Username <span class="text-rose-600">*</span></label>
-    <input id="username_input" name="username" value="{{ old('username', $user->username ?? '') }}"
-           class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('username') ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-blue-500 focus:ring-blue-100' }}"
-           placeholder="Masukkan username"
-           autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-    @if($errors->has('username'))
-      <p class="text-sm text-red-600 mt-1">{{ $errors->first('username') }}</p>
-    @else
-      <p id="username_error" class="text-sm text-red-600 mt-1 hidden"></p>
-    @endif
+   <input id="username_input" name="username" value="{{ old('username', $user->username ?? '') }}"
+       class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('username') ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-blue-500 focus:ring-blue-100' }}"
+       placeholder="Masukkan username"
+       autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      @if($errors->has('username'))
+        <p class="text-sm text-red-600 mt-1">{{ $errors->first('username') }}</p>
+      @else
+        <p id="username_error" class="text-sm text-red-600 mt-1 hidden"></p>
+      @endif
   </div>
 
   <div class="grid grid-cols-1 gap-1">

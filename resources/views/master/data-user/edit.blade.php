@@ -127,16 +127,41 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Prevent form submit if nothing changed (safety)
   form.addEventListener('submit', function (e) {
+    // LOGIKA DISABLE TOMBOL: Jika tombol disabled (tidak ada perubahan), cegah submit
     if (submitButton && submitButton.disabled) {
       e.preventDefault();
       // Optionally show a message
       alert('Tidak ada perubahan yang perlu disimpan.');
       return false;
     }
+
+    // PERUBAHAN: Tambahkan validasi client-side untuk spasi di username sebelum submit
+    // Jika username mengandung spasi, tampilkan error dan cegah submit
+    const username = document.querySelector('#username_input').value.trim();
+    const usernameError = document.querySelector('#username_error');
+
+    // Reset error untuk username
+    usernameError.textContent = '';
+    usernameError.classList.add('hidden');
+    document.querySelector('#username_input').classList.remove('border-red-500', 'bg-red-50');
+
+    let hasError = false;
+
+    // Cek apakah username mengandung spasi
+    if (username.includes(' ')) {
+      usernameError.textContent = 'Username tidak boleh mengandung spasi.';
+      usernameError.classList.remove('hidden');
+      document.querySelector('#username_input').classList.add('border-red-500', 'bg-red-50');
+      hasError = true;
+    }
+
+    // Jika ada error, cegah submit
+    if (hasError) {
+      e.preventDefault();
+      return false;
+    }
+
     // otherwise allow submit to proceed (server-side validation runs)
   });
 });
 </script>
-
-
-@endsection

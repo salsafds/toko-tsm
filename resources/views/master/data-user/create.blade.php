@@ -69,7 +69,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  // on blur username -> check availability
   usernameInput?.addEventListener('blur', async function () {
     const val = usernameInput.value.trim();
     usernameError.textContent = '';
@@ -92,7 +91,7 @@ document.addEventListener('DOMContentLoaded', function () {
     teleponError.classList.add('hidden');
     teleponInput.classList.remove('border-red-500', 'bg-red-50');
 
-    if (!tel) return true; // optional
+    if (!tel) return true;
     if (!/^[0-9]+$/.test(tel)) {
       teleponError.textContent = 'Telepon harus berisi angka saja.';
       teleponError.classList.remove('hidden');
@@ -134,6 +133,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const masuk = tanggalMasuk.value;
     const role = roleSelect.value;
 
+    if (username.includes(' ')) {
+      usernameError.textContent = 'Username tidak boleh mengandung spasi.';
+      usernameError.classList.remove('hidden');
+      usernameInput.classList.add('border-red-500', 'bg-red-50');
+      hasError = true;
+    }
+
     if (!nama) {
       namaError.textContent = 'Nama lengkap wajib diisi.';
       namaError.classList.remove('hidden');
@@ -147,7 +153,7 @@ document.addEventListener('DOMContentLoaded', function () {
       usernameInput.classList.add('border-red-500', 'bg-red-50');
       hasError = true;
     } else {
-      // AJAX check before submit
+
       const res = await checkUsernameAjax(username);
       if (res.exists) {
         usernameError.textContent = 'Username sudah digunakan.';
@@ -196,7 +202,7 @@ document.addEventListener('DOMContentLoaded', function () {
       hasError = true;
     }
 
-    // telepon client-side (before server validation)
+
     if (!validatePhoneClientSide()) {
       hasError = true;
     }

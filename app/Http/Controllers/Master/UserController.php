@@ -46,7 +46,7 @@ class UserController extends Controller
         // Validasi + simpan hasilnya ke $validated
         $validated = $request->validate([
             'nama_lengkap' => 'required|string|max:255',
-            'username' => 'required|string|max:100|unique:users,username',
+            'username' => 'required|string|max:100|unique:users,username|regex:/^\S+$/',
             'password' => 'required|string|min:6',
             'jenis_kelamin' => 'required|in:laki-laki,perempuan',
             'status' => 'required|in:aktif,nonaktif,cuti',
@@ -61,6 +61,7 @@ class UserController extends Controller
             'nama_lengkap.required' => 'Nama lengkap wajib diisi.',
             'username.required' => 'Username wajib diisi.',
             'username.unique' => 'Username sudah digunakan.',
+            'username.regex' => 'Username tidak boleh mengandung spasi.',
             'password.required' => 'Password wajib diisi.',
             'jenis_kelamin.required' => 'Jenis kelamin wajib dipilih.',
             'status.required' => 'Status wajib dipilih.',
@@ -103,7 +104,7 @@ class UserController extends Controller
         // Validasi
         $validated = $request->validate([
             'nama_lengkap' => 'required|string|max:255',
-            'username' => 'required|string|max:100|unique:users,username,' . $id . ',id_user',
+            'username' => 'required|string|max:100|unique:users,username|regex:/^\S+$/',
             'password' => 'nullable|string|min:6',
             'jenis_kelamin' => 'required|in:laki-laki,perempuan',
             'status' => 'required|in:aktif,nonaktif,cuti',
@@ -118,6 +119,7 @@ class UserController extends Controller
             'nama_lengkap.required' => 'Nama lengkap wajib diisi.',
             'username.required' => 'Username wajib diisi.',
             'username.unique' => 'Username sudah digunakan.',
+            'username.regex' => 'Username tidak boleh mengandung spasi.',
             'jenis_kelamin.required' => 'Jenis kelamin wajib dipilih.',
             'status.required' => 'Status wajib dipilih.',
             'tanggal_masuk.required' => 'Tanggal masuk wajib diisi.',
