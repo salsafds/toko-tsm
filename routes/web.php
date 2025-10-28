@@ -108,4 +108,6 @@ Route::middleware(['auth'])->name('master.')->group(function () {
 
 Route::middleware(['auth'])->name('master.')->group(function () {
     Route::resource('data-user', UserController::class);
+    Route::post('data-user/check-username', [\App\Http\Controllers\Master\UserController::class, 'checkUsername'])
+     ->name('data-user.check-username');
 });

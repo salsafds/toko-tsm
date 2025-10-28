@@ -37,6 +37,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const statusSelect = document.querySelector('#status');
   const tanggalMasuk = document.querySelector('#tanggal_masuk');
   const roleSelect = document.querySelector('#id_role');
+  const teleponInput = document.querySelector('#telepon');
 
   const namaError = document.querySelector('#nama_lengkap_error');
   const usernameError = document.querySelector('#username_error');
@@ -45,18 +46,84 @@ document.addEventListener('DOMContentLoaded', function () {
   const statusError = document.querySelector('#status_error');
   const tanggalMasukError = document.querySelector('#tanggal_masuk_error');
   const roleError = document.querySelector('#id_role_error');
+  const teleponError = document.querySelector('#telepon_error');
 
-  form.addEventListener('submit', function (e) {
+  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || document.querySelector('input[name="_token"]').value;
+
+  // helper: cek username via ajax
+  async function checkUsernameAjax(username) {
+    if (!username) return { exists: false };
+    try {
+      const res = await fetch('{{ route("master.data-user.check-username") }}', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': csrfToken,
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ username: username })
+      });
+      return await res.json();
+    } catch (err) {
+      return { exists: false };
+    }
+  }
+
+  // on blur username -> check availability
+  usernameInput?.addEventListener('blur', async function () {
+    const val = usernameInput.value.trim();
+    usernameError.textContent = '';
+    usernameError.classList.add('hidden');
+    usernameInput.classList.remove('border-red-500', 'bg-red-50');
+
+    if (!val) return;
+
+    const result = await checkUsernameAjax(val);
+    if (result.exists) {
+      usernameError.textContent = 'Username sudah digunakan.';
+      usernameError.classList.remove('hidden');
+      usernameInput.classList.add('border-red-500', 'bg-red-50');
+    }
+  });
+
+  function validatePhoneClientSide() {
+    const tel = teleponInput?.value.trim() || '';
+    teleponError.textContent = '';
+    teleponError.classList.add('hidden');
+    teleponInput.classList.remove('border-red-500', 'bg-red-50');
+
+    if (!tel) return true; // optional
+    if (!/^[0-9]+$/.test(tel)) {
+      teleponError.textContent = 'Telepon harus berisi angka saja.';
+      teleponError.classList.remove('hidden');
+      teleponInput.classList.add('border-red-500', 'bg-red-50');
+      return false;
+    }
+    if (tel.length < 10) {
+      teleponError.textContent = 'Telepon minimal 10 karakter.';
+      teleponError.classList.remove('hidden');
+      teleponInput.classList.add('border-red-500', 'bg-red-50');
+      return false;
+    }
+    if (tel.length > 20) {
+      teleponError.textContent = 'Telepon maksimal 20 karakter.';
+      teleponError.classList.remove('hidden');
+      teleponInput.classList.add('border-red-500', 'bg-red-50');
+      return false;
+    }
+    return true;
+  }
+
+  form.addEventListener('submit', async function (e) {
     e.preventDefault();
 
     // reset
-    [namaError, usernameError, passwordError, jenisError, statusError, tanggalMasukError, roleError].forEach(el => {
+    [namaError, usernameError, passwordError, jenisError, statusError, tanggalMasukError, roleError, teleponError].forEach(el => {
       if (el) { el.textContent = ''; el.classList.add('hidden'); }
     });
-    [namaInput, usernameInput, passwordInput, statusSelect, tanggalMasuk, roleSelect].forEach(el => {
+    [namaInput, usernameInput, passwordInput, statusSelect, tanggalMasuk, roleSelect, teleponInput].forEach(el => {
       if (el) el.classList.remove('border-red-500', 'bg-red-50');
     });
-    // radio styling not toggled here
 
     let hasError = false;
     const nama = namaInput.value.trim();
@@ -79,6 +146,15 @@ document.addEventListener('DOMContentLoaded', function () {
       usernameError.classList.remove('hidden');
       usernameInput.classList.add('border-red-500', 'bg-red-50');
       hasError = true;
+    } else {
+      // AJAX check before submit
+      const res = await checkUsernameAjax(username);
+      if (res.exists) {
+        usernameError.textContent = 'Username sudah digunakan.';
+        usernameError.classList.remove('hidden');
+        usernameInput.classList.add('border-red-500', 'bg-red-50');
+        hasError = true;
+      }
     }
 
     if (!password) {
@@ -120,6 +196,11 @@ document.addEventListener('DOMContentLoaded', function () {
       hasError = true;
     }
 
+    // telepon client-side (before server validation)
+    if (!validatePhoneClientSide()) {
+      hasError = true;
+    }
+
     if (hasError) return;
 
     const message = 'Apakah Anda yakin ingin menyimpan data user ini?';
@@ -129,4 +210,5 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 </script>
+
 @endsection

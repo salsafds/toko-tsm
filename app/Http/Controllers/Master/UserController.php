@@ -54,7 +54,7 @@ class UserController extends Controller
             'id_role' => 'required|exists:role,id_role',
             'id_jabatan' => 'nullable|exists:jabatan,id_jabatan',
             'id_pendidikan' => 'nullable|exists:pendidikan,id_pendidikan',
-            'telepon' => 'nullable|string|max:16',
+            'telepon' => ['nullable','string','min:10','max:20','regex:/^[0-9]+$/'],
             'alamat_user' => 'nullable|string|max:255',
         ], [
             'nama_lengkap.required' => 'Nama lengkap wajib diisi.',
@@ -65,26 +65,10 @@ class UserController extends Controller
             'status.required' => 'Status wajib dipilih.',
             'tanggal_masuk.required' => 'Tanggal masuk wajib diisi.',
             'id_role.required' => 'Role wajib dipilih.',
+            'telepon.min' => 'Telepon minimal 10 karakter.',
+            'telepon.max' => 'Telepon maksimal 20 karakter.',
+            'telepon.regex' => 'Telepon harus berisi angka saja.',
         ]);
-
-        User::create([
-            'id_user' => $this->generateNextId(),
-            'nama_lengkap' => $request->nama_lengkap,
-            'alamat_user' => $request->alamat_user,
-            'telepon' => $request->telepon,
-            'username' => $request->username,
-            'password' => Hash::make($request->password),
-            'jenis_kelamin' => $request->jenis_kelamin,
-            'status' => $request->status,
-            'tanggal_masuk' => $request->tanggal_masuk,
-            'tanggal_keluar' => $request->tanggal_keluar,
-            'id_role' => $request->id_role,
-            'id_jabatan' => $request->id_jabatan,
-            'id_pendidikan' => $request->id_pendidikan,
-            // foto_user intentionally omitted
-        ]);
-
-        return redirect()->route('master.data-user.index')->with('success', 'Data user berhasil ditambahkan.');
     }
 
     public function edit($id)
@@ -110,7 +94,7 @@ class UserController extends Controller
             'id_role' => 'required|exists:role,id_role',
             'id_jabatan' => 'nullable|exists:jabatan,id_jabatan',
             'id_pendidikan' => 'nullable|exists:pendidikan,id_pendidikan',
-            'telepon' => 'nullable|string|max:16',
+            'telepon' => ['nullable','string','min:10','max:20','regex:/^[0-9]+$/'],
             'alamat_user' => 'nullable|string|max:255',
         ], [
             'nama_lengkap.required' => 'Nama lengkap wajib diisi.',
@@ -120,31 +104,28 @@ class UserController extends Controller
             'status.required' => 'Status wajib dipilih.',
             'tanggal_masuk.required' => 'Tanggal masuk wajib diisi.',
             'id_role.required' => 'Role wajib dipilih.',
+            'telepon.min' => 'Telepon minimal 10 karakter.',
+            'telepon.max' => 'Telepon maksimal 20 karakter.',
+            'telepon.regex' => 'Telepon harus berisi angka saja.',
         ]);
+    }
 
-        $user = User::findOrFail($id);
+    public function checkUsername(Request $request)
+    {
+        $username = $request->input('username');
+        $excludeId = $request->input('id_user'); // optional
 
-        $data = $request->only([
-            'nama_lengkap',
-            'alamat_user',
-            'telepon',
-            'username',
-            'jenis_kelamin',
-            'status',
-            'tanggal_masuk',
-            'tanggal_keluar',
-            'id_role',
-            'id_jabatan',
-            'id_pendidikan',
-        ]);
-
-        if ($request->filled('password')) {
-            $data['password'] = Hash::make($request->password);
+        if (!$username) {
+            return response()->json(['exists' => false]);
         }
 
-        $user->update($data);
+        $query = User::where('username', $username);
+        if ($excludeId) {
+            $query->where('id_user', '!=', $excludeId);
+        }
+        $exists = $query->exists();
 
-        return redirect()->route('master.data-user.index')->with('success', 'Data user berhasil diperbarui.');
+        return response()->json(['exists' => $exists]);
     }
 
     public function destroy($id)
