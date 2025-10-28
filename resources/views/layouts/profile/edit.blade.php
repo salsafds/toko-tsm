@@ -13,6 +13,16 @@
             </div>
         @endif
 
+        @if($errors->any())
+            <div class="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded">
+                <ul class="list-disc list-inside">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <form id="profileForm" action="{{ route('layouts.profile.update') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
             @csrf
 
@@ -50,13 +60,15 @@
                     <label for="password" class="block text-sm font-medium text-gray-700">Password Baru</label>
                     <input type="password" id="password" name="password"
                         class="mt-1 w-full rounded-md border px-3 py-2 text-sm border-gray-200 focus:border-blue-500 focus:ring-blue-100"
-                        placeholder="Kosongkan jika tidak ingin ganti">
-                    <p id="password_error" class="text-sm text-red-600 mt-1 hidden"></p>
+                        placeholder="Kosongkan jika tidak ingin ganti"
+                        autocomplete="new-password">
                 </div>
                 <div>
                     <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Konfirmasi Password</label>
                     <input type="password" id="password_confirmation" name="password_confirmation"
-                        class="mt-1 w-full rounded-md border px-3 py-2 text-sm border-gray-200 focus:border-blue-500 focus:ring-blue-100">
+                        class="mt-1 w-full rounded-md border px-3 py-2 text-sm border-gray-200 focus:border-blue-500 focus:ring-blue-100"
+                        autocomplete="new-password">
+                    <p id="password_error" class="text-sm text-red-600 mt-1 hidden"></p>
                 </div>
             </div>
 
@@ -100,12 +112,11 @@
     <div class="bg-white rounded-lg p-6 w-full max-w-md">
         <h3 class="text-lg font-semibold mb-4">Konfirmasi Password Lama</h3>
         <p class="text-sm text-gray-600 mb-4">Masukkan password lama untuk melanjutkan perubahan password.</p>
-        <input type="password" id="old_password" class="w-full border rounded-md px-3 py-2 text-sm mb-3" placeholder="Password lama">
-        <p id="old_password_error" class="text-sm text-red-600 mb-2 hidden"></p>
-        <p class="text-xs text-gray-500 mb-4">Hubungi admin master jika lupa password.</p>
+        <input type="password" id="old_password" class="w-full border rounded-md px-3 py-2 text-sm mb-1" placeholder="Password lama">
+        <p id="old_password_error" class="text-xs text-red-600 mb-3 hidden">Password lama salah. Hubungi admin master jika lupa password.</p>
         <div class="flex justify-end gap-2">
             <button type="button" onclick="closePasswordModal()" class="px-4 py-2 border rounded-md text-sm text-gray-700 hover:bg-gray-50">Batal</button>
-            <button type="button" onclick="verifyOldPassword()" class="px-4 py-2 bg-blue-700 text-white text-sm rounded-md hover:bg-blue-800">Konfirmasi</button>
+            <button type="button" onclick="verifyOldPassword()" class="px-4 py-2 bg-blue-700 text-white text-sm rounded-md hover:bg-blue-800">Ubah Password</button>
         </div>
     </div>
 </div>
@@ -113,84 +124,50 @@
 
 @section('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
+    console.log('EDIT PROFIL SCRIPT LOADED!');
+
     const form = document.getElementById('profileForm');
     const usernameInput = document.getElementById('username');
     const passwordInput = document.getElementById('password');
     const passwordConfirm = document.getElementById('password_confirmation');
     const submitBtn = document.getElementById('submitBtn');
     const passwordError = document.getElementById('password_error');
-    const originalUsername = @json($user->username);
+    const passwordModal = document.getElementById('passwordModal');
+    const oldPasswordInput = document.getElementById('old_password');
+    const oldPasswordError = document.getElementById('old_password_error');
 
-    function updateSubmitButton() {
-        const usernameChanged = usernameInput.value.trim() !== originalUsername;
-        const passwordFilled = passwordInput.value.trim() !== '';
-        submitBtn.disabled = !(usernameChanged || passwordFilled);
+    if (!form || !usernameInput || !submitBtn || !passwordInput || !passwordConfirm || !passwordModal) {
+        console.error('ELEMEN TIDAK DITEMUKAN!');
+        return;
     }
 
-    usernameInput.addEventListener('input', updateSubmitButton);
-    passwordInput.addEventListener('input', updateSubmitButton);
-    passwordConfirm.addEventListener('input', updateSubmitButton);
+    // JANGAN RESET PASSWORD FIELD!
+    // Biarkan isinya tetap ada saat modal muncul
 
-    function checkPasswordMatch() {
-        if (passwordInput.value && passwordInput.value !== passwordConfirm.value) {
-            passwordError.textContent = 'Password tidak cocok.';
-            passwordError.classList.remove('hidden');
-        } else {
-            passwordError.classList.add('hidden');
-        }
-    }
+    const originalUsername = usernameInput.value.trim();
+    console.log('Original Username:', originalUsername);
 
-    passwordInput.addEventListener('input', checkPasswordMatch);
-    passwordConfirm.addEventListener('input', checkPasswordMatch);
+    // === MODAL FUNCTIONS ===
+    window.openPasswordModal = function () {
+        passwordModal.classList.remove('hidden');
+        oldPasswordInput.value = '';
+        oldPasswordError.classList.add('hidden');
+        oldPasswordInput.focus();
+    };
 
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const usernameChanged = usernameInput.value.trim() !== originalUsername;
-        const passwordFilled = passwordInput.value.trim() !== '';
+    window.closePasswordModal = function () {
+        passwordModal.classList.add('hidden');
+        oldPasswordInput.value = '';
+        oldPasswordError.classList.add('hidden');
+    };
 
-        if (usernameChanged && passwordFilled) {
-            alert('Tidak boleh mengubah username dan password sekaligus.');
-            return;
-        }
-
-        if (usernameChanged) {
-            if (confirm('Yakin ingin mengubah username?')) form.submit();
-            return;
-        }
-
-        if (passwordFilled) {
-            if (passwordInput.value !== passwordConfirm.value) {
-                passwordError.textContent = 'Konfirmasi password tidak cocok.';
-                passwordError.classList.remove('hidden');
-                return;
-            }
-            if (confirm('Yakin ingin mengubah password?')) openPasswordModal();
-            return;
-        }
-    });
-
-    updateSubmitButton();
-
-    // Modal Password Lama
-    window.openPasswordModal = function() {
-        document.getElementById('passwordModal').classList.remove('hidden');
-        document.getElementById('old_password').focus();
-    }
-
-    window.closePasswordModal = function() {
-        document.getElementById('passwordModal').classList.add('hidden');
-        document.getElementById('old_password_error').classList.add('hidden');
-        document.getElementById('old_password').value = '';
-    }
-
-    window.verifyOldPassword = async function() {
-        const oldPass = document.getElementById('old_password').value.trim();
-        const errorEl = document.getElementById('old_password_error');
+    window.verifyOldPassword = async function () {
+        const oldPass = oldPasswordInput.value.trim();
 
         if (!oldPass) {
-            errorEl.textContent = 'Password lama wajib diisi.';
-            errorEl.classList.remove('hidden');
+            oldPasswordError.textContent = 'Password lama wajib diisi.';
+            oldPasswordError.classList.remove('hidden');
             return;
         }
 
@@ -207,19 +184,86 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (data.valid) {
                 closePasswordModal();
-                form.submit();
+                if (confirm('Yakin ingin mengubah password?')) {
+                    form.submit(); // SEKARANG DATA TERKIRIM!
+                }
             } else {
-                errorEl.textContent = 'Password lama salah.';
-                errorEl.classList.remove('hidden');
+                oldPasswordError.textContent = 'Password lama salah. Hubungi admin master jika lupa password.';
+                oldPasswordError.classList.remove('hidden');
             }
-        } catch {
-            errorEl.textContent = 'Terjadi kesalahan.';
-            errorEl.classList.remove('hidden');
+        } catch (err) {
+            oldPasswordError.textContent = 'Terjadi kesalahan jaringan.';
+            oldPasswordError.classList.remove('hidden');
         }
     };
 
-    // Pastikan tombol bisa aktif setelah render
-    setTimeout(updateSubmitButton, 100);
+    // === CEK PERUBAHAN ===
+    function updateSubmitButton() {
+        const currentUsername = usernameInput.value.trim();
+        const passwordValue = passwordInput.value.trim();
+
+        const usernameChanged = currentUsername !== originalUsername && currentUsername !== '';
+        const passwordFilled = passwordValue !== '';
+
+        const hasChanges = usernameChanged || passwordFilled;
+        submitBtn.disabled = !hasChanges;
+    }
+
+    usernameInput.addEventListener('input', updateSubmitButton);
+    passwordInput.addEventListener('input', updateSubmitButton);
+    passwordConfirm.addEventListener('input', updateSubmitButton);
+
+    // === CEK KONFIRMASI PASSWORD ===
+    function checkPasswordMatch() {
+        const pass = passwordInput.value;
+        const confirm = passwordConfirm.value;
+
+        if (pass && confirm && pass !== confirm) {
+            passwordError.textContent = 'Password tidak cocok.';
+            passwordError.classList.remove('hidden');
+        } else {
+            passwordError.classList.add('hidden');
+        }
+    }
+    passwordInput.addEventListener('input', checkPasswordMatch);
+    passwordConfirm.addEventListener('input', checkPasswordMatch);
+
+    // === SUBMIT HANDLER ===
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const currentUsername = usernameInput.value.trim();
+        const passwordValue = passwordInput.value.trim();
+
+        const usernameChanged = currentUsername !== originalUsername && currentUsername !== '';
+        const passwordFilled = passwordValue !== '';
+
+        if (usernameChanged && passwordFilled) {
+            alert('Tidak boleh mengubah username dan password sekaligus.');
+            return;
+        }
+
+        if (usernameChanged) {
+            if (confirm('Yakin ingin mengubah username?')) {
+                form.submit(); // Langsung submit
+            }
+            return;
+        }
+
+        if (passwordFilled) {
+            if (passwordInput.value !== passwordConfirm.value) {
+                passwordError.textContent = 'Konfirmasi password tidak cocok.';
+                passwordError.classList.remove('hidden');
+                return;
+            }
+            openPasswordModal(); // Munculkan modal
+            return;
+        }
+
+        alert('Tidak ada perubahan yang disimpan.');
+    });
+
+    updateSubmitButton();
 });
 </script>
 @endsection
