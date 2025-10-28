@@ -31,8 +31,8 @@ document.addEventListener('DOMContentLoaded', function () {
   if (!form) return;
 
   const namaInput = document.querySelector('#nama_lengkap');
-  const usernameInput = document.querySelector('#username');
-  const passwordInput = document.querySelector('#password');
+  const usernameInput = document.querySelector('#username_input');
+  const passwordInput = document.querySelector('#password_input');
   const jenisEls = document.getElementsByName('jenis_kelamin');
   const statusSelect = document.querySelector('#status');
   const tanggalMasuk = document.querySelector('#tanggal_masuk');
