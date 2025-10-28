@@ -12,7 +12,7 @@ class UserSeeder extends Seeder
     {
         DB::table('users')->insert([
             [
-                'id_user' => 'USR001',
+            'id_user' => 'USR001',
             'nama_lengkap' => 'Admin Master',
             'alamat_user' => 'Jl. Mawar No. 1',
             'telepon' => '081234567890',

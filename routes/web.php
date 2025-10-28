@@ -42,14 +42,14 @@ Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 //Halaman logout
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Dashboard Master (sementara statis dulu)
 Route::get('/dashboard-master', function () {
-    return view('master/dashboard-master');
-})->name('dashboard-master');
+    return view('master.dashboard-master');
+})->middleware(['auth', 'role:R01'])->name('dashboard-master');
 
 Route::get('/dashboard-admin', function () {
-    return view('admin/dashboard-admin');
-})->name('dashboard-admin');
+    return view('admin.dashboard-admin');
+})->middleware(['auth', 'role:R02'])->name('dashboard-admin');
+
 
 Route::middleware(['auth'])->name('master.')->group(function () {
     Route::resource('data-bahasa', BahasaController::class);
