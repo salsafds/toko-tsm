@@ -20,13 +20,21 @@ use App\Http\Controllers\Master\AgenEkspedisiController;
 use App\Http\Controllers\Master\PelangganController;
 use App\Http\Controllers\Master\UserController;
 use App\Http\Controllers\PrivacyPolicyController;
+use App\Http\Controllers\ProfileController;
+
 
 // Landing page
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
 
-//Privacy Policy
-Route::middleware(['auth'])->get('/privacy-policy', [PrivacyPolicyController::class, 'index'])->name('privacy-policy');
+Route::middleware(['auth'])->name('layouts.')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/check-username', [ProfileController::class, 'checkUsername'])->name('profile.check-username');
+    Route::post('/profile/verify-password', [ProfileController::class, 'verifyOldPassword'])->name('profile.verify-password');
+});
 
+ Route::get('/privacy-policy', [PrivacyPolicyController::class, 'index'])->name('privacy-policy');
+ 
 // Halaman login
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');

@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 class PrivacyPolicyController extends Controller
 {
     public function index()
-    {
-        return view('layouts.privacy-policy.index');
-    }
+  {
+      return view('layouts.profile.index');
+  }
 }
