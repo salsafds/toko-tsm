@@ -43,7 +43,8 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        // Validasi + simpan hasilnya ke $validated
+        $validated = $request->validate([
             'nama_lengkap' => 'required|string|max:255',
             'username' => 'required|string|max:100|unique:users,username',
             'password' => 'required|string|min:6',
@@ -69,6 +70,19 @@ class UserController extends Controller
             'telepon.max' => 'Telepon maksimal 20 karakter.',
             'telepon.regex' => 'Telepon harus berisi angka saja.',
         ]);
+
+        // Tambahkan ID otomatis
+        $validated['id_user'] = $this->generateNextId();
+
+        // Hash password
+        $validated['password'] = Hash::make($validated['password']);
+
+        // Simpan ke database
+        User::create($validated);
+
+        return redirect()
+            ->route('master.data-user.index')
+            ->with('success', 'Data user berhasil ditambahkan.');
     }
 
     public function edit($id)
@@ -83,7 +97,11 @@ class UserController extends Controller
 
     public function update(Request $request, $id)
     {
-        $request->validate([
+        // Cari user dulu
+        $user = User::findOrFail($id);
+
+        // Validasi
+        $validated = $request->validate([
             'nama_lengkap' => 'required|string|max:255',
             'username' => 'required|string|max:100|unique:users,username,' . $id . ',id_user',
             'password' => 'nullable|string|min:6',
@@ -108,12 +126,26 @@ class UserController extends Controller
             'telepon.max' => 'Telepon maksimal 20 karakter.',
             'telepon.regex' => 'Telepon harus berisi angka saja.',
         ]);
+
+        // Hanya update password jika diisi
+        if (!empty($validated['password'])) {
+            $validated['password'] = Hash::make($validated['password']);
+        } else {
+            unset($validated['password']); // Jangan ubah password lama
+        }
+
+        // Update data
+        $user->update($validated);
+
+        return redirect()
+            ->route('master.data-user.index')
+            ->with('success', 'Data user berhasil diperbarui.');
     }
 
     public function checkUsername(Request $request)
     {
         $username = $request->input('username');
-        $excludeId = $request->input('id_user'); // optional
+        $excludeId = $request->input('id_user');
 
         if (!$username) {
             return response()->json(['exists' => false]);
@@ -123,9 +155,8 @@ class UserController extends Controller
         if ($excludeId) {
             $query->where('id_user', '!=', $excludeId);
         }
-        $exists = $query->exists();
 
-        return response()->json(['exists' => $exists]);
+        return response()->json(['exists' => $query->exists()]);
     }
 
     public function destroy($id)
@@ -133,7 +164,9 @@ class UserController extends Controller
         $user = User::findOrFail($id);
         $user->delete();
 
-        return redirect()->route('master.data-user.index')->with('success', 'Data user berhasil dihapus.');
+        return redirect()
+            ->route('master.data-user.index')
+            ->with('success', 'Data user berhasil dihapus.');
     }
 
     private function generateNextId()
