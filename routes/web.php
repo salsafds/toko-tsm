@@ -20,6 +20,7 @@ use App\Http\Controllers\Master\PelangganController;
 use App\Http\Controllers\Master\UserController;
 use App\Http\Controllers\PrivacyPolicyController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\PembelianController;
 
 
 // Landing page
@@ -103,4 +104,10 @@ Route::middleware(['auth', 'role:R01'])->name('master.')->group(function () {
     //data barang
     Route::resource('data-barang', BarangController::class);
     
+});
+
+Route::middleware(['auth', 'role:R02'])->name('admin.')->group(function () {
+    //data pembelian
+    Route::resource('pembelian', PembelianController::class);
+    Route::patch('pembelian/{id_pembelian}/selesai', [PembelianController::class, 'selesai'])->name('pembelian.selesai');
 });

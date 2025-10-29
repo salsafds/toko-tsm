@@ -158,8 +158,8 @@
         </span>
       </a>
 
-      <a 
-        href="{{ route('dashboard-admin') ?? '#' }}" 
+     <a 
+        href="{{ route('admin.pembelian.index') ?? '#' }}" 
         class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
         :class="{ 'justify-center': !isOpen && isDesktop }"
       >
