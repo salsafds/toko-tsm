@@ -187,7 +187,7 @@
       <div class="text-xs font-semibold text-gray-500 uppercase px-2" x-show="isOpen">Others</div>
 
       <a 
-        href="{{ route('master.data-satuan.index') ?? '#' }}" 
+        href="{{ route('dashboard-admin') ?? '#' }}" 
         class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
         :class="{ 'justify-center': !isOpen && isDesktop }"
       >
