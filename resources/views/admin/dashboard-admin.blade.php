@@ -1,4 +1,4 @@
-@extends('layouts.appmaster')
+@extends('layouts.app-admin')
 
 @section('title', 'Dashboard Admin')
 
