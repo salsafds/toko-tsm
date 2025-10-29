@@ -29,11 +29,17 @@ class ProfileController extends Controller
         /** @var User $user */
         $user = Auth::user();
 
-        $request->validate([
+        $rules = [
             'username' => 'sometimes|required|string|max:100|unique:users,username,' . $user->id_user . ',id_user',
-            'password' => 'sometimes|required|string|min:6|confirmed',
             'foto_user' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-        ]);
+        ];
+
+        // Hanya tambahkan rule password jika password diisi
+        if ($request->filled('password')) {
+            $rules['password'] = 'required|min:6|confirmed';
+        }
+
+        $request->validate($rules);
 
         $data = [];
 

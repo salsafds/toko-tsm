@@ -27,7 +27,7 @@
             @csrf
 
             <!-- Foto Profil -->
-            <div class="flex justify-center mb-6">
+            <div class="flex justify-center mb-6 z-0">
                 <div class="relative">
                     <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-200 shadow-md">
                         @if($user->foto_user && \Storage::exists('public/foto_user/' . $user->foto_user))
