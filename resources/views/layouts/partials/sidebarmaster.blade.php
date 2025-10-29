@@ -476,7 +476,7 @@
   </div>
 
 <!-- Sidebar Footer -->
-<div class="border-t p-2" :class="{ 'px-2': !isOpen }" x-show="isOpen || isDesktop">
+<div class="border-t p-2" :class="{ 'px-2 ml-4': !isOpen }" x-show="isOpen || isDesktop">
     @php
         $user = Auth::user();
         $foto = $user && $user->foto_user ? asset('storage/' . $user->foto_user) : asset('img/icon/iconProfil.png');

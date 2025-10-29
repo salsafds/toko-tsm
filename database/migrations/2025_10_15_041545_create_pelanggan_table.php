@@ -12,7 +12,7 @@ return new class extends Migration
             $table->string('id_pelanggan', 11)->primary();
             $table->string('nama_pelanggan', 255);
             $table->string('nomor_telepon', 16)->nullable();
-            $table->enum('kategori_pelanggan', ['badan_usaha', 'perorangan', 'pelanggan_umum']);
+            $table->enum('kategori_pelanggan', ['badan_usaha', 'pelanggan_umum']);
             $table->string('email_pelanggan', 255)->nullable();
             $table->string('alamat_pelanggan', 255);
             $table->string('id_negara', 11);

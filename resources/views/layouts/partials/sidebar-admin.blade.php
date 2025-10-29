@@ -182,11 +182,39 @@
         </span>
       </a>
 
+      <div class="h-2" x-show="isOpen"></div>
+
+      <div class="text-xs font-semibold text-gray-500 uppercase px-2" x-show="isOpen">Others</div>
+
+      <a 
+        href="{{ route('master.data-satuan.index') ?? '#' }}" 
+        class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
+        :class="{ 'justify-center': !isOpen && isDesktop }"
+      >
+        <img src="{{ asset('img/icon/iconBarang.png') }}" alt="Icon Barang" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
+        <span class="text-sm text-gray-700" x-show="isOpen" x-cloak>Daftar Barang</span>
+        <span 
+          x-show="!isOpen && isDesktop" 
+          x-cloak
+          x-ref="tooltip"
+          class="fixed left-[72px] bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
+          x-data="{ updatePosition() { 
+            const parentRect = this.$el.parentElement.getBoundingClientRect(); 
+            const scrollOffset = window.scrollY;
+            this.$el.style.top = (parentRect.top + scrollOffset + (parentRect.height / 2) - (this.$el.offsetHeight / 2)) + 'px'; 
+          } }"
+          @mouseover.window="updatePosition()"
+          @scroll.window="updatePosition()"
+          style="transform: translateY(-50%);">
+          Daftar Barang
+        </span>
+      </a>
+
     </nav>
   </div>
 
 <!-- Sidebar Footer -->
-<div class="border-t p-2" :class="{ 'px-2': !isOpen }" x-show="isOpen || isDesktop">
+<div class="border-t p-2" :class="{ 'px-2 ml-4': !isOpen }" x-show="isOpen || isDesktop">
     @php
         $user = Auth::user();
         $foto = $user && $user->foto_user ? asset('storage/' . $user->foto_user) : asset('img/icon/iconProfil.png');
