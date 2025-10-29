@@ -6,19 +6,19 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up(): void
+   public function up()
     {
-        Schema::create('detail_pembelian', function (Blueprint $table) {
-            $table->string('id_detail_pembelian', 11)->primary();
-            $table->string('id_pembelian', 11);
-            $table->string('id_barang', 30);
-            $table->integer('sub_total');
-            $table->integer('kuantitas');
-            $table->timestamps();
+    Schema::create('detail_pembelian', function (Blueprint $table) {
+        $table->id('id_detail_pembelian');
+        $table->string('id_pembelian');
+        $table->string('id_barang');
+        $table->integer('kuantitas');
+        $table->decimal('harga_beli', 15, 2);
+        $table->timestamps();
 
-            $table->foreign('id_pembelian')->references('id_pembelian')->on('pembelian');
-            $table->foreign('id_barang')->references('id_barang')->on('barang');
-        });
+        $table->foreign('id_pembelian')->references('id_pembelian')->on('pembelian')->onDelete('cascade');
+        $table->foreign('id_barang')->references('id_barang')->on('barang')->onDelete('cascade');
+    });
     }
 
     public function down(): void

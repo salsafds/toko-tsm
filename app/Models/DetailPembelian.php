@@ -19,6 +19,7 @@ class DetailPembelian extends Model
         'id_pembelian',
         'id_barang',
         'sub_total',
+        'harga_beli',
         'kuantitas',
     ];
 

@@ -16,18 +16,32 @@ class Pembelian extends Model
 
     protected $fillable = [
         'id_pembelian',
-        'nomor_po',
         'tanggal_pembelian',
-        'tanggal_kirim',
         'tanggal_terima',
         'id_supplier',
-        'id_karyawan',
+        'id_user',
         'jenis_pembayaran',
         'jumlah_bayar',
+    ];
+
+    protected $casts = [
+        'tanggal_pembelian' => 'date',
+        'tanggal_terima' => 'datetime',
+        'jumlah_bayar' => 'decimal:2',
     ];
 
     public function supplier()
     {
         return $this->belongsTo(Supplier::class, 'id_supplier', 'id_supplier');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'id_user', 'id_user');
+    }
+
+    public function detailPembelian()
+    {
+        return $this->hasMany(DetailPembelian::class, 'id_pembelian', 'id_pembelian');
     }
 }
