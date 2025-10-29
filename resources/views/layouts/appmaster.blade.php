@@ -77,7 +77,7 @@
   <!-- Header -->
   <header 
     x-cloak 
-    class="fixed top-0 right-0 left-0  transition-all duration-300 z-50"
+    class="fixed top-0 right-0 left-0  transition-all duration-300 z-20"
     :style="isDesktop ? { 'margin-left': isOpen ? '18rem' : '4rem' } : { 'margin-left': '0' }"
   >
       @include('layouts.partials.header')
