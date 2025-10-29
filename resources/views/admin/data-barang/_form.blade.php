@@ -1,4 +1,4 @@
-<form action="{{ isset($barang) ? route('master.data-barang.update', $barang->id_barang) : route('master.data-barang.store') }}" method="POST" class="space-y-6" id="barangForm">
+<form action="{{ isset($barang) ? route('admin.data-barang.update', $barang->id_barang) : route('admin.data-barang.store') }}" method="POST" class="space-y-6" id="barangForm">
   @csrf
   @if(isset($barang))
     @method('PUT')
@@ -137,83 +137,25 @@
     @endif
   </div>
 
-  {{-- Berat, Harga Beli, Stok, Harga Retail --}}
-  <div class="grid grid-cols-2 gap-3">
-    <div class="grid grid-cols-1 gap-1">
-      <label for="berat" class="block text-sm font-medium text-gray-700">
-        Berat (kg) <span class="text-rose-600">*</span>
-      </label>
-      <input
-        id="berat"
-        name="berat"
-        type="number"
-        step="0.01"
-        value="{{ old('berat', $barang->berat ?? '') }}"
-        class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('berat') ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-blue-500 focus:ring-blue-100' }}"
-        placeholder="Masukkan berat barang"
-      >
-      @if ($errors->has('berat'))
-        <p class="text-sm text-red-600 mt-1">{{ $errors->first('berat') }}</p>
-      @else
-        <p id="berat_error" class="text-sm text-red-600 mt-1 hidden"></p>
-        <p class="text-xs text-gray-500">Contoh: 1.5 (dalam kilogram).</p>
-      @endif
-    </div>
-
-    <div class="grid grid-cols-1 gap-1">
-      <label for="harga_beli" class="block text-sm font-medium text-gray-700">
-        Harga Beli <span class="text-rose-600">*</span>
-      </label>
-      <input
-        id="harga_beli"
-        name="harga_beli"
-        type="number"
-        value="{{ old('harga_beli', $barang->harga_beli ?? '') }}"
-        class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('harga_beli') ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-blue-500 focus:ring-blue-100' }}"
-        placeholder="Masukkan harga beli"
-      >
-      @if ($errors->has('harga_beli'))
-        <p class="text-sm text-red-600 mt-1">{{ $errors->first('harga_beli') }}</p>
-      @else
-        <p id="harga_beli_error" class="text-sm text-red-600 mt-1 hidden"></p>
-        <p class="text-xs text-gray-500">Contoh: 1000000.</p>
-      @endif
-    </div>
-  </div>
-
-  <div class="grid grid-cols-2 gap-3">
-    <div class="grid grid-cols-1 gap-1">
-      <label for="stok" class="block text-sm font-medium text-gray-700">
-        Stok <span class="text-rose-600">*</span>
-      </label>
-      <input
-        id="stok"
-        name="stok"
-        type="number"
-        value="{{ old('stok', $barang->stok ?? '') }}"
-        class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('stok') ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-blue-500 focus:ring-blue-100' }}"
-        placeholder="Masukkan jumlah stok"
-      >
-      @if ($errors->has('stok'))
-        <p class="text-sm text-red-600 mt-1">{{ $errors->first('stok') }}</p>
-      @else
-        <p id="stok_error" class="text-sm text-red-600 mt-1 hidden"></p>
-        <p class="text-xs text-gray-500">Contoh: 100.</p>
-      @endif
-    </div>
-
-    <div class="grid grid-cols-1 gap-1">
-      <label for="retail" class="block text-sm font-medium text-gray-700">Harga Retail</label>
-      <input
-        id="retail"
-        name="retail"
-        type="number"
-        value="{{ old('retail', $barang->retail ?? '') }}"
-        readonly
-        class="w-full rounded-md border bg-gray-100 px-3 py-2 text-sm text-gray-700 cursor-not-allowed"
-      >
-      <p class="text-xs text-gray-500">Harga retail dihitung otomatis berdasarkan weighted average.</p>
-    </div>
+  {{-- Berat --}}
+  <div class="grid grid-cols-1 gap-1">
+    <label for="berat" class="block text-sm font-medium text-gray-700">Berat <span class="text-rose-600">*</span>
+    </label>
+    <input
+      id="berat"
+      name="berat"
+      type="number"
+      step="0.01"
+      value="{{ old('berat', $barang->berat ?? '') }}"
+      class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('berat') ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-blue-500 focus:ring-blue-100' }}"
+      placeholder="Masukkan berat barang"
+    >
+    @if ($errors->has('berat'))
+      <p class="text-sm text-red-600 mt-1">{{ $errors->first('berat') }}</p>
+    @else
+      <p id="berat_error" class="text-sm text-red-600 mt-1 hidden"></p>
+      <p class="text-xs text-gray-500">Contoh: 1.5 (dalam kilogram).</p>
+    @endif
   </div>
 
   {{-- Tombol --}}
@@ -230,7 +172,7 @@
         Simpan
       @endif
     </button>
-    <a href="{{ route('master.data-barang.index') }}" class="inline-flex items-center px-4 py-2 border rounded-md text-sm text-gray-700 hover:bg-gray-50">
+    <a href="{{ route('admin.data-barang.index') }}" class="inline-flex items-center px-4 py-2 border rounded-md text-sm text-gray-700 hover:bg-gray-50">
       Batal
     </a>
   </div>

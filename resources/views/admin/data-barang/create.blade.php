@@ -1,4 +1,4 @@
-@extends('layouts.appmaster')
+@extends('layouts.app-admin')
 
 @section('title', 'Tambah Barang')
 
@@ -13,8 +13,8 @@
       </div>
     @endif
 
-    @include('master.data-barang._form', [
-      'action' => route('master.data-barang.store'),
+    @include('admin.data-barang._form', [
+      'action' => route('admin.data-barang.store'),
       'method' => 'POST',
       'barang' => null,
       'nextId' => $nextId,
@@ -35,8 +35,6 @@ document.addEventListener('DOMContentLoaded', function () {
   const satuanSelect = document.querySelector('#id_satuan');
   const merkInput = document.querySelector('#merk_barang');
   const beratInput = document.querySelector('#berat');
-  const hargaBeliInput = document.querySelector('#harga_beli');
-  const stokInput = document.querySelector('#stok');
 
   const namaError = document.querySelector('#nama_barang_error');
   const kategoriError = document.querySelector('#id_kategori_barang_error');
@@ -44,10 +42,8 @@ document.addEventListener('DOMContentLoaded', function () {
   const satuanError = document.querySelector('#id_satuan_error');
   const merkError = document.querySelector('#merk_barang_error');
   const beratError = document.querySelector('#berat_error');
-  const hargaBeliError = document.querySelector('#harga_beli_error');
-  const stokError = document.querySelector('#stok_error');
 
-  if (!form || !namaInput || !kategoriSelect || !supplierSelect || !satuanSelect || !merkInput || !beratInput || !hargaBeliInput || !stokInput) {
+  if (!form || !namaInput || !kategoriSelect || !supplierSelect || !satuanSelect || !merkInput || !beratInput) {
     console.error('Salah satu elemen input tidak ditemukan!');
     return;
   }
@@ -56,11 +52,11 @@ document.addEventListener('DOMContentLoaded', function () {
     e.preventDefault();
 
     // Reset errors
-    [namaError, kategoriError, supplierError, satuanError, merkError, beratError, hargaBeliError, stokError].forEach(el => {
+    [namaError, kategoriError, supplierError, satuanError, merkError, beratError].forEach(el => {
       el.textContent = '';
       el.classList.add('hidden');
     });
-    [namaInput, kategoriSelect, supplierSelect, satuanSelect, merkInput, beratInput, hargaBeliInput, stokInput].forEach(el => {
+    [namaInput, kategoriSelect, supplierSelect, satuanSelect, merkInput, beratInput].forEach(el => {
       el.classList.remove('border-red-500', 'bg-red-50');
     });
 
@@ -72,8 +68,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const satuan = satuanSelect.value;
     const merk = merkInput.value.trim();
     const berat = beratInput.value.trim();
-    const hargaBeli = hargaBeliInput.value.trim();
-    const stok = stokInput.value.trim();
 
     if (!nama) {
       namaError.textContent = 'Nama barang wajib diisi.';
@@ -127,32 +121,8 @@ document.addEventListener('DOMContentLoaded', function () {
       hasError = true;
     }
 
-    if (!hargaBeli) {
-      hargaBeliError.textContent = 'Harga beli wajib diisi.';
-      hargaBeliError.classList.remove('hidden');
-      hargaBeliInput.classList.add('border-red-500', 'bg-red-50');
-      hasError = true;
-    } else if (isNaN(parseFloat(hargaBeli)) || parseFloat(hargaBeli) < 0) {
-      hargaBeliError.textContent = 'Harga beli tidak boleh negatif.';
-      hargaBeliError.classList.remove('hidden');
-      hargaBeliInput.classList.add('border-red-500', 'bg-red-50');
-      hasError = true;
-    }
-
-    if (!stok) {
-      stokError.textContent = 'Stok wajib diisi.';
-      stokError.classList.remove('hidden');
-      stokInput.classList.add('border-red-500', 'bg-red-50');
-      hasError = true;
-    } else if (isNaN(parseInt(stok)) || parseInt(stok) < 0) {
-      stokError.textContent = 'Stok tidak boleh negatif.';
-      stokError.classList.remove('hidden');
-      stokInput.classList.add('border-red-500', 'bg-red-50');
-      hasError = true;
-    }
-
     if (hasError) {
-      console.log('Validation failed:', { nama, kategori, supplier, satuan, merk, berat, hargaBeli, stok });
+      console.log('Validation failed:', { nama, kategori, supplier, satuan, merk, berat });
       return;
     }
 
@@ -161,5 +131,5 @@ document.addEventListener('DOMContentLoaded', function () {
       form.submit();
     }
   });
-</script>
+});
 @endsection

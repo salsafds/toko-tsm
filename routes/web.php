@@ -4,23 +4,27 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PrivacyPolicyController;
+use App\Http\Controllers\ProfileController;
+
+// Master Controllers
+use App\Http\Controllers\Master\AgenEkspedisiController; 
 use App\Http\Controllers\Master\BahasaController;
-use App\Http\Controllers\Master\BarangController;
 use App\Http\Controllers\Master\JabatanController;
-use App\Http\Controllers\Master\KotaController;
+use App\Http\Controllers\Master\KategoriBarangController;
 use App\Http\Controllers\Master\NegaraController;
-use App\Http\Controllers\Master\PendidikanController;
+use App\Http\Controllers\Master\KotaController;
 use App\Http\Controllers\Master\ProvinsiController;
+use App\Http\Controllers\Master\PendidikanController;
 use App\Http\Controllers\Master\RoleController;
 use App\Http\Controllers\Master\SatuanController;
 use App\Http\Controllers\Master\SupplierController;
-use App\Http\Controllers\Master\KategoriBarangController;
-use App\Http\Controllers\Master\AgenEkspedisiController;     
 use App\Http\Controllers\Master\PelangganController;
 use App\Http\Controllers\Master\UserController;
-use App\Http\Controllers\PrivacyPolicyController;
-use App\Http\Controllers\ProfileController;
+
+// Admin Controllers
 use App\Http\Controllers\Admin\PembelianController;
+use App\Http\Controllers\Admin\BarangController;
 
 
 // Landing page
@@ -101,13 +105,13 @@ Route::middleware(['auth', 'role:R01'])->name('master.')->group(function () {
     //data bahasa
     Route::resource('data-bahasa', BahasaController::class);
     
-    //data barang
-    Route::resource('data-barang', BarangController::class);
-    
 });
 
 Route::middleware(['auth', 'role:R02'])->name('admin.')->group(function () {
     //data pembelian
     Route::resource('pembelian', PembelianController::class);
     Route::patch('pembelian/{id_pembelian}/selesai', [PembelianController::class, 'selesai'])->name('pembelian.selesai');
+
+    //data barang
+    Route::resource('data-barang', BarangController::class);
 });

@@ -1,4 +1,4 @@
-@extends('layouts.appmaster')
+@extends('layouts.app-admin')
 
 @section('title', 'Data Barang')
 
@@ -11,7 +11,7 @@
 
   <div class="flex flex-col items-start mb-4 gap-2 sm:flex-row sm:items-center sm:justify-between">
     <div class="flex items-center gap-2 w-full sm:w-auto">
-      <form method="GET" action="{{ route('master.data-barang.index') }}" class="flex items-center gap-2">
+      <form method="GET" action="{{ route('admin.data-barang.index') }}" class="flex items-center gap-2">
         <label for="per_page" class="text-xs sm:text-sm text-gray-600">Show</label>
         <select name="per_page" id="per_page" onchange="this.form.submit()" class="rounded-md border text-xs sm:text-sm px-2 py-1">
           @php $per = request()->query('per_page', 10); @endphp
@@ -24,7 +24,7 @@
     </div>
 
     <div class="flex items-center gap-2 w-full sm:w-auto">
-      <form method="GET" action="{{ route('master.data-barang.index') }}" class="flex items-center gap-2 w-full sm:w-auto">
+      <form method="GET" action="{{ route('admin.data-barang.index') }}" class="flex items-center gap-2 w-full sm:w-auto">
         <div class="relative border rounded-md w-full sm:w-64">
           <svg class="absolute left-3 top-2.5 h-4 sm:h-5 w-4 sm:w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z"/>
@@ -34,7 +34,7 @@
         </div>
       </form>
 
-      <a href="{{ route('master.data-barang.create') }}" 
+      <a href="{{ route('admin.data-barang.create') }}" 
          class="inline-flex items-center px-3 sm:px-4 py-2 bg-blue-700 text-white rounded-md text-sm hover:bg-blue-800">
         <svg class="h-4 sm:h-5 w-4 sm:w-5 sm:mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
@@ -62,7 +62,7 @@
           <th class="w-24 sm:w-32 px-2 sm:px-4 py-2 sm:py-3 border-r">Stok</th>
           <th class="w-24 sm:w-32 px-2 sm:px-4 py-2 sm:py-3 border-r">Satuan</th>
           <th class="w-32 sm:w-40 px-2 sm:px-4 py-2 sm:py-3 border-r">Harga Retail</th>
-          <th class="w-32 sm:w-40 px-2 sm:px-4 py-2 sm:py-3 border-r">Harga Beli</th>
+          <th class="w-32 sm:w-40 px-2 sm:px-4 py-2 sm:py-3">Harga Beli</th>
           <th class="w-32 sm:w-40 px-2 sm:px-4 py-2 sm:py-3">Aksi</th>
         </tr>
       </thead>
@@ -78,11 +78,11 @@
             <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ number_format($item->harga_beli, 0, ',', '.') }}</td>
             <td class="px-2 sm:px-4 py-2 text-center">
               <div class="flex justify-center items-center gap-2 sm:gap-3">
-                <a href="{{ route('master.data-barang.edit', $item->id_barang) }}"
+                <a href="{{ route('admin.data-barang.edit', $item->id_barang) }}"
                    class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300">
                   Edit
                 </a>
-                <form action="{{ route('master.data-barang.destroy', $item->id_barang) }}" method="POST"
+                <form action="{{ route('admin.data-barang.destroy', $item->id_barang) }}" method="POST"
                       onsubmit="return confirm('Apakah Anda yakin ingin menghapus data barang ini?');">
                   @csrf
                   @method('DELETE')
@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const query = searchInput.value;
     const perPage = perPageSelect.value;
 
-    fetch(`{{ route('master.data-barang.index') }}?q=${encodeURIComponent(query)}&per_page=${perPage}`, {
+    fetch(`{{ route('admin.data-barang.index') }}?q=${encodeURIComponent(query)}&per_page=${perPage}`, {
       headers: { 'X-Requested-With': 'XMLHttpRequest' }
     })
     .then(response => response.text())

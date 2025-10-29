@@ -25,4 +25,3 @@ Create.blade.php
   </div>
 </div>
 @endsection
-

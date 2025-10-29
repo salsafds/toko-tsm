@@ -1,4 +1,4 @@
-@extends('layouts.appmaster')
+@extends('layouts.app-admin')
 
 @section('title', 'Edit Barang')
 
@@ -6,8 +6,8 @@
 <div class="container mx-auto p-6">
   <div class="max-w-3xl mx-auto bg-white rounded-lg shadow-sm p-6">
     <h2 class="text-lg font-semibold text-gray-800 mb-4">Edit Data Barang</h2>
-    @include('master.data-barang._form', [
-      'action' => route('master.data-barang.update', $barang->id_barang),
+    @include('admin.data-barang._form', [
+      'action' => route('admin.data-barang.update', $barang->id_barang),
       'method' => 'PUT',
       'barang' => $barang,
       'kategoriBarang' => $kategoriBarang,
@@ -27,8 +27,6 @@ document.addEventListener('DOMContentLoaded', function () {
   const satuanSelect = document.querySelector('#id_satuan');
   const merkInput = document.querySelector('#merk_barang');
   const beratInput = document.querySelector('#berat');
-  const hargaBeliInput = document.querySelector('#harga_beli');
-  const stokInput = document.querySelector('#stok');
   const submitButton = document.querySelector('#submitButton');
 
   const namaError = document.querySelector('#nama_barang_error');
@@ -37,21 +35,17 @@ document.addEventListener('DOMContentLoaded', function () {
   const satuanError = document.querySelector('#id_satuan_error');
   const merkError = document.querySelector('#merk_barang_error');
   const beratError = document.querySelector('#berat_error');
-  const hargaBeliError = document.querySelector('#harga_beli_error');
-  const stokError = document.querySelector('#stok_error');
 
   if (!form) return;
 
-  // Simpan nilai awal
+  // Simpan nilai awal (hanya atribut dasar)
   const initial = {
     nama: namaInput?.value.trim() || '',
     kategori: kategoriSelect?.value || '',
     supplier: supplierSelect?.value || '',
     satuan: satuanSelect?.value || '',
     merk: merkInput?.value.trim() || '',
-    berat: beratInput?.value.trim() || '',
-    hargaBeli: hargaBeliInput?.value.trim() || '',
-    stok: stokInput?.value.trim() || ''
+    berat: beratInput?.value.trim() || ''
   };
 
   function checkChanges() {
@@ -61,9 +55,7 @@ document.addEventListener('DOMContentLoaded', function () {
       supplier: supplierSelect?.value || '',
       satuan: satuanSelect?.value || '',
       merk: merkInput?.value.trim() || '',
-      berat: beratInput?.value.trim() || '',
-      hargaBeli: hargaBeliInput?.value.trim() || '',
-      stok: stokInput?.value.trim() || ''
+      berat: beratInput?.value.trim() || ''
     };
 
     const same = Object.keys(initial).every(k => initial[k] === current[k]);
@@ -76,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  [namaInput, kategoriSelect, supplierSelect, satuanSelect, merkInput, beratInput, hargaBeliInput, stokInput].forEach(el => {
+  [namaInput, kategoriSelect, supplierSelect, satuanSelect, merkInput, beratInput].forEach(el => {
     if (!el) return;
     el.addEventListener('input', checkChanges);
     el.addEventListener('change', checkChanges);
@@ -86,10 +78,10 @@ document.addEventListener('DOMContentLoaded', function () {
     e.preventDefault();
 
     // Reset
-    [namaError, kategoriError, supplierError, satuanError, merkError, beratError, hargaBeliError, stokError].forEach(el => {
+    [namaError, kategoriError, supplierError, satuanError, merkError, beratError].forEach(el => {
       if (el) { el.textContent = ''; el.classList.add('hidden'); }
     });
-    [namaInput, kategoriSelect, supplierSelect, satuanSelect, merkInput, beratInput, hargaBeliInput, stokInput].forEach(el => {
+    [namaInput, kategoriSelect, supplierSelect, satuanSelect, merkInput, beratInput].forEach(el => {
       if (el) el.classList.remove('border-red-500', 'bg-red-50');
     });
 
@@ -101,8 +93,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const satuan = satuanSelect?.value || '';
     const merk = merkInput?.value.trim() || '';
     const berat = beratInput?.value.trim() || '';
-    const hargaBeli = hargaBeliInput?.value.trim() || '';
-    const stok = stokInput?.value.trim() || '';
 
     if (!nama) {
       namaError.textContent = 'Nama barang wajib diisi.';
@@ -156,30 +146,6 @@ document.addEventListener('DOMContentLoaded', function () {
       hasError = true;
     }
 
-    if (!hargaBeli) {
-      hargaBeliError.textContent = 'Harga beli wajib diisi.';
-      hargaBeliError.classList.remove('hidden');
-      hargaBeliInput.classList.add('border-red-500', 'bg-red-50');
-      hasError = true;
-    } else if (parseFloat(hargaBeli) < 0) {
-      hargaBeliError.textContent = 'Harga beli tidak boleh negatif.';
-      hargaBeliError.classList.remove('hidden');
-      hargaBeliInput.classList.add('border-red-500', 'bg-red-50');
-      hasError = true;
-    }
-
-    if (!stok) {
-      stokError.textContent = 'Stok wajib diisi.';
-      stokError.classList.remove('hidden');
-      stokInput.classList.add('border-red-500', 'bg-red-50');
-      hasError = true;
-    } else if (parseInt(stok) < 0) {
-      stokError.textContent = 'Stok tidak boleh negatif.';
-      stokError.classList.remove('hidden');
-      stokInput.classList.add('border-red-500', 'bg-red-50');
-      hasError = true;
-    }
-
     if (hasError) return;
 
     // Konfirmasi
@@ -190,5 +156,4 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 });
-</script>
 @endsection
