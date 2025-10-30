@@ -20,9 +20,12 @@ class Pengiriman extends Model
         'id_penjualan',
         'nomor_resi',
         'biaya_pengiriman',
-        'status_pembayaran',
-        'diskon_biaya_kirim',
         'total_berat_bruto',
+        'nama_penerima',
+        'telepon_penerima',
+        'alamat_penerima',
+        'kode_pos',
+        'catatan',
     ];
 
     public function agenEkspedisi()

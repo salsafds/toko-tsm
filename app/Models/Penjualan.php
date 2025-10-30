@@ -17,11 +17,27 @@ class Penjualan extends Model
     protected $fillable = [
         'id_penjualan',
         'id_pelanggan',
-        'tanggal_penjualan',
+        'id_anggota',
+        'tanggal_order',
+        'tanggal_selesai',
         'diskon_penjualan',
         'total_harga_penjualan',
         'jenis_pembayaran',
     ];
 
-    public function pelanggan() { return $this->belongsTo(Pelanggan::class, 'id_pelanggan'); }
+    protected $casts = [
+        'tanggal_order' => 'datetime',
+        'tanggal_selesai' => 'datetime',
+    ];
+
+    public function pelanggan()
+    {
+        return $this->belongsTo(Pelanggan::class, 'id_pelanggan');
+    }
+
+    // relasi baru ke anggota
+    public function anggota()
+    {
+        return $this->belongsTo(Anggota::class, 'id_anggota', 'id_anggota');
+    }
 }
