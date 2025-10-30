@@ -1,4 +1,7 @@
-<form action="{{ $action ?? '#' }}" method="POST" enctype="multipart/form-data" class="space-y-4 sm:space-y-6 max-w-3xl mx-auto px-4 sm:px-0">
+<form id="kategoriForm"
+  action="{{ $action ?? '#' }}" 
+  method="POST" enctype="multipart/form-data" 
+  class="space-y-4 sm:space-y-6 max-w-3xl mx-auto px-4 sm:px-0">
   @csrf
   @if(isset($method) && strtoupper($method) === 'PUT')
     @method('PUT')
@@ -47,17 +50,18 @@
   {{-- Submit / Cancel --}}
   <div class="flex items-center gap-3 justify-end sm:justify-start">
     <button 
-      type="submit" 
-      class="inline-flex items-center px-3 sm:px-4 py-2 bg-blue-700 text-white text-sm rounded-md hover:bg-blue-800 {{ isset($isEdit) && $isEdit ? 'disabled:opacity-50' : '' }}"
-      {{ isset($isEdit) && $isEdit ? 'disabled' : '' }}
-      id="submitButton"
-    >
-      @if(isset($kategori))
-        Update
-      @else
-        Simpan
-      @endif
-    </button>
+    type="submit" 
+    id="submitButton"
+    class="inline-flex items-center px-3 sm:px-4 py-2 bg-blue-700 text-white text-sm rounded-md hover:bg-blue-800 
+          {{ isset($isEdit) && $isEdit && (old('nama_kategori', $kategori->nama_kategori ?? '') === ($kategori->nama_kategori ?? '')) ? 'opacity-50' : '' }}"
+    {{ isset($isEdit) && $isEdit && (old('nama_kategori', $kategori->nama_kategori ?? '') === ($kategori->nama_kategori ?? '')) ? 'disabled' : '' }}
+  >
+    @if(isset($kategori))
+      Update
+    @else
+      Simpan
+    @endif
+  </button>
     <a href="{{ route('master.data-kategori-barang.index') }}" class="inline-flex items-center px-3 sm:px-4 py-2 border rounded-md text-sm text-gray-700 hover:bg-gray-50">
       Batal
     </a>
