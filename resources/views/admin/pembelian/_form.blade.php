@@ -1,5 +1,6 @@
-_form.blade.php (pembalian
-<form action="{{ isset($pembelian) ? route('admin.pembelian.update', $pembelian->id_pembelian) : route('admin.pembelian.store') }}" method="POST" class="space-y-6" id="pembelianForm">
+
+<form action="{{ isset($pembelian) ? route('admin.pembelian.update', $pembelian->id_pembelian) : route('admin.pembelian.store') }}" 
+      method="POST" class="space-y-6" id="pembelianForm">
   @csrf
   @if(isset($pembelian))
     @method('PUT')
@@ -8,183 +9,204 @@ _form.blade.php (pembalian
   {{-- ID Pembelian --}}
   <div>
     <label class="block text-sm font-medium text-gray-700">ID Pembelian</label>
-    <input type="text" name="id_pembelian" value="{{ old('id_pembelian', isset($pembelian) ? $pembelian->id_pembelian : ($nextId ?? '')) }}" readonly class="w-full rounded-md border bg-gray-100 px-3 py-2 text-sm text-gray-700 cursor-not-allowed">
+    <input type="text" name="id_pembelian" 
+           value="{{ old('id_pembelian', isset($pembelian) ? $pembelian->id_pembelian : ($nextId ?? '')) }}" 
+           readonly class="w-full rounded-md border bg-gray-100 px-3 py-2 text-sm text-gray-700 cursor-not-allowed">
     <p class="text-xs text-gray-500">ID dibuat otomatis secara berurutan. Preview: {{ $nextId ?? '' }}.</p>
   </div>
 
   {{-- Tanggal Pembelian --}}
-  <div class="grid grid-cols-1 gap-1">
-    <label for="tanggal_pembelian" class="block text-sm font-medium text-gray-700">Tanggal Pembelian <span class="text-rose-600">*</span></label>
-    <input id="tanggal_pembelian" name="tanggal_pembelian" type="date" value="{{ old('tanggal_pembelian', $pembelian->tanggal_pembelian ?? '') }}" class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('tanggal_pembelian') ? 'border-red-500 bg-red-50' : 'border-gray-200 focus:border-blue-500' }}">
-    @if ($errors->has('tanggal_pembelian'))
-      <p class="text-sm text-red-600 mt-1">{{ $errors->first('tanggal_pembelian') }}</p>
-    @endif
+  <div>
+    <label class="block text-sm font-medium text-gray-700">Tanggal Pembelian <span class="text-rose-600">*</span></label>
+    <input id="tanggal_pembelian" name="tanggal_pembelian" type="date"
+           value="{{ old('tanggal_pembelian', $pembelian->tanggal_pembelian ?? '') }}"
+           class="w-full rounded-md border px-3 py-2 text-sm border-gray-200 focus:border-blue-500">
+  </div>
+
+  {{-- Tanggal Terima --}}
+  <div>
+    <label class="block text-sm font-medium text-gray-700">Tanggal Terima</label>
+    <input id="tanggal_terima" name="tanggal_terima" type="date"
+           value="{{ old('tanggal_terima', $pembelian->tanggal_terima ?? '') }}"
+           readonly class="w-full rounded-md border bg-gray-100 px-3 py-2 text-sm text-gray-700 cursor-not-allowed">
+    <p class="text-xs text-gray-500">Tanggal terima diisi otomatis saat selesai.</p>
   </div>
 
   {{-- Supplier --}}
-  <div class="grid grid-cols-1 gap-1">
-    <label for="id_supplier" class="block text-sm font-medium text-gray-700">Supplier <span class="text-rose-600">*</span></label>
-    <select id="id_supplier" name="id_supplier" class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('id_supplier') ? 'border-red-500 bg-red-50' : 'border-gray-200 focus:border-blue-500' }}">
+  <div>
+    <label class="block text-sm font-medium text-gray-700">Supplier <span class="text-rose-600">*</span></label>
+    <select id="id_supplier" name="id_supplier" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200 focus:border-blue-500">
       <option value="">-- Pilih Supplier --</option>
       @foreach($suppliers as $s)
-        <option value="{{ $s->id_supplier }}" {{ old('id_supplier', $pembelian->id_supplier ?? '') == $s->id_supplier ? 'selected' : '' }}>{{ $s->nama_supplier }}</option>
+        <option value="{{ $s->id_supplier }}" {{ old('id_supplier', $pembelian->id_supplier ?? '') == $s->id_supplier ? 'selected' : '' }}>
+          {{ $s->nama_supplier }}
+        </option>
       @endforeach
     </select>
-    @if ($errors->has('id_supplier'))
-      <p class="text-sm text-red-600 mt-1">{{ $errors->first('id_supplier') }}</p>
-    @endif
   </div>
 
   {{-- User --}}
-  <div class="grid grid-cols-1 gap-1">
-    <label for="id_user" class="block text-sm font-medium text-gray-700">User <span class="text-rose-600">*</span></label>
-    <select id="id_user" name="id_user" class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('id_user') ? 'border-red-500 bg-red-50' : 'border-gray-200 focus:border-blue-500' }}">
+  <div>
+    <label class="block text-sm font-medium text-gray-700">User <span class="text-rose-600">*</span></label>
+    <select id="id_user" name="id_user" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200 focus:border-blue-500">
       <option value="">-- Pilih User --</option>
       @foreach($users as $u)
-        <option value="{{ $u->id }}" {{ old('id_user', $pembelian->id_user ?? '') == $u->id ? 'selected' : '' }}>{{ $u->name }}</option>
+        <option value="{{ $u->id }}" {{ old('id_user', $pembelian->id_user ?? '') == $u->id ? 'selected' : '' }}>
+          {{ $u->name }}
+        </option>
       @endforeach
     </select>
-    @if ($errors->has('id_user'))
-      <p class="text-sm text-red-600 mt-1">{{ $errors->first('id_user') }}</p>
-    @endif
   </div>
 
   {{-- Jenis Pembayaran --}}
-  <div class="grid grid-cols-1 gap-1">
-    <label for="jenis_pembayaran" class="block text-sm font-medium text-gray-700">Jenis Pembayaran <span class="text-rose-600">*</span></label>
-    <select id="jenis_pembayaran" name="jenis_pembayaran" class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('jenis_pembayaran') ? 'border-red-500 bg-red-50' : 'border-gray-200 focus:border-blue-500' }}">
+  <div>
+    <label class="block text-sm font-medium text-gray-700">Jenis Pembayaran <span class="text-rose-600">*</span></label>
+    <select id="jenis_pembayaran" name="jenis_pembayaran" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200 focus:border-blue-500">
       <option value="">-- Pilih Jenis --</option>
       <option value="cash" {{ old('jenis_pembayaran', $pembelian->jenis_pembayaran ?? '') == 'cash' ? 'selected' : '' }}>Cash/Tunai</option>
       <option value="kredit" {{ old('jenis_pembayaran', $pembelian->jenis_pembayaran ?? '') == 'kredit' ? 'selected' : '' }}>Kredit</option>
     </select>
-    @if ($errors->has('jenis_pembayaran'))
-      <p class="text-sm text-red-600 mt-1">{{ $errors->first('jenis_pembayaran') }}</p>
-    @endif
   </div>
 
   {{-- Jumlah Bayar --}}
-  <div class="grid grid-cols-1 gap-1">
-    <label for="jumlah_bayar" class="block text-sm font-medium text-gray-700">Jumlah Bayar <span class="text-rose-600">*</span></label>
-    <input id="jumlah_bayar" name="jumlah_bayar" type="number" step="0.01" value="{{ old('jumlah_bayar', $pembelian->jumlah_bayar ?? '') }}" class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('jumlah_bayar') ? 'border-red-500 bg-red-50' : 'border-gray-200 focus:border-blue-500' }}">
-    @if ($errors->has('jumlah_bayar'))
-      <p class="text-sm text-red-600 mt-1">{{ $errors->first('jumlah_bayar') }}</p>
-    @endif
+  <div>
+    <label class="block text-sm font-medium text-gray-700">Jumlah Bayar <span class="text-rose-600">*</span></label>
+    <input id="jumlah_bayar" name="jumlah_bayar" type="number" step="0.01"
+           value="{{ old('jumlah_bayar', $pembelian->jumlah_bayar ?? '') }}"
+           class="w-full rounded-md border px-3 py-2 text-sm border-gray-200 focus:border-blue-500">
   </div>
 
-  {{-- Tanggal Terima --}}
-  <div class="grid grid-cols-1 gap-1">
-    <label for="tanggal_terima" class="block text-sm font-medium text-gray-700">Tanggal Terima</label>
-    <input id="tanggal_terima" name="tanggal_terima" type="date" value="{{ old('tanggal_terima', $pembelian->tanggal_terima ?? '') }}" readonly class="w-full rounded-md border bg-gray-100 px-3 py-2 text-sm text-gray-700 cursor-not-allowed">
-    <p class="text-xs text-gray-500">Tanggal terima akan diisi otomatis saat selesai.</p>
+  {{-- Section Detail Barang --}}
+  <div id="detail_section" class="space-y-4">
+    <h3 class="text-lg font-medium text-gray-800">Detail Barang</h3>
+    <div id="detail_container">
+      <div class="detail_row grid grid-cols-4 gap-3 items-end">
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Barang</label>
+          <select name="details[0][id_barang]" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200 focus:border-blue-500">
+            <option value="">-- Pilih Barang --</option>
+            @foreach($barangs as $b)
+              <option value="{{ $b->id_barang }}">{{ $b->nama_barang }}</option>
+            @endforeach
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Harga Beli</label>
+          <input name="details[0][harga_beli]" type="number" step="0.01" min="0" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200 focus:border-blue-500">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Stok</label>
+          <input name="details[0][kuantitas]" type="number" min="1" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200 focus:border-blue-500">
+        </div>
+        <div class="flex items-center gap-2">
+          <button type="button" class="add_detail inline-flex items-center px-3 py-2 bg-green-600 text-white text-sm rounded-md hover:bg-green-700">Tambah</button>
+          <button type="button" class="remove_detail inline-flex items-center px-3 py-2 bg-red-600 text-white text-sm rounded-md hover:bg-red-700 hidden">Hapus</button>
+        </div>
+      </div>
+    </div>
   </div>
 
-  {{-- Checkbox untuk Detail --}}
-  <div class="flex items-center">
-    <input id="show_details" type="checkbox" class="rounded border-gray-300">
-    <label for="show_details" class="ml-2 text-sm text-gray-700">Tambahkan Detail Barang</label>
+  {{-- Tombol Simpan Pembelian --}}
+  <div class="flex items-center gap-3">
+    <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-700 text-white text-sm rounded-md hover:bg-blue-800">
+      {{ isset($pembelian) ? 'Update' : 'Simpan Pembelian' }}
+    </button>
+  </div>
+</form>
+
+
+<div class="border-t pt-6 mt-10">
+  <div class="flex items-center mb-4">
+    <input id="tambah_barang" type="checkbox" name="tambah_barang" class="rounded border-gray-300">
+    <label for="tambah_barang" class="ml-2 text-sm text-gray-700">Tambah Barang Baru</label>
   </div>
 
-{{-- Section Detail Barang --}}
-<div id="detail_section" class="hidden space-y-4">
-  <h3 class="text-lg font-medium text-gray-800">Detail Barang</h3>
-  <div id="detail_container">
-    {{-- Baris detail awal --}}
-    <div class="detail_row grid grid-cols-3 gap-3 items-end">
+  <form id="formTambahBarang" class="hidden space-y-4 border rounded-lg p-6 bg-gray-50">
+    @csrf
+    <h3 class="text-lg font-semibold text-gray-800 mb-2">Form Tambah Barang</h3>
+
+    <div class="grid grid-cols-2 gap-4">
       <div>
-        <label class="block text-sm font-medium text-gray-700">Barang</label>
-        <select name="details[0][id_barang]" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200 focus:border-blue-500">
-          <option value="">-- Pilih Barang --</option>
-          @foreach($barangs as $b)
-            <option value="{{ $b->id_barang }}">{{ $b->nama_barang }}</option>
+        <label class="block text-sm font-medium text-gray-700">Nama Barang</label>
+        <input type="text" name="nama_barang" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Kategori Barang</label>
+        <select name="id_kategori_barang" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200">
+          <option value="">-- Pilih Kategori --</option>
+          @foreach($kategoriBarang as $k)
+            <option value="{{ $k->id_kategori_barang }}">{{ $k->nama_kategori }}</option>
           @endforeach
         </select>
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-700">Kuantitas</label>
-        <input name="details[0][kuantitas]" type="number" min="1" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200 focus:border-blue-500">
+        <label class="block text-sm font-medium text-gray-700">Supplier</label>
+        <select name="id_supplier_barang" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200">
+          <option value="">-- Pilih Supplier --</option>
+          @foreach($suppliers as $s)
+            <option value="{{ $s->id_supplier }}">{{ $s->nama_supplier }}</option>
+          @endforeach
+        </select>
       </div>
-      <div class="flex items-center gap-2">
-        <button type="button" class="add_detail inline-flex items-center px-3 py-2 bg-green-600 text-white text-sm rounded-md hover:bg-green-700">Tambah</button>
-        <button type="button" class="remove_detail items-center px-3 py-2 bg-red-600 text-white text-sm rounded-md hover:bg-red-700 hidden">Hapus</button>
-        </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Satuan</label>
+        <select name="id_satuan" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200">
+          <option value="">-- Pilih Satuan --</option>
+          @foreach($satuan as $s)
+            <option value="{{ $s->id_satuan }}">{{ $s->nama_satuan }}</option>
+          @endforeach
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Berat (kg)</label>
+        <input type="number" step="0.01" name="berat" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200">
+      </div>
     </div>
-  </div>
-</div>
 
-{{-- Tombol --}}
-<div class="flex items-center gap-3">
-  <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-700 text-white text-sm rounded-md hover:bg-blue-800" id="submitButton">
-    @if(isset($pembelian))
-      Update
-    @else
-      Simpan
-    @endif
-  </button>
-  <a href="{{ route('admin.pembelian.index') }}" class="inline-flex items-center px-4 py-2 border rounded-md text-sm text-gray-700 hover:bg-gray-50">Batal</a>
+    <button type="submit" class="mt-4 px-4 py-2 bg-green-600 text-white text-sm rounded-md hover:bg-green-700">Simpan Barang</button>
+  </form>
 </div>
-</form>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-  const form = document.querySelector('#pembelianForm');
-  const showDetailsCheckbox = document.querySelector('#show_details');
-  const detailSection = document.querySelector('#detail_section');
-  const detailContainer = document.querySelector('#detail_container');
-  const submitButton = document.querySelector('#submitButton');
+  const tambahBarangCheckbox = document.getElementById('tambah_barang');
+  const formTambahBarang = document.getElementById('formTambahBarang');
 
-  // Toggle detail section
-  showDetailsCheckbox.addEventListener('change', function () {
-    if (this.checked) {
-      detailSection.classList.remove('hidden');
-    } else {
-      detailSection.classList.add('hidden');
-    }
+  tambahBarangCheckbox.addEventListener('change', () => {
+    formTambahBarang.classList.toggle('hidden', !tambahBarangCheckbox.checked);
   });
 
-  // Add detail row
-  detailContainer.addEventListener('click', function (e) {
-    if (e.target.classList.contains('add_detail')) {
-      const row = e.target.closest('.detail_row');
-      const newRow = row.cloneNode(true);
-      const index = detailContainer.children.length;
-      newRow.querySelectorAll('select, input').forEach(el => {
-        el.name = el.name.replace(/\$\d+\$/, `[${index}]`);
-        el.value = '';
-      });
-      newRow.querySelector('.remove_detail').classList.remove('hidden');
-      detailContainer.appendChild(newRow);
-    }
-
-    if (e.target.classList.contains('remove_detail')) {
-      e.target.closest('.detail_row').remove();
-    }
-  });
-
-  // Form validation
-  form.addEventListener('submit', function (e) {
+  formTambahBarang.addEventListener('submit', function (e) {
     e.preventDefault();
-    let hasError = false;
 
-    // Reset errors
-    document.querySelectorAll('.text-red-600').forEach(el => el.remove());
-    document.querySelectorAll('input, select').forEach(el => el.classList.remove('border-red-500', 'bg-red-50'));
+    fetch("{{ route('admin.data-barang.store') }}", {
+        method: "POST",
+        headers: {
+          "X-CSRF-TOKEN": "{{ csrf_token() }}",
+          "Accept": "application/json"
+        },
+        body: new FormData(formBarang)
+      })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        alert('Barang berhasil ditambahkan!');
+        formTambahBarang.reset();
+        formTambahBarang.classList.add('hidden');
+        tambahBarangCheckbox.checked = false;
 
-    // Validate required fields
-    const requiredFields = ['tanggal_pembelian', 'id_supplier', 'id_user', 'jenis_pembayaran', 'jumlah_bayar'];
-    requiredFields.forEach(field => {
-      const el = document.querySelector(`[name="${field}"]`);
-      if (!el.value) {
-        el.classList.add('border-red-500', 'bg-red-50');
-        el.insertAdjacentHTML('afterend', '<p class="text-sm text-red-600 mt-1">Field ini wajib diisi.</p>');
-        hasError = true;
+        // Update dropdown barang di form pembelian
+        document.querySelectorAll('select[name^="details"]').forEach(select => {
+          const option = document.createElement('option');
+          option.value = data.barang.id_barang;
+          option.textContent = data.barang.nama_barang;
+          select.appendChild(option);
+        });
+      } else {
+        alert('Gagal menambah barang.');
       }
-    });
-
-    if (hasError) return;
-
-    if (confirm('Apakah Anda yakin ingin menyimpan data pembelian ini?')) {
-      form.submit();
-    }
+    })
+    .catch(() => alert('Terjadi kesalahan.'));
   });
 });
 </script>

@@ -44,4 +44,10 @@ class Pembelian extends Model
     {
         return $this->hasMany(DetailPembelian::class, 'id_pembelian', 'id_pembelian');
     }
+
+    // Method untuk cek apakah pembelian sudah selesai
+    public function isSelesai()
+    {
+        return !is_null($this->tanggal_terima);
+    }
 }
