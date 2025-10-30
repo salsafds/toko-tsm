@@ -5,7 +5,7 @@
 @section('content')
 <div class="container mx-auto">
   <div class="flex flex-col items-start mb-4 sm:mb-6">
-    <h1 class="text-2xl sm:text-2xl font-semibold text-gray-800 text-left">Data Barang</h1>
+    <h1 class="text-2xl sm:text-2xl font-semibold text-gray-800 text-left">Daftar Barang</h1>
     <p class="text-xs sm:text-sm text-gray-500 mt-1 text-left">Daftar barang dan informasi stok</p>
   </div>
 
