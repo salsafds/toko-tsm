@@ -13,6 +13,14 @@ class DatabaseSeeder extends Seeder
             JabatanSeeder::class,
             PendidikanSeeder::class,
             UserSeeder::class,
+            NegaraSeeder::class,
+            ProvinsiSeeder::class,
+            KotaSeeder::class,
+            KategoriBarangSeeder::class,
+            SatuanSeeder::class,
+            SupplierSeeder::class,
+            PelangganSeeder::class,
+            BarangSeeder::class,
         ]);
     }
 }

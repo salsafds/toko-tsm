@@ -96,11 +96,10 @@ class KategoriBarangController extends Controller
     {
         // Ambil MAX angka dari id_kategori (SUBSTRING setelah 'KT', cast ke UNSIGNED)
         // Jika table kosong, maxNum = null → fallback ke 0
-        $maxNum = KategoriBarang::selectRaw('MAX(CAST(SUBSTRING(id_kategori_barang, 3) AS UNSIGNED)) as max_num')
+        $maxNum = KategoriBarang::selectRaw('MAX(CAST(SUBSTRING(id_kategori_barang, 4) AS UNSIGNED)) as max_num')
                                ->value('max_num') ?? 0;
         $nextNumber = $maxNum + 1;
         
-        // Format: KT + 4 digit dengan leading zero (KT0001, KT0002, ..., KT0100, dll.)
-        return 'KT' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        return 'KB' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
     }
 }

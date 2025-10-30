@@ -26,29 +26,30 @@
 
   {{-- Negara (dropdown) --}}
   <div class="grid grid-cols-1 gap-1">
-    <label for="id_negara" class="block text-sm font-medium text-gray-700">Negara <span class="text-rose-600">*</span></label>
-    <select
-      id="id_negara"
-      name="id_negara"
-      class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('id_negara') ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-blue-500 focus:ring-blue-100' }}"
-      aria-invalid="{{ $errors->has('id_negara') ? 'true' : 'false' }}"
-    >
-      <option value="">-- Pilih Negara --</option>
-      @if(isset($negara) && $negara->count())
-        @foreach($negara as $n)
-          <option value="{{ $n->id_negara }}" {{ old('id_negara', $provinsi->id_negara ?? '') == $n->id_negara ? 'selected' : '' }}>
-            {{ $n->nama_negara }}
-          </option>
-        @endforeach
-      @endif
-    </select>
+      <label for="id_negara" class="block text-sm font-medium text-gray-700">Negara <span class="text-rose-600">*</span></label>
+      
+      <select
+        id="id_negara"
+        name="id_negara"
+        class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('id_negara') ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-blue-500 focus:ring-blue-100' }}"
+        aria-invalid="{{ $errors->has('id_negara') ? 'true' : 'false' }}"
+      >
+        <option value="">-- Pilih Negara --</option>
+        @if(isset($negara) && $negara->count())
+          @foreach($negara as $n)
+            <option value="{{ $n->id_negara }}" {{ old('id_negara', $provinsi->id_negara ?? '') == $n->id_negara ? 'selected' : '' }}>
+              {{ $n->nama_negara }}
+            </option>
+          @endforeach
+        @endif
+      </select>
 
-    @if ($errors->has('id_negara'))
-      <p class="text-sm text-red-600 mt-1">{{ $errors->first('id_negara') }}</p>
-    @else
-      <p id="id_negara_error" class="text-sm text-red-600 mt-1 hidden"></p>
-      <p class="text-xs text-gray-500">Pilih negara untuk provinsi ini.</p>
-    @endif
+      @if ($errors->has('id_negara'))
+        <p class="text-sm text-red-600 mt-1">{{ $errors->first('id_negara') }}</p>
+      @else
+        <p id="id_negara_error" class="text-sm text-red-600 mt-1 hidden"></p>
+        <p class="text-xs text-gray-500">Pilih negara untuk provinsi ini.</p>
+      @endif
   </div>
 
   {{-- Nama Provinsi --}}

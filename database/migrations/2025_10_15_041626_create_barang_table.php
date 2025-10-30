@@ -19,9 +19,9 @@ return new class extends Migration
         $table->string('id_satuan', 11);
         $table->string('merk_barang', 255);
         $table->decimal('berat', 11,2);
-        $table->decimal('harga_beli', 10, 2);
-        $table->integer('stok');
-        $table->decimal('retail', 10, 2);
+        $table->decimal('harga_beli', 10, 2)->nullable();
+        $table->integer('stok')->nullable();
+        $table->decimal('retail', 10, 2)->nullable();
         $table->timestamps();
 
         $table->foreign('id_kategori_barang')->references('id_kategori_barang')->on('kategori_barang')->onDelete('cascade');

@@ -96,11 +96,11 @@ class SatuanController extends Controller
     {
         // Ambil MAX angka dari id_satuan (SUBSTRING setelah 'ST', cast ke UNSIGNED)
         // Jika table kosong, maxNum = null → fallback ke 0
-        $maxNum = Satuan::selectRaw('MAX(CAST(SUBSTRING(id_satuan, 3) AS UNSIGNED)) as max_num')
+        $maxNum = Satuan::selectRaw('MAX(CAST(SUBSTRING(id_satuan, 4) AS UNSIGNED)) as max_num')
                         ->value('max_num') ?? 0;
         $nextNumber = $maxNum + 1;
         
         // Format: ST + 2 digit dengan leading zero (ST01, ST02, ..., ST10, dll.)
-        return 'ST' . str_pad($nextNumber, 2, '0', STR_PAD_LEFT);
+        return 'ST' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
     }
 }
