@@ -53,39 +53,48 @@ class BarangController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
-        // Validasi hanya untuk atribut dasar
-        $request->validate([
-            'id_barang' => 'required|string|unique:barang,id_barang',
-            'nama_barang' => 'required|string|max:100',
-            'id_kategori_barang' => 'required|exists:kategori_barang,id_kategori_barang',
-            'id_supplier' => 'required|exists:supplier,id_supplier',
-            'id_satuan' => 'required|exists:satuan,id_satuan',
-            'merk_barang' => 'nullable|string|max:100',
-            'berat' => 'required|numeric|min:0.01',
-        ]);
-
-        // Buat barang dengan atribut dasar; set harga_beli, stok, retail ke default (0)
-        Barang::create([
-            'id_barang' => $request->id_barang,
-            'nama_barang' => $request->nama_barang,
-            'id_kategori_barang' => $request->id_kategori_barang,
-            'id_supplier' => $request->id_supplier,
-            'id_satuan' => $request->id_satuan,
-            'merk_barang' => $request->merk_barang ?: '',
-            'berat' => $request->berat,
-            'harga_beli' => 0,  // Default, akan diupdate di Pembelian
-            'stok' => 0,         // Default, akan diupdate di Pembelian
-            'retail' => 0,       // Default, hitung di Pembelian jika perlu
-        ]);
-
-        return redirect()->route('admin.data-barang.index')
-                        ->with('success', 'Data barang berhasil ditambahkan.');
+{
+    // Cek apakah barang dengan nama yang sama sudah ada
+    if (Barang::where('nama_barang', $request->nama_barang)->exists()) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Barang dengan nama ini sudah ada.'
+        ], 409);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
+    // Validasi
+    $request->validate([
+        'nama_barang' => 'required|string|max:100',
+        'id_kategori_barang' => 'required|exists:kategori_barang,id_kategori_barang',
+        'id_supplier' => 'required|exists:supplier,id_supplier',
+        'id_satuan' => 'required|exists:satuan,id_satuan',
+        'berat' => 'required|numeric|min:0.01',
+    ]);
+
+    // Buat ID otomatis
+    $nextId = $this->generateNextId();
+
+    // Simpan data
+    $barang = Barang::create([
+        'id_barang' => $nextId,
+        'nama_barang' => $request->nama_barang,
+        'id_kategori_barang' => $request->id_kategori_barang,
+        'id_supplier' => $request->id_supplier,
+        'id_satuan' => $request->id_satuan,
+        'merk_barang' => $request->merk_barang ?: '',
+        'berat' => $request->berat,
+        'harga_beli' => 0,
+        'stok' => 0,
+        'retail' => 0,
+    ]);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Barang berhasil ditambahkan.',
+        'barang' => $barang
+    ]);
+}
+
     public function edit($id_barang)
     {
         // Tidak ada perubahan
@@ -128,7 +137,7 @@ class BarangController extends Controller
         ]);
 
         $barang = Barang::findOrFail($id_barang);
-        // Update hanya atribut dasar; jangan sentuh harga_beli, stok, retail
+
         $barang->update([
             'nama_barang' => $request->nama_barang,
             'id_kategori_barang' => $request->id_kategori_barang,
@@ -136,7 +145,7 @@ class BarangController extends Controller
             'id_satuan' => $request->id_satuan,
             'merk_barang' => $request->merk_barang ?: '',
             'berat' => $request->berat,
-            // harga_beli, stok, retail tidak diupdate di sini
+
         ]);
 
         return redirect()->route('admin.data-barang.index')
@@ -145,7 +154,7 @@ class BarangController extends Controller
 
     public function destroy($id_barang)
     {
-        // Tidak ada perubahan
+
         $barang = Barang::findOrFail($id_barang);
         $barang->delete();
 

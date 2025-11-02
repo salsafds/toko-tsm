@@ -1,4 +1,3 @@
-index.blade.php
 @extends('layouts.app-admin')
 
 @section('title', 'Pembelian')
@@ -47,15 +46,17 @@ index.blade.php
     <div class="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded text-xs sm:text-sm">{{ session('success') }}</div>
   @endif
 
-  <div class="bg-white rounded-lg shadow-sm overflow-x-auto border border-gray-200">
+{{-- Bagian sebelum tabel tetap sama --}}
+
+<div class="bg-white rounded-lg shadow-sm overflow-x-auto border border-gray-200">
     <table class="min-w-full divide-y divide-gray-200 table-auto">
       <thead class="bg-gray-50">
         <tr class="text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
           <th class="w-24 sm:w-32 px-2 sm:px-4 py-2 sm:py-3 border-r border-gray-200">ID Pembelian</th>
-          <th class="w-32 sm:w-40 px-2 sm:px-4 py-2 sm:py-3 border-r">Tanggal Pembelian</th>
           <th class="w-32 sm:w-40 px-2 sm:px-4 py-2 sm:py-3 border-r">Supplier</th>
           <th class="w-32 sm:w-40 px-2 sm:px-4 py-2 sm:py-3 border-r">User</th>
           <th class="w-32 sm:w-40 px-2 sm:px-4 py-2 sm:py-3 border-r">Jumlah Bayar</th>
+          <th class="w-32 sm:w-40 px-2 sm:px-4 py-2 sm:py-3 border-r">Tanggal Pembelian</th> 
           <th class="w-32 sm:w-40 px-2 sm:px-4 py-2 sm:py-3 border-r">Tanggal Terima</th>
           <th class="w-32 sm:w-40 px-2 sm:px-4 py-2 sm:py-3">Aksi</th>
         </tr>
@@ -64,10 +65,10 @@ index.blade.php
         @forelse($pembelian as $item)
           <tr class="hover:bg-gray-50 transition-colors">
             <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r border-gray-100">{{ $item->id_pembelian }}</td>
-            <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->tanggal_pembelian->format('d/m/Y') }}</td>
             <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->supplier->nama_supplier }}</td>
-            <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->user->name }}</td>
+            <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->user->nama_lengkap }}</td>
             <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ number_format($item->jumlah_bayar, 0, ',', '.') }}</td>
+            <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->tanggal_pembelian->format('d/m/Y') }}</td>
             <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">
               @if($item->tanggal_terima)
                 {{ $item->tanggal_terima->format('d/m/Y') }}
@@ -84,26 +85,29 @@ index.blade.php
                 @if(!$item->tanggal_terima)
                   <a href="{{ route('admin.pembelian.edit', $item->id_pembelian) }}" class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 hover:bg-blue-200">Edit</a>
                 @else
-                  <span class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500">Edit (Disabled)</span>
+                  <span class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500">Edit</span>
                 @endif
-                <form action="{{ route('admin.pembelian.destroy', $item->id_pembelian) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data pembelian ini?');" style="display:inline;">
-                  @csrf
-                  @method('DELETE')
-                  <button type="submit" class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-rose-100 text-rose-700 hover:bg-rose-200">Delete</button>
-                </form>
+                @if(!$item->tanggal_terima)  
+                  <form action="{{ route('admin.pembelian.destroy', $item->id_pembelian) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data pembelian ini?');" style="display:inline;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-rose-100 text-rose-700 hover:bg-rose-200">Delete</button>
+                  </form>
+                @else
+                  <span class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500">Delete</span>
+                @endif
                 <a href="#" class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700 hover:bg-purple-200">Print</a> <!-- Placeholder untuk print -->
               </div>
             </td>
           </tr>
         @empty
           <tr>
-            <td colspan="7" class="px-4 py-6 sm:py-8 text-center text-xs sm:text-sm text-gray-500">Tidak ada data pembelian.</td>
+            <td colspan="8" class="px-4 py-6 sm:py-8 text-center text-xs sm:text-sm text-gray-500">Tidak ada data pembelian.</td>  {{-- Update colspan dari 7 ke 8 --}}
           </tr>
         @endforelse
       </tbody>
     </table>
   </div>
-
   <div class="mt-4 flex flex-col sm:flex-row items-center justify-between gap-2">
     <div class="text-xs sm:text-sm text-gray-600">
       @if(isset($pembelian) && $pembelian->total())

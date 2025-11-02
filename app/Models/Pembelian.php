@@ -45,7 +45,11 @@ class Pembelian extends Model
         return $this->hasMany(DetailPembelian::class, 'id_pembelian', 'id_pembelian');
     }
 
-    // Method untuk cek apakah pembelian sudah selesai
+    public function getTotalAttribute()
+    {
+        return $this->detailPembelian->sum('sub_total');
+    }
+
     public function isSelesai()
     {
         return !is_null($this->tanggal_terima);

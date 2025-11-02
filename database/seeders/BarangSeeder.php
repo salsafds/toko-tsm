@@ -35,9 +35,9 @@ class BarangSeeder extends Seeder
                 'id_satuan' => 'ST001',          // pcs
                 'merk_barang' => 'Standard',
                 'berat' => 0.02,
-                'harga_beli' => null,
-                'stok' => null,
-                'retail' => null,
+                'harga_beli' => 0,
+                'stok' => 0,
+                'retail' => 0,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

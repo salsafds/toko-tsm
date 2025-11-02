@@ -108,10 +108,12 @@ Route::middleware(['auth', 'role:R01'])->name('master.')->group(function () {
 });
 
 Route::middleware(['auth', 'role:R02'])->name('admin.')->group(function () {
+    
     //data pembelian
     Route::resource('pembelian', PembelianController::class);
     Route::patch('pembelian/{id_pembelian}/selesai', [PembelianController::class, 'selesai'])->name('pembelian.selesai');
-
+    Route::post('pembelian/store-barang', [PembelianController::class, 'storeBarang'])->name('pembelian.storeBarang');
+    
     //data barang
     Route::resource('data-barang', BarangController::class);
 });

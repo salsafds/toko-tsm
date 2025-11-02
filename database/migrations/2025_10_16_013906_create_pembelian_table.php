@@ -13,13 +13,21 @@ return new class extends Migration
             $table->date('tanggal_pembelian');
             $table->timestamp('tanggal_terima')->nullable();
             $table->string('id_supplier', 11);
-            $table->string('id_user', 11); 
-            $table->enum('jenis_pembayaran', ['cash', 'kredit']); 
-            $table->decimal('jumlah_bayar', 10, 2);
+            $table->string('id_user', 11);
+            $table->enum('jenis_pembayaran', ['Cash', 'Transfer', 'Kredit'])->nullable();
+            $table->decimal('jumlah_bayar', 15, 2)->default(0);
+
             $table->timestamps();
 
-            $table->foreign('id_supplier')->references('id_supplier')->on('supplier');
-            $table->foreign('id_user')->references('id_user')->on('users');
+            $table->foreign('id_supplier')->references('id_supplier')
+                  ->on('supplier')
+                  ->onUpdate('cascade')
+                  ->onDelete('restrict');
+
+            $table->foreign('id_user')->references('id_user')
+                  ->on('users')
+                  ->onUpdate('cascade')
+                  ->onDelete('restrict');
         });
     }
 
