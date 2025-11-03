@@ -46,9 +46,7 @@
     <div class="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded text-xs sm:text-sm">{{ session('success') }}</div>
   @endif
 
-{{-- Bagian sebelum tabel tetap sama --}}
-
-<div class="bg-white rounded-lg shadow-sm overflow-x-auto border border-gray-200">
+  <div class="bg-white rounded-lg shadow-sm overflow-x-auto border border-gray-200">
     <table class="min-w-full divide-y divide-gray-200 table-auto">
       <thead class="bg-gray-50">
         <tr class="text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -102,12 +100,13 @@
           </tr>
         @empty
           <tr>
-            <td colspan="8" class="px-4 py-6 sm:py-8 text-center text-xs sm:text-sm text-gray-500">Tidak ada data pembelian.</td>  {{-- Update colspan dari 7 ke 8 --}}
+            <td colspan="7" class="px-4 py-6 sm:py-8 text-center text-xs sm:text-sm text-gray-500">Tidak ada data pembelian.</td>
           </tr>
         @endforelse
       </tbody>
     </table>
   </div>
+
   <div class="mt-4 flex flex-col sm:flex-row items-center justify-between gap-2">
     <div class="text-xs sm:text-sm text-gray-600">
       @if(isset($pembelian) && $pembelian->total())

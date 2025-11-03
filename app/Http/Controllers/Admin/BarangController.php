@@ -48,10 +48,7 @@ class BarangController extends Controller
 
         return view('admin.data-barang.create', compact('kategoriBarang', 'supplier', 'satuan', 'nextId'));
     }
-
-    /**
-     * Store a newly created resource in storage.
-     */
+    
     public function store(Request $request)
 {
     // Cek apakah barang dengan nama yang sama sudah ada
@@ -162,9 +159,6 @@ class BarangController extends Controller
                         ->with('success', 'Data barang berhasil dihapus.');
     }
 
-    /**
-     * Generate ID barang berurutan (BRG0001, BRG0002, dll.)
-     */
     private function generateNextId()
     {
         // Tidak ada perubahan
@@ -173,4 +167,41 @@ class BarangController extends Controller
         $nextNumber = $maxNum + 1;
         return 'BRG' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
     }
+    public function updateRetail($id_barang, $kuantitas_baru, $harga_beli_baru)
+{
+    $barang = Barang::find($id_barang);
+    if (!$barang) return;
+
+    $stok_lama = $barang->stok ?? 0;
+    $harga_beli_lama = $barang->harga_beli ?? 0;
+
+    // Hitung total stok baru
+    $stok_total = $stok_lama + $kuantitas_baru;
+
+    // Jika stok total 0 (kasus ekstrem), set ulang semua nilai
+    if ($stok_total <= 0) {
+        $barang->update([
+            'stok' => 0,
+            'harga_beli' => 0,
+            'retail' => 0,
+        ]);
+        return;
+    }
+
+    // Hitung harga beli rata-rata tertimbang (weighted average)
+    $harga_beli_rata = (
+        ($stok_lama * $harga_beli_lama) + ($kuantitas_baru * $harga_beli_baru)
+    ) / $stok_total;
+
+    // Misal: margin retail 30%
+    $margin = 0.30;
+    $harga_retail_baru = $harga_beli_rata * (1 + $margin);
+
+    // Update data barang
+    $barang->update([
+        'stok' => $stok_total,
+        'harga_beli' => round($harga_beli_rata, 2),
+        'retail' => round($harga_retail_baru, 2),
+    ]);
+}
 }
