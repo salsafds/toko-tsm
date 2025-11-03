@@ -13,13 +13,13 @@ return new class extends Migration
             $table->string('id_agen_ekspedisi', 11);
             $table->string('id_penjualan', 11);
             $table->string('nomor_resi', 255)->unique()->nullable();
-            $table->integer('biaya_pengiriman')->nullable();
+            $table->integer('biaya_pengiriman')->default(0);
             $table->integer('total_berat_bruto')->nullable();
             $table->string('nama_penerima', 255);
             $table->string('telepon_penerima', 20);
             $table->text('alamat_penerima');
             $table->string('kode_pos', 10);
-            $table->text('catatan')->nullable();
+            $table->string('catatan')->nullable();
             $table->timestamps();
 
             $table->foreign('id_agen_ekspedisi')->references('id_ekspedisi')->on('agen_ekspedisi');

@@ -18,11 +18,13 @@ class Penjualan extends Model
         'id_penjualan',
         'id_pelanggan',
         'id_anggota',
+        'id_user', 
         'tanggal_order',
         'tanggal_selesai',
         'diskon_penjualan',
         'total_harga_penjualan',
         'jenis_pembayaran',
+        'catatan',
     ];
 
     protected $casts = [
@@ -35,9 +37,13 @@ class Penjualan extends Model
         return $this->belongsTo(Pelanggan::class, 'id_pelanggan');
     }
 
-    // relasi baru ke anggota
     public function anggota()
     {
         return $this->belongsTo(Anggota::class, 'id_anggota', 'id_anggota');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'id_user', 'id_user');
     }
 }
