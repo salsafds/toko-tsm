@@ -112,6 +112,7 @@ Route::middleware(['auth', 'role:R02'])->name('admin.')->group(function () {
     //data penjualan
     Route::resource('penjualan', PenjualanController::class);
     Route::get('penjualan/{id}/print', [PenjualanController::class, 'print'])->name('penjualan.print');
+    Route::patch('penjualan/{id_penjualan}/selesai', [PenjualanController::class, 'selesai'])->name('penjualan.selesai');
 
     //data pembelian
     Route::resource('pembelian', PembelianController::class);

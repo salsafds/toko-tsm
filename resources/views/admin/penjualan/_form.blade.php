@@ -106,71 +106,74 @@
   </div>
 
   {{-- Ekspedisi --}}
-  <div>
-    <label><input type="checkbox" id="ekspedisi" name="ekspedisi" value="1" {{ old('ekspedisi', isset($penjualan->pengiriman) ? 'checked' : '') }}> Ekspedisi</label>
-    <div id="ekspedisiForm" style="display: {{ old('ekspedisi') || isset($penjualan->pengiriman) ? 'block' : 'none' }};">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-        <div class="grid grid-cols-1 gap-1">
-          <label for="id_agen_ekspedisi" class="block text-sm font-medium text-gray-700">Agen Ekspedisi <span class="text-rose-600">*</span></label>
-          <select name="id_agen_ekspedisi" id="id_agen_ekspedisi" class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('id_agen_ekspedisi') ? 'border-red-500 bg-red-50' : 'border-gray-200' }}">
-            <option value="">-- Pilih Agen Ekspedisi --</option>
-            @foreach($agenEkspedisis as $ae)
-              <option value="{{ $ae->id_ekspedisi }}" {{ old('id_agen_ekspedisi', $penjualan->pengiriman->id_agen_ekspedisi ?? '') == $ae->id_ekspedisi ? 'selected' : '' }}>{{ $ae->nama_ekspedisi }}</option>
-            @endforeach
-          </select>
-          @if ($errors->has('id_agen_ekspedisi'))
-            <p class="text-sm text-red-600 mt-1">{{ $errors->first('id_agen_ekspedisi') }}</p>
-          @else
-            <p id="id_agen_ekspedisi_error" class="text-sm text-red-600 mt-1 hidden"></p>
-          @endif
-        </div>
-        <div class="grid grid-cols-1 gap-1">
-          <label for="nama_penerima" class="block text-sm font-medium text-gray-700">Nama Penerima <span class="text-rose-600">*</span></label>
-          <input type="text" name="nama_penerima" id="nama_penerima" value="{{ old('nama_penerima', $penjualan->pengiriman->nama_penerima ?? '') }}" class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('nama_penerima') ? 'border-red-500 bg-red-50' : 'border-gray-200' }}">
-          @if ($errors->has('nama_penerima'))
-            <p class="text-sm text-red-600 mt-1">{{ $errors->first('nama_penerima') }}</p>
-          @else
-            <p id="nama_penerima_error" class="text-sm text-red-600 mt-1 hidden"></p>
-          @endif
-        </div>
-        <div class="grid grid-cols-1 gap-1">
-          <label for="telepon_penerima" class="block text-sm font-medium text-gray-700">Telepon Penerima <span class="text-rose-600">*</span></label>
-          <input type="text" name="telepon_penerima" id="telepon_penerima" value="{{ old('telepon_penerima', $penjualan->pengiriman->telepon_penerima ?? '') }}" class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('telepon_penerima') ? 'border-red-500 bg-red-50' : 'border-gray-200' }}">
-          @if ($errors->has('telepon_penerima'))
-            <p class="text-sm text-red-600 mt-1">{{ $errors->first('telepon_penerima') }}</p>
-          @else
-            <p id="telepon_penerima_error" class="text-sm text-red-600 mt-1 hidden"></p>
-          @endif
-        </div>
-        <div class="grid grid-cols-1 gap-1">
-          <label for="kode_pos" class="block text-sm font-medium text-gray-700">Kode Pos <span class="text-rose-600">*</span></label>
-          <input type="text" name="kode_pos" id="kode_pos" value="{{ old('kode_pos', $penjualan->pengiriman->kode_pos ?? '') }}" class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('kode_pos') ? 'border-red-500 bg-red-50' : 'border-gray-200' }}">
-          @if ($errors->has('kode_pos'))
-            <p class="text-sm text-red-600 mt-1">{{ $errors->first('kode_pos') }}</p>
-          @else
-            <p id="kode_pos_error" class="text-sm text-red-600 mt-1 hidden"></p>
-          @endif
-        </div>
-        <div class="md:col-span-2 grid grid-cols-1 gap-1">
-          <label for="alamat_penerima" class="block text-sm font-medium text-gray-700">Alamat Penerima <span class="text-rose-600">*</span></label>
-          <textarea name="alamat_penerima" id="alamat_penerima" rows="3" class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('alamat_penerima') ? 'border-red-500 bg-red-50' : 'border-gray-200' }}">{{ old('alamat_penerima', $penjualan->pengiriman->alamat_penerima ?? '') }}</textarea>
-          @if ($errors->has('alamat_penerima'))
-            <p class="text-sm text-red-600 mt-1">{{ $errors->first('alamat_penerima') }}</p>
-          @else
-            <p id="alamat_penerima_error" class="text-sm text-red-600 mt-1 hidden"></p>
-          @endif
-        </div>
-        <div class="grid grid-cols-1 gap-1">
-          <label for="biaya_pengiriman" class="block text-sm font-medium text-gray-700">Biaya Pengiriman <span class="text-rose-600">*</span></label>
-          <input type="number" name="biaya_pengiriman" id="biaya_pengiriman" value="{{ old('biaya_pengiriman', $penjualan->pengiriman->biaya_pengiriman ?? '') }}" class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('biaya_pengiriman') ? 'border-red-500 bg-red-50' : 'border-gray-200' }}" step="0.01" min="0">
-          @if ($errors->has('biaya_pengiriman'))
-            <p class="text-sm text-red-600 mt-1">{{ $errors->first('biaya_pengiriman') }}</p>
-          @else
-            <p id="biaya_pengiriman_error" class="text-sm text-red-600 mt-1 hidden"></p>
-          @endif
-        </div>
+  <div class="mt-6">
+  <label class="flex items-center space-x-2 cursor-pointer select-none">
+    <input type="checkbox" id="ekspedisi" name="ekspedisi" value="1" class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500" {{ old('ekspedisi', isset($penjualan->pengiriman)) ? 'checked' : '' }}>
+    <span class="text-sm font-medium text-gray-700">Gunakan Ekspedisi</span>
+  </label>
+
+  <div id="ekspedisiForm" class="mt-3 p-5 bg-gray-50 border border-gray-300 rounded-md transition-all duration-300 ease-in-out" style="display: {{ old('ekspedisi') || isset($penjualan->pengiriman) ? 'block' : 'none' }};">
+    <p class="text-xs font-semibold text-gray-600 mb-4 flex items-center">
+      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+      Informasi Pengiriman
+    </p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Agen Ekspedisi -->
+      <div>
+        <label for="id_agen_ekspedisi" class="block text-sm font-medium text-gray-700">Agen Ekspedisi <span class="text-rose-600">*</span></label>
+        <select name="id_agen_ekspedisi" id="id_agen_ekspedisi" class="w-full rounded-md border px-3 py-2 text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-100">
+          <option value="">-- Pilih Agen --</option>
+          @foreach($agenEkspedisis as $ae)
+            <option value="{{ $ae->id_ekspedisi }}" {{ old('id_agen_ekspedisi', $penjualan->pengiriman->id_agen_ekspedisi ?? '') == $ae->id_ekspedisi ? 'selected' : '' }}>{{ $ae->nama_ekspedisi }}</option>
+          @endforeach
+        </select>
+        <p id="id_agen_ekspedisi_error" class="text-sm text-red-600 mt-1 hidden"></p>
+      </div>
+
+      <!-- Nama Penerima -->
+      <div>
+        <label for="nama_penerima" class="block text-sm font-medium text-gray-700">Nama Penerima <span class="text-rose-600">*</span></label>
+        <input type="text" name="nama_penerima" id="nama_penerima" value="{{ old('nama_penerima', $penjualan->pengiriman->nama_penerima ?? '') }}" class="w-full rounded-md border px-3 py-2 text-sm border-gray-300">
+        <p id="nama_penerima_error" class="text-sm text-red-600 mt-1 hidden"></p>
+      </div>
+
+      <!-- Telepon -->
+      <div>
+        <label for="telepon_penerima" class="block text-sm font-medium text-gray-700">Telepon Penerima <span class="text-rose-600">*</span></label>
+        <input type="text" name="telepon_penerima" id="telepon_penerima" value="{{ old('telepon_penerima', $penjualan->pengiriman->telepon_penerima ?? '') }}" class="w-full rounded-md border px-3 py-2 text-sm border-gray-300">
+        <p id="telepon_penerima_error" class="text-sm text-red-600 mt-1 hidden"></p>
+      </div>
+
+      <!-- Kode Pos -->
+      <div>
+        <label for="kode_pos" class="block text-sm font-medium text-gray-700">Kode Pos <span class="text-rose-600">*</span></label>
+        <input type="text" name="kode_pos" id="kode_pos" value="{{ old('kode_pos', $penjualan->pengiriman->kode_pos ?? '') }}" class="w-full rounded-md border px-3 py-2 text-sm border-gray-300">
+        <p id="kode_pos_error" class="text-sm text-red-600 mt-1 hidden"></p>
+      </div>
+
+      <!-- Alamat (2 kolom) -->
+      <div class="md:col-span-2">
+        <label for="alamat_penerima" class="block text-sm font-medium text-gray-700">Alamat Penerima <span class="text-rose-600">*</span></label>
+        <textarea name="alamat_penerima" id="alamat_penerima" rows="2" class="w-full rounded-md border px-3 py-2 text-sm border-gray-300">{{ old('alamat_penerima', $penjualan->pengiriman->alamat_penerima ?? '') }}</textarea>
+        <p id="alamat_penerima_error" class="text-sm text-red-600 mt-1 hidden"></p>
+      </div>
+
+      <!-- Nomor Resi (opsional) -->
+      <div>
+        <label for="nomor_resi" class="block text-sm font-medium text-gray-700">Nomor Resi</label>
+        <input type="text" name="nomor_resi" id="nomor_resi" value="{{ old('nomor_resi', $penjualan->pengiriman->nomor_resi ?? '') }}" class="w-full rounded-md border px-3 py-2 text-sm border-gray-300" placeholder="Opsional">
+        <p id="nomor_resi_error" class="text-sm text-red-600 mt-1 hidden"></p>
+      </div>
+
+      <!-- Biaya Pengiriman -->
+      <div>
+        <label for="biaya_pengiriman" class="block text-sm font-medium text-gray-700">Biaya Pengiriman <span class="text-rose-600">*</span></label>
+        <input type="number" name="biaya_pengiriman" id="biaya_pengiriman" value="{{ old('biaya_pengiriman', $penjualan->pengiriman->biaya_pengiriman ?? '') }}" class="w-full rounded-md border px-3 py-2 text-sm border-gray-300" step="0.01" min="0">
+        <p id="biaya_pengiriman_error" class="text-sm text-red-600 mt-1 hidden"></p>
       </div>
     </div>
+  </div>
   </div>
 
   {{-- Kasir --}}

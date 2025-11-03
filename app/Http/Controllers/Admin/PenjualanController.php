@@ -71,13 +71,14 @@ class PenjualanController extends Controller
             'jenis_pembayaran' => 'required|in:tunai,kredit',
             'jumlah_bayar' => 'required|numeric|min:0',
             'catatan' => 'nullable|string|max:255',
-            'ekspedisi' => 'nullable|boolean',
-            'id_agen_ekspedisi' => 'required_if:ekspedisi,true|exists:agen_ekspedisi,id_ekspedisi',
-            'nama_penerima' => 'required_if:ekspedisi,true|string|max:255',
-            'telepon_penerima' => 'required_if:ekspedisi,true|string|max:20',
-            'alamat_penerima' => 'required_if:ekspedisi,true|string',
-            'kode_pos' => 'required_if:ekspedisi,true|string|max:10',
-            'biaya_pengiriman' => 'required_if:ekspedisi,true|numeric|min:0',
+            'ekspedisi' => 'nullable|in:1',
+            'id_agen_ekspedisi' => 'required_if:ekspedisi,1|exists:agen_ekspedisi,id_ekspedisi',
+            'nama_penerima' => 'required_if:ekspedisi,1|string|max:255',
+            'telepon_penerima' => 'required_if:ekspedisi,1|string|max:20',
+            'alamat_penerima' => 'required_if:ekspedisi,1|string',
+            'kode_pos' => 'required_if:ekspedisi,1|string|max:10',
+            'nomor_resi' => 'nullable|string|max:255',
+            'biaya_pengiriman' => 'required_if:ekspedisi,1|numeric|min:0',
         ], [
             'id_pelanggan.exists' => 'Pelanggan tidak valid.',
             'id_anggota.exists' => 'Anggota tidak valid.',
@@ -136,11 +137,12 @@ class PenjualanController extends Controller
                 $barang->decrement('stok', $item['kuantitas']);
             }
 
-            if ($request->ekspedisi) {
+            if ($request->filled('ekspedisi') && $request->ekspedisi == '1') {
                 Pengiriman::create([
                     'id_pengiriman' => $this->generatePengirimanId(),
                     'id_agen_ekspedisi' => $request->id_agen_ekspedisi,
                     'id_penjualan' => $penjualan->id_penjualan,
+                    'nomor_resi' => $request->nomor_resi,
                     'biaya_pengiriman' => $request->biaya_pengiriman,
                     'nama_penerima' => $request->nama_penerima,
                     'telepon_penerima' => $request->telepon_penerima,
@@ -184,13 +186,14 @@ class PenjualanController extends Controller
             'jenis_pembayaran' => 'required|in:tunai,kredit',
             'jumlah_bayar' => 'required|numeric|min:0',
             'catatan' => 'nullable|string|max:255',
-            'ekspedisi' => 'nullable|boolean',
-            'id_agen_ekspedisi' => 'required_if:ekspedisi,true|exists:agen_ekspedisi,id_ekspedisi',
-            'nama_penerima' => 'required_if:ekspedisi,true|string|max:255',
-            'telepon_penerima' => 'required_if:ekspedisi,true|string|max:20',
-            'alamat_penerima' => 'required_if:ekspedisi,true|string',
-            'kode_pos' => 'required_if:ekspedisi,true|string|max:10',
-            'biaya_pengiriman' => 'required_if:ekspedisi,true|numeric|min:0',
+            'ekspedisi' => 'nullable|in:1',
+            'id_agen_ekspedisi' => 'required_if:ekspedisi,1|exists:agen_ekspedisi,id_ekspedisi',
+            'nama_penerima' => 'required_if:ekspedisi,1|string|max:255',
+            'telepon_penerima' => 'required_if:ekspedisi,1|string|max:20',
+            'alamat_penerima' => 'required_if:ekspedisi,1|string',
+            'kode_pos' => 'required_if:ekspedisi,1|string|max:10',
+            'nomor_resi' => 'nullable|string|max:255',
+            'biaya_pengiriman' => 'required_if:ekspedisi,1|numeric|min:0',
         ]);
 
         if (!$request->id_pelanggan && !$request->id_anggota) {
@@ -238,7 +241,7 @@ class PenjualanController extends Controller
                 $barang->decrement('stok', $item['kuantitas']);
             }
 
-            if ($request->ekspedisi) {
+            if ($request->filled('ekspedisi') && $request->ekspedisi == '1') {
                 Pengiriman::create([
                     'id_pengiriman' => $this->generatePengirimanId(),
                     'id_agen_ekspedisi' => $request->id_agen_ekspedisi,
