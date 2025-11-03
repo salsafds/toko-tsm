@@ -54,28 +54,56 @@
 
   {{-- Barang --}}
   <div id="barangContainer">
-    <label class="block text-sm font-medium text-gray-700">Barang <span class="text-rose-600">*</span></label>
-    @if(isset($penjualan))
-      @foreach($penjualan->detailPenjualan as $index => $detail)
-        <div class="grid grid-cols-3 gap-3 mb-2">
-          <select name="barang[{{ $index }}][id_barang]" class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('barang.' . $index . '.id_barang') ? 'border-red-500 bg-red-50' : 'border-gray-200' }}">
+    <label class="block text-sm font-medium text-gray-700 mb-1">Barang <span class="text-rose-600">*</span></label>
+    <p class="text-xs text-gray-500 mb-3">Pilih barang dan kuantitas yang akan dijual.</p>
+
+    {{-- Baris default pertama (kosong) --}}
+    <div class="grid grid-cols-12 gap-2 mb-2 barang-row items-center">
+        <div class="col-span-6">
+        <select name="barang[0][id_barang]" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200">
+            <option value="">-- Pilih Barang --</option>
             @foreach($barangs as $b)
-              <option value="{{ $b->id_barang }}" {{ $detail->id_barang == $b->id_barang ? 'selected' : '' }}>{{ $b->nama_barang }}</option>
+            <option value="{{ $b->id_barang }}">{{ $b->nama_barang }}</option>
             @endforeach
-          </select>
-          <input type="number" name="barang[{{ $index }}][kuantitas]" value="{{ $detail->kuantitas }}" class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('barang.' . $index . '.kuantitas') ? 'border-red-500 bg-red-50' : 'border-gray-200' }}" min="1">
-          <button type="button" class="removeBarang bg-red-500 text-white px-2 py-1 rounded">-</button>
+        </select>
         </div>
-      @endforeach
+        <div class="col-span-4">
+        <input type="number" name="barang[0][kuantitas]" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200" min="1" placeholder="Qty">
+        </div>
+        <div class="col-span-2 flex justify-center">
+        <button type="button" class="add-barang-btn bg-blue-500 hover:bg-blue-600 text-white w-8 h-8 rounded-full text-xs font-bold flex items-center justify-center shadow-sm">+</button>
+        </div>
+    </div>
+
+    {{-- Baris dari data edit (jika ada) --}}
+    @if(isset($penjualan) && $penjualan->detailPenjualan->count() > 0)
+        @foreach($penjualan->detailPenjualan as $index => $detail)
+        @if($index > 0) {{-- skip index 0 karena sudah ada default kosong --}}
+            <div class="grid grid-cols-12 gap-2 mb-2 barang-row items-center">
+            <div class="col-span-6">
+                <select name="barang[{{ $index }}][id_barang]" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200">
+                @foreach($barangs as $b)
+                    <option value="{{ $b->id_barang }}" {{ $detail->id_barang == $b->id_barang ? 'selected' : '' }}>{{ $b->nama_barang }}</option>
+                @endforeach
+                </select>
+            </div>
+            <div class="col-span-4">
+                <input type="number" name="barang[{{ $index }}][kuantitas]" value="{{ $detail->kuantitas }}" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200" min="1">
+            </div>
+            <div class="col-span-2 flex justify-center">
+                <button type="button" class="remove-barang-btn bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full text-xs font-bold flex items-center justify-center shadow-sm">−</button>
+            </div>
+            </div>
+        @endif
+        @endforeach
     @endif
+
     @if ($errors->has('barang'))
-      <p class="text-sm text-red-600 mt-1">{{ $errors->first('barang') }}</p>
+        <p class="text-sm text-red-600 mt-1">{{ $errors->first('barang') }}</p>
     @else
-      <p id="barang_error" class="text-sm text-red-600 mt-1 hidden"></p>
-      <p class="text-xs text-gray-500">Pilih barang dan kuantitas yang akan dijual.</p>
+        <p id="barang_error" class="text-sm text-red-600 mt-1 hidden"></p>
     @endif
   </div>
-  <button type="button" id="addBarang" class="bg-blue-500 text-white px-4 py-2 rounded">+</button>
 
   {{-- Ekspedisi --}}
   <div>
@@ -207,7 +235,6 @@ document.addEventListener('DOMContentLoaded', function () {
   const form = document.querySelector('#penjualanForm');
   const ekspedisiCheckbox = document.querySelector('#ekspedisi');
   const ekspedisiForm = document.querySelector('#ekspedisiForm');
-  const addBarangBtn = document.querySelector('#addBarang');
   const barangContainer = document.querySelector('#barangContainer');
   const submitButton = document.querySelector('#submitButton');
 
@@ -216,32 +243,83 @@ document.addEventListener('DOMContentLoaded', function () {
     ekspedisiForm.style.display = this.checked ? 'block' : 'none';
   });
 
-  // Add barang row
-  addBarangBtn.addEventListener('click', function() {
-    const index = barangContainer.querySelectorAll('.grid').length;
+  // --- BARANG DYNAMIC ROWS ---
+  let barangIndex = {{ isset($penjualan) ? $penjualan->detailPenjualan->count() : 1 }};
+
+  function updateActionButtons() {
+    const rows = barangContainer.querySelectorAll('.barang-row');
+    rows.forEach((row, index) => {
+      const actionCell = row.querySelector('.col-span-2');
+      const isLast = index === rows.length - 1;
+
+      actionCell.innerHTML = '';
+
+      if (isLast) {
+        const addBtn = document.createElement('button');
+        addBtn.type = 'button';
+        addBtn.className = 'add-barang-btn bg-blue-500 hover:bg-blue-600 text-white w-8 h-8 rounded-full text-xs font-bold flex items-center justify-center shadow-sm';
+        addBtn.innerHTML = '+';
+        addBtn.addEventListener('click', addNewRow);
+        actionCell.appendChild(addBtn);
+      } else {
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'remove-barang-btn bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full text-xs font-bold flex items-center justify-center shadow-sm';
+        removeBtn.innerHTML = '−';
+        removeBtn.addEventListener('click', function() {
+          row.remove();
+          updateActionButtons();
+          reindexBarangRows();
+        });
+        actionCell.appendChild(removeBtn);
+      }
+    });
+  }
+
+  function addNewRow() {
+    const newRow = document.createElement('div');
+    newRow.className = 'grid grid-cols-12 gap-2 mb-2 barang-row items-center';
+
     const barangOptions = @json($barangs);
     let options = '<option value="">-- Pilih Barang --</option>';
     barangOptions.forEach(b => {
       options += `<option value="${b.id_barang}">${b.nama_barang}</option>`;
     });
-    const newRow = `
-      <div class="grid grid-cols-3 gap-3 mb-2">
-        <select name="barang[${index}][id_barang]" class="w-full rounded-md border px-3 py-2 text-sm">${options}</select>
-        <input type="number" name="barang[${index}][kuantitas]" class="w-full rounded-md border px-3 py-2 text-sm" min="1">
-        <button type="button" class="removeBarang bg-red-500 text-white px-2 py-1 rounded">-</button>
+
+    newRow.innerHTML = `
+      <div class="col-span-6">
+        <select name="barang[${barangIndex}][id_barang]" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200">
+          ${options}
+        </select>
+      </div>
+      <div class="col-span-4">
+        <input type="number" name="barang[${barangIndex}][kuantitas]" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200" min="1" placeholder="Qty">
+      </div>
+      <div class="col-span-2 flex justify-center">
+        <!-- Tombol + akan ditambahkan oleh updateActionButtons -->
       </div>
     `;
-    barangContainer.insertAdjacentHTML('beforeend', newRow);
-  });
 
-  // Remove barang row
-  document.addEventListener('click', function(e) {
-    if (e.target.classList.contains('removeBarang')) {
-      e.target.parentElement.remove();
-    }
-  });
+    barangContainer.appendChild(newRow);
+    barangIndex++;
+    updateActionButtons();
+  }
 
-  // Form validation and submission
+  function reindexBarangRows() {
+    const rows = barangContainer.querySelectorAll('.barang-row');
+    rows.forEach((row, idx) => {
+      const select = row.querySelector('select');
+      const input = row.querySelector('input');
+      if (select) select.name = `barang[${idx}][id_barang]`;
+      if (input) input.name = `barang[${idx}][kuantitas]`;
+    });
+    barangIndex = rows.length;
+  }
+
+  // Inisialisasi
+  updateActionButtons();
+
+  // Form validation
   form.addEventListener('submit', function (e) {
     e.preventDefault();
 
@@ -259,26 +337,21 @@ document.addEventListener('DOMContentLoaded', function () {
     const idPelanggan = document.querySelector('#id_pelanggan').value;
     const idAnggota = document.querySelector('#id_anggota').value;
     if (!idPelanggan && !idAnggota) {
-      document.querySelector('#id_pelanggan_error').textContent = 'Pilih pelanggan atau anggota.';
-      document.querySelector('#id_pelanggan_error').classList.remove('hidden');
-      document.querySelector('#id_pelanggan').classList.add('border-red-500', 'bg-red-50');
+      showError('#id_pelanggan_error', 'Pilih pelanggan atau anggota.', '#id_pelanggan');
       hasError = true;
     }
     if (idPelanggan && idAnggota) {
-      document.querySelector('#id_pelanggan_error').textContent = 'Hanya boleh pilih satu: pelanggan atau anggota.';
-      document.querySelector('#id_pelanggan_error').classList.remove('hidden');
-      document.querySelector('#id_pelanggan').classList.add('border-red-500', 'bg-red-50');
+      showError('#id_pelanggan_error', 'Hanya boleh pilih satu: pelanggan atau anggota.', '#id_pelanggan');
       hasError = true;
     }
 
     // Validate barang
-    const barangRows = barangContainer.querySelectorAll('.grid');
+    const barangRows = barangContainer.querySelectorAll('.barang-row');
     if (barangRows.length === 0) {
-      document.querySelector('#barang_error').textContent = 'Minimal satu barang harus dipilih.';
-      document.querySelector('#barang_error').classList.remove('hidden');
+      showError('#barang_error', 'Minimal satu barang harus dipilih.');
       hasError = true;
     } else {
-      barangRows.forEach((row, index) => {
+      barangRows.forEach(row => {
         const select = row.querySelector('select');
         const input = row.querySelector('input');
         if (!select.value) {
@@ -292,42 +365,34 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
 
-    // Validate ekspedisi if checked
+    // Validate ekspedisi
     if (ekspedisiCheckbox.checked) {
       const fields = ['id_agen_ekspedisi', 'nama_penerima', 'telepon_penerima', 'alamat_penerima', 'kode_pos', 'biaya_pengiriman'];
       fields.forEach(field => {
         const el = document.querySelector(`#${field}`);
         if (!el.value) {
-          document.querySelector(`#${field}_error`).textContent = 'Field ini wajib diisi.';
-          document.querySelector(`#${field}_error`).classList.remove('hidden');
-          el.classList.add('border-red-500', 'bg-red-50');
+          showError(`#${field}_error`, 'Field ini wajib diisi.', `#${field}`);
           hasError = true;
         }
       });
     }
 
-    // Validate diskon, jenis_pembayaran, jumlah_bayar
+    // Validate lainnya
     const diskon = document.querySelector('#diskon_penjualan').value;
-    if (diskon < 0 || diskon > 100) {
-      document.querySelector('#diskon_penjualan_error').textContent = 'Diskon maksimal 100%.';
-      document.querySelector('#diskon_penjualan_error').classList.remove('hidden');
-      document.querySelector('#diskon_penjualan').classList.add('border-red-500', 'bg-red-50');
+    if (diskon !== '' && (diskon < 0 || diskon > 100)) {
+      showError('#diskon_penjualan_error', 'Diskon maksimal 100%.', '#diskon_penjualan');
       hasError = true;
     }
 
     const jenisPembayaran = document.querySelector('#jenis_pembayaran').value;
     if (!jenisPembayaran) {
-      document.querySelector('#jenis_pembayaran_error').textContent = 'Jenis pembayaran wajib dipilih.';
-      document.querySelector('#jenis_pembayaran_error').classList.remove('hidden');
-      document.querySelector('#jenis_pembayaran').classList.add('border-red-500', 'bg-red-50');
+      showError('#jenis_pembayaran_error', 'Jenis pembayaran wajib dipilih.', '#jenis_pembayaran');
       hasError = true;
     }
 
     const jumlahBayar = document.querySelector('#jumlah_bayar').value;
     if (!jumlahBayar || jumlahBayar < 0) {
-      document.querySelector('#jumlah_bayar_error').textContent = 'Jumlah bayar wajib diisi.';
-      document.querySelector('#jumlah_bayar_error').classList.remove('hidden');
-      document.querySelector('#jumlah_bayar').classList.add('border-red-500', 'bg-red-50');
+      showError('#jumlah_bayar_error', 'Jumlah bayar wajib diisi.', '#jumlah_bayar');
       hasError = true;
     }
 
@@ -340,19 +405,26 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  // For edit mode, disable submit if no changes (similar to supplier)
+  function showError(errorSelector, message, inputSelector = null) {
+    const errorEl = document.querySelector(errorSelector);
+    errorEl.textContent = message;
+    errorEl.classList.remove('hidden');
+    if (inputSelector) {
+      document.querySelector(inputSelector).classList.add('border-red-500', 'bg-red-50');
+    }
+  }
+
+  // Edit mode: disable submit if no changes
   @if(isset($isEdit) && $isEdit)
   const initial = {
     id_pelanggan: document.querySelector('#id_pelanggan').value,
     id_anggota: document.querySelector('#id_anggota').value,
-    // Add more initial values as needed
   };
 
   function checkChanges() {
     const current = {
       id_pelanggan: document.querySelector('#id_pelanggan').value,
       id_anggota: document.querySelector('#id_anggota').value,
-      // Add more current values
     };
     const same = Object.keys(initial).every(k => initial[k] === current[k]);
     submitButton.disabled = same;
@@ -363,6 +435,7 @@ document.addEventListener('DOMContentLoaded', function () {
     el.addEventListener('input', checkChanges);
     el.addEventListener('change', checkChanges);
   });
+  checkChanges(); // Initial check
   @endif
 });
 </script>
