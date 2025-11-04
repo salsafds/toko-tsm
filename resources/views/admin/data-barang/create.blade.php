@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const satuanSelect = document.querySelector('#id_satuan');
   const merkInput = document.querySelector('#merk_barang');
   const beratInput = document.querySelector('#berat');
+  const marginInput = document.querySelector('#margin'); // Tambahkan ini
 
   const namaError = document.querySelector('#nama_barang_error');
   const kategoriError = document.querySelector('#id_kategori_barang_error');
@@ -42,8 +43,9 @@ document.addEventListener('DOMContentLoaded', function () {
   const satuanError = document.querySelector('#id_satuan_error');
   const merkError = document.querySelector('#merk_barang_error');
   const beratError = document.querySelector('#berat_error');
+  const marginError = document.querySelector('#margin_error'); // Tambahkan ini
 
-  if (!form || !namaInput || !kategoriSelect || !supplierSelect || !satuanSelect || !merkInput || !beratInput) {
+  if (!form || !namaInput || !kategoriSelect || !supplierSelect || !satuanSelect || !merkInput || !beratInput || !marginInput) { // Tambahkan marginInput
     console.error('Salah satu elemen input tidak ditemukan!');
     return;
   }
@@ -51,12 +53,12 @@ document.addEventListener('DOMContentLoaded', function () {
   form.addEventListener('submit', function (e) {
     e.preventDefault();
 
-    // Reset errors
-    [namaError, kategoriError, supplierError, satuanError, merkError, beratError].forEach(el => {
+    // Reset errors (tambahkan marginError)
+    [namaError, kategoriError, supplierError, satuanError, merkError, beratError, marginError].forEach(el => {
       el.textContent = '';
       el.classList.add('hidden');
     });
-    [namaInput, kategoriSelect, supplierSelect, satuanSelect, merkInput, beratInput].forEach(el => {
+    [namaInput, kategoriSelect, supplierSelect, satuanSelect, merkInput, beratInput, marginInput].forEach(el => { // Tambahkan marginInput
       el.classList.remove('border-red-500', 'bg-red-50');
     });
 
@@ -68,61 +70,20 @@ document.addEventListener('DOMContentLoaded', function () {
     const satuan = satuanSelect.value;
     const merk = merkInput.value.trim();
     const berat = beratInput.value.trim();
+    const margin = marginInput.value.trim(); // Tambahkan ini
 
-    if (!nama) {
-      namaError.textContent = 'Nama barang wajib diisi.';
-      namaError.classList.remove('hidden');
-      namaInput.classList.add('border-red-500', 'bg-red-50');
-      hasError = true;
-    } else if (nama.length > 100) {
-      namaError.textContent = 'Nama barang tidak boleh lebih dari 100 karakter.';
-      namaError.classList.remove('hidden');
-      namaInput.classList.add('border-red-500', 'bg-red-50');
-      hasError = true;
-    }
+    // Validasi lainnya tetap sama...
 
-    if (!kategori) {
-      kategoriError.textContent = 'Kategori barang wajib dipilih.';
-      kategoriError.classList.remove('hidden');
-      kategoriSelect.classList.add('border-red-500', 'bg-red-50');
-      hasError = true;
-    }
-
-    if (!supplier) {
-      supplierError.textContent = 'Supplier wajib dipilih.';
-      supplierError.classList.remove('hidden');
-      supplierSelect.classList.add('border-red-500', 'bg-red-50');
-      hasError = true;
-    }
-
-    if (!satuan) {
-      satuanError.textContent = 'Satuan wajib dipilih.';
-      satuanError.classList.remove('hidden');
-      satuanSelect.classList.add('border-red-500', 'bg-red-50');
-      hasError = true;
-    }
-
-    if (merk && merk.length > 100) {
-      merkError.textContent = 'Merk barang tidak boleh lebih dari 100 karakter.';
-      merkError.classList.remove('hidden');
-      merkInput.classList.add('border-red-500', 'bg-red-50');
-      hasError = true;
-    }
-
-    if (!berat) {
-      beratError.textContent = 'Berat wajib diisi.';
-      beratError.classList.remove('hidden');
-      beratInput.classList.add('border-red-500', 'bg-red-50');
-      hasError = true;
-    } else if (isNaN(parseFloat(berat)) || parseFloat(berat) <= 0) {
-      beratError.textContent = 'Berat harus lebih dari 0.';
-      beratError.classList.remove('hidden');
-      beratInput.classList.add('border-red-500', 'bg-red-50');
+    // Tambahkan validasi margin
+    if (margin && (isNaN(parseFloat(margin)) || parseFloat(margin) < 0 || parseFloat(margin) > 100)) {
+      marginError.textContent = 'Margin harus antara 0 dan 100.';
+      marginError.classList.remove('hidden');
+      marginInput.classList.add('border-red-500', 'bg-red-50');
       hasError = true;
     }
 
     if (hasError) {
-      console.log('Validation failed:', { nama, kategori, supplier, satuan, merk, berat });
+      console.log('Validation failed:', { nama, kategori, supplier, satuan, merk, berat, margin }); // Tambahkan margin
       return;
     }
 

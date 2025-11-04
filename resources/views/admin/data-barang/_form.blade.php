@@ -138,42 +138,65 @@
   </div>
 
   {{-- Berat --}}
-  <div class="grid grid-cols-1 gap-1">
-    <label for="berat" class="block text-sm font-medium text-gray-700">Berat <span class="text-rose-600">*</span>
-    </label>
-    <input
-      id="berat"
-      name="berat"
-      type="number"
-      step="0.01"
-      value="{{ old('berat', $barang->berat ?? '') }}"
-      class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('berat') ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-blue-500 focus:ring-blue-100' }}"
-      placeholder="Masukkan berat barang"
-    >
-    @if ($errors->has('berat'))
-      <p class="text-sm text-red-600 mt-1">{{ $errors->first('berat') }}</p>
-    @else
-      <p id="berat_error" class="text-sm text-red-600 mt-1 hidden"></p>
-      <p class="text-xs text-gray-500">Contoh: 1.5 (dalam kilogram).</p>
-    @endif
-  </div>
+<div class="grid grid-cols-1 gap-1">
+  <label for="berat" class="block text-sm font-medium text-gray-700">Berat <span class="text-rose-600">*</span>
+  </label>
+  <input
+    id="berat"
+    name="berat"
+    type="number"
+    step="0.01"
+    value="{{ old('berat', $barang->berat ?? '') }}"
+    class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('berat') ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-blue-500 focus:ring-blue-100' }}"
+    placeholder="Masukkan berat barang"
+  >
+  @if ($errors->has('berat'))
+    <p class="text-sm text-red-600 mt-1">{{ $errors->first('berat') }}</p>
+  @else
+    <p id="berat_error" class="text-sm text-red-600 mt-1 hidden"></p>
+    <p class="text-xs text-gray-500">Contoh: 1.5 (dalam kilogram).</p>
+  @endif
+</div>
 
-  {{-- Tombol --}}
-  <div class="flex items-center gap-3">
-    <button 
-      type="submit" 
-      class="inline-flex items-center px-4 py-2 bg-blue-700 text-white text-sm rounded-md hover:bg-blue-800 {{ isset($isEdit) && $isEdit ? 'disabled:opacity-50' : '' }}"
-      {{ isset($isEdit) && $isEdit ? 'disabled' : '' }}
-      id="submitButton"
-    >
-      @if(isset($barang))
-        Update
-      @else
-        Simpan
-      @endif
-    </button>
-    <a href="{{ route('admin.data-barang.index') }}" class="inline-flex items-center px-4 py-2 border rounded-md text-sm text-gray-700 hover:bg-gray-50">
-      Batal
-    </a>
-  </div>
+{{-- Margin --}}
+<div class="grid grid-cols-1 gap-1">
+  <label for="margin" class="block text-sm font-medium text-gray-700">
+    Margin (%)
+  </label>
+  <input
+    id="margin"
+    name="margin"
+    type="number"
+    step="0.01"
+    min="0"
+    max="100"
+    value="{{ old('margin', $barang->margin ?? 0) }}"
+    class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('margin') ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-blue-500 focus:ring-blue-100' }}"
+    placeholder="Masukkan margin dalam persen (contoh: 30.00)"
+  >
+  @if ($errors->has('margin'))
+    <p class="text-sm text-red-600 mt-1">{{ $errors->first('margin') }}</p>
+  @else
+    <p id="margin_error" class="text-sm text-red-600 mt-1 hidden"></p>
+    <p class="text-xs text-gray-500">Margin keuntungan dalam persen (0-100). Default: 0.</p>
+  @endif
+</div>
+
+{{-- Tombol --}}
+<div class="flex items-center gap-3">
+  <button 
+    type="submit" 
+    class="inline-flex items-center px-4 py-2 bg-blue-700 text-white text-sm rounded-md hover:bg-blue-800"
+    id="submitButton"
+  >
+    @if(isset($barang))
+      Update
+    @else
+      Simpan
+    @endif
+  </button>
+  <a href="{{ route('admin.data-barang.index') }}" class="inline-flex items-center px-4 py-2 border rounded-md text-sm text-gray-700 hover:bg-gray-50">
+    Batal
+  </a>
+</div>
 </form>

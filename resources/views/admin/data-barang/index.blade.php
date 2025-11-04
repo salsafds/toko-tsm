@@ -51,59 +51,61 @@
     </div>
   @endif
 
-  {{-- Table --}}
-  <div class="bg-white rounded-lg shadow-sm overflow-x-auto border border-gray-200">
-    <table class="min-w-full divide-y divide-gray-200 table-auto">
-      <thead class="bg-gray-50">
-        <tr class="text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-          <th class="w-24 sm:w-32 px-2 sm:px-4 py-2 sm:py-3 border-r border-gray-200">ID Barang</th>
-          <th class="flex-1 px-2 sm:px-4 py-2 sm:py-3 border-r">Nama Barang</th>
-          <th class="w-32 sm:w-40 px-2 sm:px-4 py-2 sm:py-3 border-r">Kategori</th>
-          <th class="w-24 sm:w-32 px-2 sm:px-4 py-2 sm:py-3 border-r">Stok</th>
-          <th class="w-24 sm:w-32 px-2 sm:px-4 py-2 sm:py-3 border-r">Satuan</th>
-          <th class="w-32 sm:w-40 px-2 sm:px-4 py-2 sm:py-3 border-r">Harga Retail</th>
-          <th class="w-32 sm:w-40 px-2 sm:px-4 py-2 sm:py-3">Harga Beli</th>
-          <th class="w-32 sm:w-40 px-2 sm:px-4 py-2 sm:py-3">Aksi</th>
+{{-- Table --}}
+<div class="bg-white rounded-lg shadow-sm overflow-x-auto border border-gray-200">
+  <table class="min-w-full divide-y divide-gray-200 table-auto">
+    <thead class="bg-gray-50">
+      <tr class="text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+        <th class="w-24 sm:w-32 px-2 sm:px-4 py-2 sm:py-3 border-r border-gray-200">ID Barang</th>
+        <th class="flex-1 px-2 sm:px-4 py-2 sm:py-3 border-r">Nama Barang</th>
+        <th class="w-32 sm:w-40 px-2 sm:px-4 py-2 sm:py-3 border-r">Kategori</th>
+        <th class="w-24 sm:w-32 px-2 sm:px-4 py-2 sm:py-3 border-r">Stok</th>
+        <th class="w-24 sm:w-32 px-2 sm:px-4 py-2 sm:py-3 border-r">Satuan</th>
+        <th class="w-32 sm:w-40 px-2 sm:px-4 py-2 sm:py-3 border-r">Harga Retail</th>
+        <th class="w-32 sm:w-40 px-2 sm:px-4 py-2 sm:py-3 border-r">Harga Beli</th>
+        <th class="w-24 sm:w-32 px-2 sm:px-4 py-2 sm:py-3 border-r">Margin (%)</th> <!-- Tambahkan ini -->
+        <th class="w-32 sm:w-40 px-2 sm:px-4 py-2 sm:py-3">Aksi</th>
+      </tr>
+    </thead>
+    <tbody class="bg-white divide-y divide-gray-100">
+      @forelse($barang as $item)
+        <tr class="hover:bg-gray-50 transition-colors">
+          <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r border-gray-100">{{ $item->id_barang }}</td>
+          <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->nama_barang }}</td>
+          <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->kategoriBarang->nama_kategori }}</td>
+          <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->stok }}</td>
+          <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->satuan->nama_satuan }}</td>
+          <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ number_format($item->retail, 0, ',', '.') }}</td>
+          <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ number_format($item->harga_beli, 0, ',', '.') }}</td>
+          <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->margin }}%</td> <!-- Tambahkan ini -->
+          <td class="px-2 sm:px-4 py-2 text-center">
+            <div class="flex justify-center items-center gap-2 sm:gap-3">
+              <a href="{{ route('admin.data-barang.edit', $item->id_barang) }}"
+                 class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                Edit
+              </a>
+              <form action="{{ route('admin.data-barang.destroy', $item->id_barang) }}" method="POST"
+                    onsubmit="return confirm('Apakah Anda yakin ingin menghapus data barang ini?');">
+                @csrf
+                @method('DELETE')
+                <button type="submit"
+                        class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-rose-100 text-rose-700 hover:bg-rose-200 focus:outline-none focus:ring-2 focus:ring-rose-300">
+                  Delete
+                </button>
+              </form>
+            </div>
+          </td>
         </tr>
-      </thead>
-      <tbody class="bg-white divide-y divide-gray-100">
-        @forelse($barang as $item)
-          <tr class="hover:bg-gray-50 transition-colors">
-            <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r border-gray-100">{{ $item->id_barang }}</td>
-            <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->nama_barang }}</td>
-            <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->kategoriBarang->nama_kategori }}</td>
-            <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->stok }}</td>
-            <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->satuan->nama_satuan }}</td>
-            <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ number_format($item->retail, 0, ',', '.') }}</td>
-            <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ number_format($item->harga_beli, 0, ',', '.') }}</td>
-            <td class="px-2 sm:px-4 py-2 text-center">
-              <div class="flex justify-center items-center gap-2 sm:gap-3">
-                <a href="{{ route('admin.data-barang.edit', $item->id_barang) }}"
-                   class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300">
-                  Edit
-                </a>
-                <form action="{{ route('admin.data-barang.destroy', $item->id_barang) }}" method="POST"
-                      onsubmit="return confirm('Apakah Anda yakin ingin menghapus data barang ini?');">
-                  @csrf
-                  @method('DELETE')
-                  <button type="submit"
-                          class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-rose-100 text-rose-700 hover:bg-rose-200 focus:outline-none focus:ring-2 focus:ring-rose-300">
-                    Delete
-                  </button>
-                </form>
-              </div>
-            </td>
-          </tr>
-        @empty
-          <tr>
-            <td colspan="8" class="px-4 py-6 sm:py-8 text-center text-xs sm:text-sm text-gray-500">
-              Tidak ada data barang.
-            </td>
-          </tr>
-        @endforelse
-      </tbody>
-    </table>
-  </div>
+      @empty
+        <tr>
+          <td colspan="9" class="px-4 py-6 sm:py-8 text-center text-xs sm:text-sm text-gray-500"> <!-- Update colspan dari 8 ke 9 -->
+            Tidak ada data barang.
+          </td>
+        </tr>
+      @endforelse
+    </tbody>
+  </table>
+</div>
 
   {{-- Pagination --}}
   <div class="mt-4 flex flex-col sm:flex-row items-center justify-between gap-2">

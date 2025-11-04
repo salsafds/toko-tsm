@@ -184,15 +184,10 @@ class PembelianController extends Controller
 
         $pembelian->update(['tanggal_terima' => now()]);
 
-        // Update stok, harga_beli, dan retail
+        // Update stok, harga_beli, dan retail hanya melalui updateRetail (weighted average)
         foreach ($pembelian->detailPembelian as $detail) {
-            $barang = Barang::find($detail->id_barang);
-            if ($barang) {
-                $barang->increment('stok', $detail->kuantitas);
-                $barang->update(['harga_beli' => $detail->harga_beli]); // Update harga beli
-                // Panggil weighted average di BarangController
-                app(BarangController::class)->updateRetail($detail->id_barang, $detail->kuantitas, $detail->harga_beli);
-            }
+            // Panggil updateRetail untuk menangani semua update (stok, harga beli rata-rata, retail)
+            app(BarangController::class)->updateRetail($detail->id_barang, $detail->kuantitas, $detail->harga_beli);
         }
 
         return redirect()->route('admin.pembelian.index')->with('success', 'Pembelian ditandai selesai dan stok diperbarui.');
@@ -202,14 +197,14 @@ class PembelianController extends Controller
     {
         $maxNum = Pembelian::selectRaw('MAX(CAST(SUBSTRING(id_pembelian, 4) AS UNSIGNED)) as max_num')->value('max_num') ?? 0;
         $nextNumber = $maxNum + 1;
-        return 'PEM' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        return 'PB' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
     }
 
     private function generateNextDetailId()
     {
         $maxNum = DetailPembelian::selectRaw('MAX(CAST(SUBSTRING(id_detail_pembelian, 4) AS UNSIGNED)) as max_num')->value('max_num') ?? 0;
         $nextNumber = $maxNum + 1;
-        return 'DET' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        return 'DTL' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
     }
 
     private function generateNextIdBarang()
@@ -220,33 +215,35 @@ class PembelianController extends Controller
     }
 
     public function storeBarang(Request $request)
-    {
-        $request->validate([
-            'nama_barang' => 'required|string|max:255',
-            'id_kategori_barang' => 'required|exists:kategori_barang,id_kategori_barang',
-            'id_supplier_barang' => 'required|exists:supplier,id_supplier',
-            'id_satuan' => 'required|exists:satuan,id_satuan',
-            'merk_barang' => 'nullable|string|max:255',
-            'berat' => 'required|numeric|min:0.01',
-        ]);
+{
+    $request->validate([
+        'nama_barang' => 'required|string|max:255',
+        'id_kategori_barang' => 'required|exists:kategori_barang,id_kategori_barang',
+        'id_supplier_barang' => 'required|exists:supplier,id_supplier',
+        'id_satuan' => 'required|exists:satuan,id_satuan',
+        'merk_barang' => 'nullable|string|max:255',
+        'berat' => 'required|numeric|min:0.01',
+        'margin' => 'nullable|numeric|min:0|max:100', 
+    ]);
 
-        $barang = Barang::create([
-            'id_barang' => $this->generateNextIdBarang(),
-            'nama_barang' => $request->nama_barang,
-            'id_kategori_barang' => $request->id_kategori_barang,
-            'id_supplier' => $request->id_supplier_barang,
-            'id_satuan' => $request->id_satuan,
-            'merk_barang' => $request->merk_barang ?: '',
-            'berat' => $request->berat,
-            'harga_beli' => 0,
-            'stok' => 0,
-            'retail' => 0,
-        ]);
+    $barang = Barang::create([
+        'id_barang' => $this->generateNextIdBarang(),
+        'nama_barang' => $request->nama_barang,
+        'id_kategori_barang' => $request->id_kategori_barang,
+        'id_supplier' => $request->id_supplier_barang,
+        'id_satuan' => $request->id_satuan,
+        'merk_barang' => $request->merk_barang ?: '',
+        'berat' => $request->berat,
+        'harga_beli' => 0,
+        'stok' => 0,
+        'retail' => 0,
+        'margin' => $request->margin ?? 0,
+    ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Barang baru berhasil ditambahkan.',
-            'barang' => $barang
-        ]);
+    return response()->json([
+        'success' => true,
+        'message' => 'Barang baru berhasil ditambahkan.',
+        'barang' => $barang
+    ]);
     }
 }

@@ -20,6 +20,7 @@ return new class extends Migration
         $table->string('merk_barang', 255);
         $table->decimal('berat', 11,2);
         $table->decimal('harga_beli', 10, 2)->default(0);
+        $table->decimal('margin', 5, 2)->default(0.00);
         $table->integer('stok')->default(0);
         $table->decimal('retail', 10, 2)->default(0);
         $table->timestamps();

@@ -219,6 +219,30 @@
       </div>
     </div>
 
+    {{-- Margin --}}
+    <div class="grid grid-cols-1 gap-1">
+      <label for="margin" class="block text-sm font-medium text-gray-700">
+        Margin (%)
+      </label>
+      <input
+        id="margin"
+        name="margin"
+        type="number"
+        step="0.01"
+        min="0"
+        max="100"
+        value="{{ old('margin', $barang->margin ?? 0) }}"
+        class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('margin') ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-blue-500 focus:ring-blue-100' }}"
+        placeholder="Masukkan margin dalam persen (contoh: 30.00)"
+      >
+      @if ($errors->has('margin'))
+        <p class="text-sm text-red-600 mt-1">{{ $errors->first('margin') }}</p>
+      @else
+        <p id="margin_error" class="text-sm text-red-600 mt-1 hidden"></p>
+        <p class="text-xs text-gray-500">Margin keuntungan dalam persen (0-100)</p>
+      @endif
+    </div>
+
     <button type="submit" class="mt-4 px-4 py-2 bg-green-600 text-white text-sm rounded-md hover:bg-green-700">Simpan Barang</button>
   </form>
 </div>
@@ -482,5 +506,17 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
   }
+  document.addEventListener('input', function(e) {
+    if (e.target.name && (e.target.name.includes('[harga_beli]') || e.target.name.includes('[kuantitas]'))) {
+      const row = e.target.closest('.detail_row');
+      const hargaInput = row.querySelector('input[name*="[harga_beli]"]');
+      const qtyInput = row.querySelector('input[name*="[kuantitas]"]');
+      const subTotalInput = row.querySelector('input[readonly]'); 
+      const harga = parseFloat(hargaInput.value) || 0;
+      const qty = parseInt(qtyInput.value) || 0;
+      const subTotal = harga * qty;
+      subTotalInput.value = subTotal.toFixed(2);
+    }
+  });
 });
 </script>
