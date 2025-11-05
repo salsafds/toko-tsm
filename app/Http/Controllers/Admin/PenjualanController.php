@@ -60,7 +60,7 @@ class PenjualanController extends Controller
             'barang.*.kuantitas' => 'required|integer|min:1',
             'diskon_penjualan' => 'nullable|numeric|min:0|max:100',
             'jenis_pembayaran' => 'required|in:tunai,kredit',
-            'jumlah_bayar' => 'required|numeric|min:0',
+            'uang_diterima' => 'nullable|numeric|min:0',
             'catatan' => 'nullable|string|max:255',
         ];
 
@@ -72,7 +72,6 @@ class PenjualanController extends Controller
             'barang.*.kuantitas.required' => 'Kuantitas wajib diisi.',
             'diskon_penjualan.max' => 'Diskon maksimal 100%.',
             'jenis_pembayaran.required' => 'Jenis pembayaran wajib dipilih.',
-            'jumlah_bayar.required' => 'Jumlah bayar wajib diisi.',
         ];
 
         // Hanya validasi ekspedisi jika checkbox dikirim dan bernilai 1
@@ -180,7 +179,7 @@ class PenjualanController extends Controller
             'barang.*.kuantitas' => 'required|integer|min:1',
             'diskon_penjualan' => 'nullable|numeric|min:0|max:100',
             'jenis_pembayaran' => 'required|in:tunai,kredit',
-            'jumlah_bayar' => 'required|numeric|min:0',
+            'uang_diterima' => 'nullable|numeric|min:0',
             'catatan' => 'nullable|string|max:255',
         ];
 
@@ -192,7 +191,6 @@ class PenjualanController extends Controller
             'barang.*.kuantitas.required' => 'Kuantitas wajib diisi.',
             'diskon_penjualan.max' => 'Diskon maksimal 100%.',
             'jenis_pembayaran.required' => 'Jenis pembayaran wajib dipilih.',
-            'jumlah_bayar.required' => 'Jumlah bayar wajib diisi.',
         ];
 
         if ($request->has('ekspedisi') && $request->ekspedisi == '1') {

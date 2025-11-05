@@ -24,6 +24,7 @@ class Penjualan extends Model
         'diskon_penjualan',
         'total_harga_penjualan',
         'jenis_pembayaran',
+        'uang_diterima',
         'catatan',
     ];
 

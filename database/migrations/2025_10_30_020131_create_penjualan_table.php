@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('total_harga_penjualan');
             $table->enum('jenis_pembayaran', ['tunai', 'kredit']);
             $table->string('catatan')->nullable();
+            $table->integer('uang_diterima')->nullable();
             $table->timestamps();
 
             // FK pelanggan

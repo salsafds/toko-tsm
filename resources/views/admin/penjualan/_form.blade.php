@@ -57,51 +57,60 @@
     <label class="block text-sm font-medium text-gray-700 mb-1">Barang <span class="text-rose-600">*</span></label>
     <p class="text-xs text-gray-500 mb-3">Pilih barang dan kuantitas yang akan dijual.</p>
 
-    {{-- Baris default pertama --}}
-    <div class="grid grid-cols-12 gap-2 mb-2 barang-row items-center">
+    @php
+      $barangIndex = 0;
+      $isEdit = isset($penjualan) && $penjualan->detailPenjualan->count() > 0;
+    @endphp
+
+    @if($isEdit)
+      @foreach($penjualan->detailPenjualan as $detail)
+        <div class="grid grid-cols-12 gap-2 mb-2 barang-row items-center">
+          <div class="col-span-6">
+            <select name="barang[{{ $barangIndex }}][id_barang]" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200">
+              <option value="">-- Pilih Barang --</option>
+              @foreach($barangs as $b)
+                <option value="{{ $b->id_barang }}" data-harga="{{ $b->retail }}" {{ $detail->id_barang == $b->id_barang ? 'selected' : '' }}>
+                  {{ $b->nama_barang }}
+                </option>
+              @endforeach
+            </select>
+          </div>
+          <div class="col-span-4">
+            <input type="number" name="barang[{{ $barangIndex }}][kuantitas]" value="{{ old('barang.' . $barangIndex . '.kuantitas', $detail->kuantitas) }}" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200" min="1" placeholder="Qty">
+          </div>
+          <div class="col-span-2 flex justify-center">
+            @if($loop->last)
+              <button type="button" class="add-barang-btn bg-blue-500 hover:bg-blue-600 text-white w-8 h-8 rounded-full text-xs font-bold flex items-center justify-center shadow-sm">+</button>
+            @else
+              <button type="button" class="remove-barang-btn bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full text-xs font-bold flex items-center justify-center shadow-sm">-</button>
+            @endif
+          </div>
+        </div>
+        @php $barangIndex++ @endphp
+      @endforeach
+    @else
+      <div class="grid grid-cols-12 gap-2 mb-2 barang-row items-center">
         <div class="col-span-6">
-        <select name="barang[0][id_barang]" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200">
+          <select name="barang[0][id_barang]" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200">
             <option value="">-- Pilih Barang --</option>
             @foreach($barangs as $b)
-            <option value="{{ $b->id_barang }}">{{ $b->nama_barang }}</option>
+              <option value="{{ $b->id_barang }}" data-harga="{{ $b->retail }}">{{ $b->nama_barang }}</option>
             @endforeach
-        </select>
+          </select>
         </div>
         <div class="col-span-4">
-        <input type="number" name="barang[0][kuantitas]" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200" min="1" placeholder="Qty">
+          <input type="number" name="barang[0][kuantitas]" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200" min="1" placeholder="Qty">
         </div>
         <div class="col-span-2 flex justify-center">
-        <button type="button" class="add-barang-btn bg-blue-500 hover:bg-blue-600 text-white w-8 h-8 rounded-full text-xs font-bold flex items-center justify-center shadow-sm">+</button>
+          <button type="button" class="add-barang-btn bg-blue-500 hover:bg-blue-600 text-white w-8 h-8 rounded-full text-xs font-bold flex items-center justify-center shadow-sm">+</button>
         </div>
-    </div>
-
-    {{-- Baris dari data edit --}}
-    @if(isset($penjualan) && $penjualan->detailPenjualan->count() > 0)
-        @foreach($penjualan->detailPenjualan as $index => $detail)
-        @if($index > 0)
-            <div class="grid grid-cols-12 gap-2 mb-2 barang-row items-center">
-            <div class="col-span-6">
-                <select name="barang[{{ $index }}][id_barang]" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200">
-                @foreach($barangs as $b)
-                    <option value="{{ $b->id_barang }}" {{ $detail->id_barang == $b->id_barang ? 'selected' : '' }}>{{ $b->nama_barang }}</option>
-                @endforeach
-                </select>
-            </div>
-            <div class="col-span-4">
-                <input type="number" name="barang[{{ $index }}][kuantitas]" value="{{ $detail->kuantitas }}" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200" min="1">
-            </div>
-            <div class="col-span-2 flex justify-center">
-                <button type="button" class="remove-barang-btn bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full text-xs font-bold flex items-center justify-center shadow-sm">−</button>
-            </div>
-            </div>
-        @endif
-        @endforeach
+      </div>
     @endif
 
     @if ($errors->has('barang'))
-        <p class="text-sm text-red-600 mt-1">{{ $errors->first('barang') }}</p>
+      <p class="text-sm text-red-600 mt-1">{{ $errors->first('barang') }}</p>
     @else
-        <p id="barang_error" class="text-sm text-red-600 mt-1 hidden"></p>
+      <p id="barang_error" class="text-sm text-red-600 mt-1 hidden"></p>
     @endif
   </div>
 
@@ -177,42 +186,67 @@
     </div>
   </div>
 
-  {{-- Kasir --}}
-  <div class="grid grid-cols-2 gap-3">
-    <div class="grid grid-cols-1 gap-1">
-      <label for="diskon_penjualan" class="block text-sm font-medium text-gray-700">Diskon (%)</label>
-      <input type="number" name="diskon_penjualan" id="diskon_penjualan" value="{{ old('diskon_penjualan', $penjualan->diskon_penjualan ?? 0) }}" class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('diskon_penjualan') ? 'border-red-500 bg-red-50' : 'border-gray-200' }}" min="0" max="100">
-      @if ($errors->has('diskon_penjualan'))
-        <p class="text-sm text-red-600 mt-1">{{ $errors->first('diskon_penjualan') }}</p>
-      @else
+  {{-- KASIR – KONDISIONAL uang_diterima --}}
+  <div class="mt-6 pt-5 border-t border-gray-300">
+    <h3 class="text-lg font-semibold text-gray-800 mb-4">Kasir</h3>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Sub Total -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Sub Total</label>
+        <input type="text" id="subTotalDisplay" readonly class="w-full rounded-md border bg-gray-100 px-3 py-2 text-sm text-gray-700 cursor-not-allowed" value="Rp 0">
+      </div>
+
+      <!-- Diskon (%) -->
+      <div>
+        <label for="diskon_penjualan" class="block text-sm font-medium text-gray-700">Diskon (%)</label>
+        <input type="number" name="diskon_penjualan" id="diskon_penjualan" 
+               value="{{ old('diskon_penjualan', $penjualan->diskon_penjualan ?? 0) }}" 
+               class="w-full rounded-md border px-3 py-2 text-sm border-gray-200" min="0" max="100" step="0.01">
         <p id="diskon_penjualan_error" class="text-sm text-red-600 mt-1 hidden"></p>
-      @endif
-    </div>
-    <div class="grid grid-cols-1 gap-1">
-      <label for="jenis_pembayaran" class="block text-sm font-medium text-gray-700">Jenis Pembayaran <span class="text-rose-600">*</span></label>
-      <select name="jenis_pembayaran" id="jenis_pembayaran" class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('jenis_pembayaran') ? 'border-red-500 bg-red-50' : 'border-gray-200' }}">
-        <option value="tunai" {{ old('jenis_pembayaran', $penjualan->jenis_pembayaran ?? '') == 'tunai' ? 'selected' : '' }}>Tunai</option>
-        <option value="kredit" {{ old('jenis_pembayaran', $penjualan->jenis_pembayaran ?? '') == 'kredit' ? 'selected' : '' }}>Kredit</option>
-      </select>
-      @if ($errors->has('jenis_pembayaran'))
-        <p class="text-sm text-red-600 mt-1">{{ $errors->first('jenis_pembayaran') }}</p>
-      @else
+      </div>
+
+      <!-- Total Bayar -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Total Bayar</label>
+        <input type="text" id="totalBayarDisplay" readonly class="w-full rounded-md border bg-gray-100 px-3 py-2 text-sm font-bold text-blue-700 cursor-not-allowed" value="Rp 0">
+      </div>
+
+      <!-- Jenis Pembayaran -->
+      <div>
+        <label for="jenis_pembayaran" class="block text-sm font-medium text-gray-700">Jenis Pembayaran <span class="text-rose-600">*</span></label>
+        <select name="jenis_pembayaran" id="jenis_pembayaran" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200">
+          <option value="tunai" {{ old('jenis_pembayaran', $penjualan->jenis_pembayaran ?? '') == 'tunai' ? 'selected' : '' }}>Tunai</option>
+          <option value="kredit" {{ old('jenis_pembayaran', $penjualan->jenis_pembayaran ?? '') == 'kredit' ? 'selected' : '' }}>Kredit</option>
+        </select>
         <p id="jenis_pembayaran_error" class="text-sm text-red-600 mt-1 hidden"></p>
-      @endif
-    </div>
-    <div class="grid grid-cols-1 gap-1">
-      <label for="jumlah_bayar" class="block text-sm font-medium text-gray-700">Jumlah Bayar <span class="text-rose-600">*</span></label>
-      <input type="number" name="jumlah_bayar" id="jumlah_bayar" value="{{ old('jumlah_bayar') }}" class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('jumlah_bayar') ? 'border-red-500 bg-red-50' : 'border-gray-200' }}" step="0.01" min="0">
-      @if ($errors->has('jumlah_bayar'))
-        <p class="text-sm text-red-600 mt-1">{{ $errors->first('jumlah_bayar') }}</p>
-      @else
-        <p id="jumlah_bayar_error" class="text-sm text-red-600 mt-1 hidden"></p>
-      @endif
+      </div>
+
+      <!-- Uang Diterima (KONDISIONAL) -->
+      <div>
+        <label for="uang_diterima" class="block text-sm font-medium text-gray-700">
+          Jumlah Uang Dibayarkan 
+          <span id="wajib_tunai" class="text-rose-600 hidden">*</span>
+        </label>
+        <input type="number" name="uang_diterima" id="uang_diterima" 
+               value="{{ old('uang_diterima', $penjualan->uang_diterima ?? '') }}" 
+               class="w-full rounded-md border px-3 py-2 text-sm border-gray-200" 
+               step="0.01" min="0">
+        <p id="uang_diterima_error" class="text-sm text-red-600 mt-1 hidden"></p>
+      </div>
+
+      <!-- Uang Kembalian -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Uang Kembalian</label>
+        <input type="text" id="kembalianDisplay" readonly 
+               class="w-full rounded-md border bg-gray-100 px-3 py-2 text-sm font-bold cursor-not-allowed" 
+               value="Rp 0">
+      </div>
     </div>
   </div>
 
   {{-- Catatan --}}
-  <div class="grid grid-cols-1 gap-1">
+  <div class="mt-6">
     <label for="catatan" class="block text-sm font-medium text-gray-700">Catatan</label>
     <textarea name="catatan" id="catatan" rows="3" class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('catatan') ? 'border-red-500 bg-red-50' : 'border-gray-200' }}" placeholder="Tambahkan catatan jika diperlukan">{{ old('catatan', $penjualan->catatan ?? '') }}</textarea>
     @if ($errors->has('catatan'))
@@ -236,40 +270,60 @@
 document.addEventListener('DOMContentLoaded', function () {
   const ekspedisiCheckbox = document.getElementById('ekspedisi');
   const ekspedisiForm = document.getElementById('ekspedisiForm');
-  const form = document.getElementById('penjualanForm');
   const barangContainer = document.getElementById('barangContainer');
-  const submitButton = document.getElementById('submitButton');
+  const diskonInput = document.getElementById('diskon_penjualan');
+  const jenisPembayaranSelect = document.getElementById('jenis_pembayaran');
+  const uangDiterimaInput = document.getElementById('uang_diterima');
+  const wajibTunaiSpan = document.getElementById('wajib_tunai');
+  const subTotalDisplay = document.getElementById('subTotalDisplay');
+  const totalBayarDisplay = document.getElementById('totalBayarDisplay');
+  const kembalianDisplay = document.getElementById('kembalianDisplay');
 
-  // --- EKSPEDISI: Toggle & Hapus Field dari Request ---
+  let barangIndex = {{ $isEdit ?? false ? $penjualan->detailPenjualan->count() : 1 }};
+
+  // --- FUNGSI KONDISI UANG DITERIMA ---
+  function toggleUangDiterima() {
+    const isTunai = jenisPembayaranSelect.value === 'tunai';
+    
+    if (isTunai) {
+      uangDiterimaInput.disabled = false;
+      uangDiterimaInput.removeAttribute('readonly');
+      wajibTunaiSpan.classList.remove('hidden');
+    } else {
+      uangDiterimaInput.disabled = true;
+      uangDiterimaInput.value = '';
+      wajibTunaiSpan.classList.add('hidden');
+      // Reset kembalian ke 0
+      kembalianDisplay.value = 'Rp 0';
+      kembalianDisplay.className = 'w-full rounded-md border bg-gray-100 px-3 py-2 text-sm font-bold text-gray-700 cursor-not-allowed';
+    }
+    hitungTotal(); // Update kembalian
+  }
+
+  jenisPembayaranSelect.addEventListener('change', toggleUangDiterima);
+
+  // --- EKSPEDISI ---
   function toggleEkspedisi() {
     const isChecked = ekspedisiCheckbox.checked;
     ekspedisiForm.style.display = isChecked ? 'block' : 'none';
-
     if (!isChecked) {
-      // Hapus semua field dari form agar tidak terkirim
-      ekspedisiForm.querySelectorAll('input, select, textarea').forEach(field => {
-        field.disabled = true;
-        field.value = '';
+      ekspedisiForm.querySelectorAll('input, select, textarea').forEach(f => {
+        f.disabled = true; f.value = '';
       });
     } else {
-      ekspedisiForm.querySelectorAll('input, select, textarea').forEach(field => {
-        field.disabled = false;
-      });
+      ekspedisiForm.querySelectorAll('input, select, textarea').forEach(f => f.disabled = false);
     }
   }
-
   ekspedisiCheckbox.addEventListener('change', toggleEkspedisi);
-  toggleEkspedisi(); // Inisialisasi
+  toggleEkspedisi();
 
   // --- BARANG DYNAMIC ---
-  let barangIndex = {{ isset($penjualan) ? $penjualan->detailPenjualan->count() : 1 }};
-
   function updateActionButtons() {
     const rows = barangContainer.querySelectorAll('.barang-row');
-    rows.forEach((row, index) => {
+    rows.forEach((row, i) => {
       const actionCell = row.querySelector('.col-span-2');
       actionCell.innerHTML = '';
-      if (index === rows.length - 1) {
+      if (i === rows.length - 1) {
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'add-barang-btn bg-blue-500 hover:bg-blue-600 text-white w-8 h-8 rounded-full text-xs font-bold flex items-center justify-center shadow-sm';
@@ -280,8 +334,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'remove-barang-btn bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full text-xs font-bold flex items-center justify-center shadow-sm';
-        btn.innerHTML = '−';
-        btn.onclick = () => { row.remove(); updateActionButtons(); reindexBarangRows(); };
+        btn.innerHTML = '-';
+        btn.onclick = () => { row.remove(); updateActionButtons(); reindexBarangRows(); hitungTotal(); };
         actionCell.appendChild(btn);
       }
     });
@@ -290,7 +344,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function addNewRow() {
     const newRow = document.createElement('div');
     newRow.className = 'grid grid-cols-12 gap-2 mb-2 barang-row items-center';
-    const options = @json($barangs).map(b => `<option value="${b.id_barang}">${b.nama_barang}</option>`).join('');
+    const options = @json($barangs).map(b => `<option value="${b.id_barang}" data-harga="${b.retail}">${b.nama_barang}</option>`).join('');
     newRow.innerHTML = `
       <div class="col-span-6">
         <select name="barang[${barangIndex}][id_barang]" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200">
@@ -305,6 +359,7 @@ document.addEventListener('DOMContentLoaded', function () {
     barangContainer.appendChild(newRow);
     barangIndex++;
     updateActionButtons();
+    attachBarangEvents(newRow);
   }
 
   function reindexBarangRows() {
@@ -316,53 +371,111 @@ document.addEventListener('DOMContentLoaded', function () {
     barangIndex = rows.length;
   }
 
+  function attachBarangEvents(row) {
+    const select = row.querySelector('select');
+    const input = row.querySelector('input');
+    select.addEventListener('change', hitungTotal);
+    input.addEventListener('input', hitungTotal);
+  }
+
+  document.querySelectorAll('.barang-row').forEach(attachBarangEvents);
   updateActionButtons();
 
-  // --- FORM SUBMIT & VALIDASI ---
-  form.addEventListener('submit', function (e) {
+  // --- HITUNG TOTAL ---
+  function hitungTotal() {
+    let subTotal = 0;
+    document.querySelectorAll('.barang-row').forEach(row => {
+      const select = row.querySelector('select');
+      const qty = parseFloat(row.querySelector('input').value) || 0;
+      const harga = parseFloat(select.selectedOptions[0]?.dataset.harga) || 0;
+      subTotal += harga * qty;
+    });
+
+    const diskonPersen = parseFloat(diskonInput.value) || 0;
+    const diskon = subTotal * (diskonPersen / 100);
+    const totalBayar = subTotal - diskon;
+
+    subTotalDisplay.value = `Rp ${formatRupiah(subTotal)}`;
+    totalBayarDisplay.value = `Rp ${formatRupiah(totalBayar)}`;
+
+    // Hanya hitung kembalian jika tunai
+    if (jenisPembayaranSelect.value === 'tunai') {
+      const uangDiterima = parseFloat(uangDiterimaInput.value) || 0;
+      const kembalian = uangDiterima - totalBayar;
+
+      if (kembalian >= 0) {
+        kembalianDisplay.value = `Rp ${formatRupiah(kembalian)}`;
+        kembalianDisplay.className = 'w-full rounded-md border bg-gray-100 px-3 py-2 text-sm font-bold text-green-700 cursor-not-allowed';
+      } else {
+        kembalianDisplay.value = `- Rp ${formatRupiah(Math.abs(kembalian))}`;
+        kembalianDisplay.className = 'w-full rounded-md border bg-red-100 px-3 py-2 text-sm font-bold text-red-700 cursor-not-allowed';
+      }
+    } else {
+      kembalianDisplay.value = 'Rp 0';
+      kembalianDisplay.className = 'w-full rounded-md border bg-gray-100 px-3 py-2 text-sm font-bold text-gray-700 cursor-not-allowed';
+    }
+  }
+
+  function formatRupiah(angka) {
+    return new Intl.NumberFormat('id-ID').format(angka);
+  }
+
+  diskonInput.addEventListener('input', hitungTotal);
+  uangDiterimaInput.addEventListener('input', hitungTotal);
+
+  // Inisialisasi awal
+  toggleUangDiterima();
+  hitungTotal();
+
+  // --- VALIDASI & SUBMIT ---
+  document.getElementById('penjualanForm').addEventListener('submit', function (e) {
     e.preventDefault();
-    let hasError = false;
+    let error = false;
 
-    // Reset error
     document.querySelectorAll('.text-red-600:not(.hidden)').forEach(el => el.classList.add('hidden'));
-    document.querySelectorAll('input, select, textarea').forEach(el => el.classList.remove('border-red-500', 'bg-red-50'));
+    document.querySelectorAll('input, select').forEach(el => el.classList.remove('border-red-500', 'bg-red-50'));
 
-    // Pelanggan/Anggota
     const p = document.getElementById('id_pelanggan').value;
     const a = document.getElementById('id_anggota').value;
-    if (!p && !a) { showError('#id_pelanggan_error', 'Pilih pelanggan atau anggota.', '#id_pelanggan'); hasError = true; }
-    if (p && a) { showError('#id_pelanggan_error', 'Hanya boleh pilih satu.', '#id_pelanggan'); hasError = true; }
+    if (!p && !a) { showError('#id_pelanggan_error', 'Pilih pelanggan atau anggota.', '#id_pelanggan'); error = true; }
+    if (p && a) { showError('#id_pelanggan_error', 'Hanya boleh pilih satu.', '#id_pelanggan'); error = true; }
 
-    // Barang
-    const rows = barangContainer.querySelectorAll('.barang-row');
-    if (rows.length === 0) { showError('#barang_error', 'Minimal satu barang.'); hasError = true; }
+    const rows = document.querySelectorAll('.barang-row');
+    if (rows.length === 0) { showError('#barang_error', 'Minimal satu barang.'); error = true; }
     rows.forEach(r => {
       const s = r.querySelector('select').value;
       const i = r.querySelector('input').value;
       if (!s) r.querySelector('select').classList.add('border-red-500', 'bg-red-50');
       if (!i || i < 1) r.querySelector('input').classList.add('border-red-500', 'bg-red-50');
-      if (!s || !i) hasError = true;
+      if (!s || !i) error = true;
     });
 
-    // Ekspedisi (hanya jika dicentang)
     if (ekspedisiCheckbox.checked) {
       ['id_agen_ekspedisi', 'nama_penerima', 'telepon_penerima', 'alamat_penerima', 'kode_pos', 'biaya_pengiriman'].forEach(id => {
         const el = document.getElementById(id);
-        if (!el.value) {
-          showError(`#${id}_error`, 'Wajib diisi.', `#${id}`);
-          hasError = true;
-        }
+        if (!el.value) { showError(`#${id}_error`, 'Wajib diisi.', `#${id}`); error = true; }
       });
     }
 
-    // Lainnya
-    const diskon = document.getElementById('diskon_penjualan').value;
-    if (diskon && (diskon < 0 || diskon > 100)) { showError('#diskon_penjualan_error', 'Maksimal 100%.'); hasError = true; }
-    if (!document.getElementById('jenis_pembayaran').value) { showError('#jenis_pembayaran_error', 'Wajib dipilih.'); hasError = true; }
-    if (!document.getElementById('jumlah_bayar').value) { showError('#jumlah_bayar_error', 'Wajib diisi.'); hasError = true; }
+    if (diskonInput.value && (diskonInput.value < 0 || diskonInput.value > 100)) {
+      showError('#diskon_penjualan_error', 'Diskon maksimal 100%.', '#diskon_penjualan');
+      error = true;
+    }
+    if (!jenisPembayaranSelect.value) {
+      showError('#jenis_pembayaran_error', 'Wajib dipilih.', '#jenis_pembayaran');
+      error = true;
+    }
 
-    if (!hasError && confirm('Simpan data penjualan?')) {
-      form.submit();
+    // Validasi uang_diterima hanya jika tunai
+    if (jenisPembayaranSelect.value === 'tunai') {
+      if (!uangDiterimaInput.value || uangDiterimaInput.value < 0) {
+        showError('#uang_diterima_error', 'Wajib diisi saat pembayaran tunai.', '#uang_diterima');
+        error = true;
+      }
+    }
+
+    if (!error && confirm('Simpan data penjualan?')) {
+      this.submit();
     }
   });
 
