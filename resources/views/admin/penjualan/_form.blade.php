@@ -7,7 +7,7 @@
   {{-- ID Penjualan --}}
   <div>
     <label class="block text-sm font-medium text-gray-700">ID Penjualan</label>
-    <input type="text" name="id_penjualan" value="{{ old('id_penjualan', isset($penjualan) ? $penjualan->id_penjualan : ($nextId ?? '')) }}" readonly class="w-full rounded-md border bg-gray-100 px-3 py-2 text-sm text-gray-700 cursor-not-allowed">
+    <input type="text" name="id_penjualan" value="{{ old('id_penjualan', $penjualan->id_penjualan ?? ($nextId ?? '')) }}" readonly class="w-full rounded-md border bg-gray-100 px-3 py-2 text-sm text-gray-700 cursor-not-allowed">
     <p class="text-xs text-gray-500">
       @if(isset($penjualan))
         ID tidak dapat diubah.
@@ -57,7 +57,7 @@
     <label class="block text-sm font-medium text-gray-700 mb-1">Barang <span class="text-rose-600">*</span></label>
     <p class="text-xs text-gray-500 mb-3">Pilih barang dan kuantitas yang akan dijual.</p>
 
-    {{-- Baris default pertama (kosong) --}}
+    {{-- Baris default pertama --}}
     <div class="grid grid-cols-12 gap-2 mb-2 barang-row items-center">
         <div class="col-span-6">
         <select name="barang[0][id_barang]" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200">
@@ -75,10 +75,10 @@
         </div>
     </div>
 
-    {{-- Baris dari data edit (jika ada) --}}
+    {{-- Baris dari data edit --}}
     @if(isset($penjualan) && $penjualan->detailPenjualan->count() > 0)
         @foreach($penjualan->detailPenjualan as $index => $detail)
-        @if($index > 0) {{-- skip index 0 karena sudah ada default kosong --}}
+        @if($index > 0)
             <div class="grid grid-cols-12 gap-2 mb-2 barang-row items-center">
             <div class="col-span-6">
                 <select name="barang[{{ $index }}][id_barang]" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200">
@@ -107,73 +107,74 @@
 
   {{-- Ekspedisi --}}
   <div class="mt-6">
-  <label class="flex items-center space-x-2 cursor-pointer select-none">
-    <input type="checkbox" id="ekspedisi" name="ekspedisi" value="1" class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500" {{ old('ekspedisi', isset($penjualan->pengiriman)) ? 'checked' : '' }}>
-    <span class="text-sm font-medium text-gray-700">Gunakan Ekspedisi</span>
-  </label>
+    <label class="flex items-center space-x-2 cursor-pointer select-none">
+      <input 
+        type="checkbox" 
+        id="ekspedisi" 
+        name="ekspedisi" 
+        value="1" 
+        class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500" 
+        {{ old('ekspedisi') == '1' || (!empty($penjualan->pengiriman) && $penjualan->pengiriman->exists) ? 'checked' : '' }}
+      >
+      <span class="text-sm font-medium text-gray-700">Gunakan Ekspedisi</span>
+    </label>
 
-  <div id="ekspedisiForm" class="mt-3 p-5 bg-gray-50 border border-gray-300 rounded-md transition-all duration-300 ease-in-out" style="display: {{ old('ekspedisi') || isset($penjualan->pengiriman) ? 'block' : 'none' }};">
-    <p class="text-xs font-semibold text-gray-600 mb-4 flex items-center">
-      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
-      Informasi Pengiriman
-    </p>
+    <div id="ekspedisiForm" 
+         class="mt-3 p-5 bg-gray-50 border border-gray-300 rounded-md transition-all duration-300 ease-in-out" 
+         style="display: {{ old('ekspedisi') == '1' || (!empty($penjualan->pengiriman) && $penjualan->pengiriman->exists) ? 'block' : 'none' }};">
+      <p class="text-xs font-semibold text-gray-600 mb-4 flex items-center">
+        Informasi Pengiriman
+      </p>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <!-- Agen Ekspedisi -->
-      <div>
-        <label for="id_agen_ekspedisi" class="block text-sm font-medium text-gray-700">Agen Ekspedisi <span class="text-rose-600">*</span></label>
-        <select name="id_agen_ekspedisi" id="id_agen_ekspedisi" class="w-full rounded-md border px-3 py-2 text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-100">
-          <option value="">-- Pilih Agen --</option>
-          @foreach($agenEkspedisis as $ae)
-            <option value="{{ $ae->id_ekspedisi }}" {{ old('id_agen_ekspedisi', $penjualan->pengiriman->id_agen_ekspedisi ?? '') == $ae->id_ekspedisi ? 'selected' : '' }}>{{ $ae->nama_ekspedisi }}</option>
-          @endforeach
-        </select>
-        <p id="id_agen_ekspedisi_error" class="text-sm text-red-600 mt-1 hidden"></p>
-      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label for="id_agen_ekspedisi" class="block text-sm font-medium text-gray-700">Agen Ekspedisi <span class="text-rose-600">*</span></label>
+          <select name="id_agen_ekspedisi" id="id_agen_ekspedisi" class="w-full rounded-md border px-3 py-2 text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-100">
+            <option value="">-- Pilih Agen --</option>
+            @foreach($agenEkspedisis as $ae)
+              <option value="{{ $ae->id_ekspedisi }}" {{ old('id_agen_ekspedisi', $penjualan->pengiriman->id_agen_ekspedisi ?? '') == $ae->id_ekspedisi ? 'selected' : '' }}>{{ $ae->nama_ekspedisi }}</option>
+            @endforeach
+          </select>
+          <p id="id_agen_ekspedisi_error" class="text-sm text-red-600 mt-1 hidden"></p>
+        </div>
 
-      <!-- Nama Penerima -->
-      <div>
-        <label for="nama_penerima" class="block text-sm font-medium text-gray-700">Nama Penerima <span class="text-rose-600">*</span></label>
-        <input type="text" name="nama_penerima" id="nama_penerima" value="{{ old('nama_penerima', $penjualan->pengiriman->nama_penerima ?? '') }}" class="w-full rounded-md border px-3 py-2 text-sm border-gray-300">
-        <p id="nama_penerima_error" class="text-sm text-red-600 mt-1 hidden"></p>
-      </div>
+        <div>
+          <label for="nama_penerima" class="block text-sm font-medium text-gray-700">Nama Penerima <span class="text-rose-600">*</span></label>
+          <input type="text" name="nama_penerima" id="nama_penerima" value="{{ old('nama_penerima', $penjualan->pengiriman->nama_penerima ?? '') }}" class="w-full rounded-md border px-3 py-2 text-sm border-gray-300">
+          <p id="nama_penerima_error" class="text-sm text-red-600 mt-1 hidden"></p>
+        </div>
 
-      <!-- Telepon -->
-      <div>
-        <label for="telepon_penerima" class="block text-sm font-medium text-gray-700">Telepon Penerima <span class="text-rose-600">*</span></label>
-        <input type="text" name="telepon_penerima" id="telepon_penerima" value="{{ old('telepon_penerima', $penjualan->pengiriman->telepon_penerima ?? '') }}" class="w-full rounded-md border px-3 py-2 text-sm border-gray-300">
-        <p id="telepon_penerima_error" class="text-sm text-red-600 mt-1 hidden"></p>
-      </div>
+        <div>
+          <label for="telepon_penerima" class="block text-sm font-medium text-gray-700">Telepon Penerima <span class="text-rose-600">*</span></label>
+          <input type="text" name="telepon_penerima" id="telepon_penerima" value="{{ old('telepon_penerima', $penjualan->pengiriman->telepon_penerima ?? '') }}" class="w-full rounded-md border px-3 py-2 text-sm border-gray-300">
+          <p id="telepon_penerima_error" class="text-sm text-red-600 mt-1 hidden"></p>
+        </div>
 
-      <!-- Kode Pos -->
-      <div>
-        <label for="kode_pos" class="block text-sm font-medium text-gray-700">Kode Pos <span class="text-rose-600">*</span></label>
-        <input type="text" name="kode_pos" id="kode_pos" value="{{ old('kode_pos', $penjualan->pengiriman->kode_pos ?? '') }}" class="w-full rounded-md border px-3 py-2 text-sm border-gray-300">
-        <p id="kode_pos_error" class="text-sm text-red-600 mt-1 hidden"></p>
-      </div>
+        <div>
+          <label for="kode_pos" class="block text-sm font-medium text-gray-700">Kode Pos <span class="text-rose-600">*</span></label>
+          <input type="text" name="kode_pos" id="kode_pos" value="{{ old('kode_pos', $penjualan->pengiriman->kode_pos ?? '') }}" class="w-full rounded-md border px-3 py-2 text-sm border-gray-300">
+          <p id="kode_pos_error" class="text-sm text-red-600 mt-1 hidden"></p>
+        </div>
 
-      <!-- Alamat (2 kolom) -->
-      <div class="md:col-span-2">
-        <label for="alamat_penerima" class="block text-sm font-medium text-gray-700">Alamat Penerima <span class="text-rose-600">*</span></label>
-        <textarea name="alamat_penerima" id="alamat_penerima" rows="2" class="w-full rounded-md border px-3 py-2 text-sm border-gray-300">{{ old('alamat_penerima', $penjualan->pengiriman->alamat_penerima ?? '') }}</textarea>
-        <p id="alamat_penerima_error" class="text-sm text-red-600 mt-1 hidden"></p>
-      </div>
+        <div class="md:col-span-2">
+          <label for="alamat_penerima" class="block text-sm font-medium text-gray-700">Alamat Penerima <span class="text-rose-600">*</span></label>
+          <textarea name="alamat_penerima" id="alamat_penerima" rows="2" class="w-full rounded-md border px-3 py-2 text-sm border-gray-300">{{ old('alamat_penerima', $penjualan->pengiriman->alamat_penerima ?? '') }}</textarea>
+          <p id="alamat_penerima_error" class="text-sm text-red-600 mt-1 hidden"></p>
+        </div>
 
-      <!-- Nomor Resi (opsional) -->
-      <div>
-        <label for="nomor_resi" class="block text-sm font-medium text-gray-700">Nomor Resi</label>
-        <input type="text" name="nomor_resi" id="nomor_resi" value="{{ old('nomor_resi', $penjualan->pengiriman->nomor_resi ?? '') }}" class="w-full rounded-md border px-3 py-2 text-sm border-gray-300" placeholder="Opsional">
-        <p id="nomor_resi_error" class="text-sm text-red-600 mt-1 hidden"></p>
-      </div>
+        <div>
+          <label for="nomor_resi" class="block text-sm font-medium text-gray-700">Nomor Resi</label>
+          <input type="text" name="nomor_resi" id="nomor_resi" value="{{ old('nomor_resi', $penjualan->pengiriman->nomor_resi ?? '') }}" class="w-full rounded-md border px-3 py-2 text-sm border-gray-300" placeholder="Opsional">
+          <p id="nomor_resi_error" class="text-sm text-red-600 mt-1 hidden"></p>
+        </div>
 
-      <!-- Biaya Pengiriman -->
-      <div>
-        <label for="biaya_pengiriman" class="block text-sm font-medium text-gray-700">Biaya Pengiriman <span class="text-rose-600">*</span></label>
-        <input type="number" name="biaya_pengiriman" id="biaya_pengiriman" value="{{ old('biaya_pengiriman', $penjualan->pengiriman->biaya_pengiriman ?? '') }}" class="w-full rounded-md border px-3 py-2 text-sm border-gray-300" step="0.01" min="0">
-        <p id="biaya_pengiriman_error" class="text-sm text-red-600 mt-1 hidden"></p>
+        <div>
+          <label for="biaya_pengiriman" class="block text-sm font-medium text-gray-700">Biaya Pengiriman <span class="text-rose-600">*</span></label>
+          <input type="number" name="biaya_pengiriman" id="biaya_pengiriman" value="{{ old('biaya_pengiriman', $penjualan->pengiriman->biaya_pengiriman ?? '') }}" class="w-full rounded-md border px-3 py-2 text-sm border-gray-300" step="0.01" min="0">
+          <p id="biaya_pengiriman_error" class="text-sm text-red-600 mt-1 hidden"></p>
+        </div>
       </div>
     </div>
-  </div>
   </div>
 
   {{-- Kasir --}}
@@ -224,57 +225,64 @@
 
   {{-- Tombol --}}
   <div class="flex items-center gap-3">
-    <button id="submitButton" type="submit" class="inline-flex items-center px-4 py-2 bg-blue-700 text-white text-sm rounded-md hover:bg-blue-800 {{ isset($isEdit) && $isEdit ? 'disabled:opacity-50' : '' }}"
-            {{ isset($isEdit) && $isEdit ? 'disabled' : '' }}>
+    <button id="submitButton" type="submit" class="inline-flex items-center px-4 py-2 bg-blue-700 text-white text-sm rounded-md hover:bg-blue-800">
       @if(isset($penjualan)) Update @else Simpan @endif
     </button>
     <a href="{{ route('admin.penjualan.index') }}" class="inline-flex items-center px-4 py-2 border rounded-md text-sm text-gray-700 hover:bg-gray-50">Batal</a>
   </div>
 </form>
 
-{{-- JavaScript untuk Toggle Ekspedisi dan Tambah Barang --}}
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-  const form = document.querySelector('#penjualanForm');
-  const ekspedisiCheckbox = document.querySelector('#ekspedisi');
-  const ekspedisiForm = document.querySelector('#ekspedisiForm');
-  const barangContainer = document.querySelector('#barangContainer');
-  const submitButton = document.querySelector('#submitButton');
+  const ekspedisiCheckbox = document.getElementById('ekspedisi');
+  const ekspedisiForm = document.getElementById('ekspedisiForm');
+  const form = document.getElementById('penjualanForm');
+  const barangContainer = document.getElementById('barangContainer');
+  const submitButton = document.getElementById('submitButton');
 
-  // Toggle ekspedisi form
-  ekspedisiCheckbox.addEventListener('change', function() {
-    ekspedisiForm.style.display = this.checked ? 'block' : 'none';
-  });
+  // --- EKSPEDISI: Toggle & Hapus Field dari Request ---
+  function toggleEkspedisi() {
+    const isChecked = ekspedisiCheckbox.checked;
+    ekspedisiForm.style.display = isChecked ? 'block' : 'none';
 
-  // --- BARANG DYNAMIC ROWS ---
+    if (!isChecked) {
+      // Hapus semua field dari form agar tidak terkirim
+      ekspedisiForm.querySelectorAll('input, select, textarea').forEach(field => {
+        field.disabled = true;
+        field.value = '';
+      });
+    } else {
+      ekspedisiForm.querySelectorAll('input, select, textarea').forEach(field => {
+        field.disabled = false;
+      });
+    }
+  }
+
+  ekspedisiCheckbox.addEventListener('change', toggleEkspedisi);
+  toggleEkspedisi(); // Inisialisasi
+
+  // --- BARANG DYNAMIC ---
   let barangIndex = {{ isset($penjualan) ? $penjualan->detailPenjualan->count() : 1 }};
 
   function updateActionButtons() {
     const rows = barangContainer.querySelectorAll('.barang-row');
     rows.forEach((row, index) => {
       const actionCell = row.querySelector('.col-span-2');
-      const isLast = index === rows.length - 1;
-
       actionCell.innerHTML = '';
-
-      if (isLast) {
-        const addBtn = document.createElement('button');
-        addBtn.type = 'button';
-        addBtn.className = 'add-barang-btn bg-blue-500 hover:bg-blue-600 text-white w-8 h-8 rounded-full text-xs font-bold flex items-center justify-center shadow-sm';
-        addBtn.innerHTML = '+';
-        addBtn.addEventListener('click', addNewRow);
-        actionCell.appendChild(addBtn);
+      if (index === rows.length - 1) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'add-barang-btn bg-blue-500 hover:bg-blue-600 text-white w-8 h-8 rounded-full text-xs font-bold flex items-center justify-center shadow-sm';
+        btn.innerHTML = '+';
+        btn.onclick = addNewRow;
+        actionCell.appendChild(btn);
       } else {
-        const removeBtn = document.createElement('button');
-        removeBtn.type = 'button';
-        removeBtn.className = 'remove-barang-btn bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full text-xs font-bold flex items-center justify-center shadow-sm';
-        removeBtn.innerHTML = '−';
-        removeBtn.addEventListener('click', function() {
-          row.remove();
-          updateActionButtons();
-          reindexBarangRows();
-        });
-        actionCell.appendChild(removeBtn);
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'remove-barang-btn bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full text-xs font-bold flex items-center justify-center shadow-sm';
+        btn.innerHTML = '−';
+        btn.onclick = () => { row.remove(); updateActionButtons(); reindexBarangRows(); };
+        actionCell.appendChild(btn);
       }
     });
   }
@@ -282,27 +290,18 @@ document.addEventListener('DOMContentLoaded', function () {
   function addNewRow() {
     const newRow = document.createElement('div');
     newRow.className = 'grid grid-cols-12 gap-2 mb-2 barang-row items-center';
-
-    const barangOptions = @json($barangs);
-    let options = '<option value="">-- Pilih Barang --</option>';
-    barangOptions.forEach(b => {
-      options += `<option value="${b.id_barang}">${b.nama_barang}</option>`;
-    });
-
+    const options = @json($barangs).map(b => `<option value="${b.id_barang}">${b.nama_barang}</option>`).join('');
     newRow.innerHTML = `
       <div class="col-span-6">
         <select name="barang[${barangIndex}][id_barang]" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200">
-          ${options}
+          <option value="">-- Pilih Barang --</option>${options}
         </select>
       </div>
       <div class="col-span-4">
         <input type="number" name="barang[${barangIndex}][kuantitas]" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200" min="1" placeholder="Qty">
       </div>
-      <div class="col-span-2 flex justify-center">
-        <!-- Tombol + akan ditambahkan oleh updateActionButtons -->
-      </div>
+      <div class="col-span-2 flex justify-center"></div>
     `;
-
     barangContainer.appendChild(newRow);
     barangIndex++;
     updateActionButtons();
@@ -311,134 +310,67 @@ document.addEventListener('DOMContentLoaded', function () {
   function reindexBarangRows() {
     const rows = barangContainer.querySelectorAll('.barang-row');
     rows.forEach((row, idx) => {
-      const select = row.querySelector('select');
-      const input = row.querySelector('input');
-      if (select) select.name = `barang[${idx}][id_barang]`;
-      if (input) input.name = `barang[${idx}][kuantitas]`;
+      row.querySelector('select').name = `barang[${idx}][id_barang]`;
+      row.querySelector('input').name = `barang[${idx}][kuantitas]`;
     });
     barangIndex = rows.length;
   }
 
-  // Inisialisasi
   updateActionButtons();
 
-  // Form validation
+  // --- FORM SUBMIT & VALIDASI ---
   form.addEventListener('submit', function (e) {
     e.preventDefault();
-
-    // Reset errors
-    document.querySelectorAll('.text-red-600').forEach(el => {
-      if (!el.classList.contains('hidden')) el.classList.add('hidden');
-    });
-    document.querySelectorAll('input, select, textarea').forEach(el => {
-      el.classList.remove('border-red-500', 'bg-red-50');
-    });
-
     let hasError = false;
 
-    // Validate pelanggan/anggota
-    const idPelanggan = document.querySelector('#id_pelanggan').value;
-    const idAnggota = document.querySelector('#id_anggota').value;
-    if (!idPelanggan && !idAnggota) {
-      showError('#id_pelanggan_error', 'Pilih pelanggan atau anggota.', '#id_pelanggan');
-      hasError = true;
-    }
-    if (idPelanggan && idAnggota) {
-      showError('#id_pelanggan_error', 'Hanya boleh pilih satu: pelanggan atau anggota.', '#id_pelanggan');
-      hasError = true;
-    }
+    // Reset error
+    document.querySelectorAll('.text-red-600:not(.hidden)').forEach(el => el.classList.add('hidden'));
+    document.querySelectorAll('input, select, textarea').forEach(el => el.classList.remove('border-red-500', 'bg-red-50'));
 
-    // Validate barang
-    const barangRows = barangContainer.querySelectorAll('.barang-row');
-    if (barangRows.length === 0) {
-      showError('#barang_error', 'Minimal satu barang harus dipilih.');
-      hasError = true;
-    } else {
-      barangRows.forEach(row => {
-        const select = row.querySelector('select');
-        const input = row.querySelector('input');
-        if (!select.value) {
-          select.classList.add('border-red-500', 'bg-red-50');
-          hasError = true;
-        }
-        if (!input.value || input.value < 1) {
-          input.classList.add('border-red-500', 'bg-red-50');
-          hasError = true;
-        }
-      });
-    }
+    // Pelanggan/Anggota
+    const p = document.getElementById('id_pelanggan').value;
+    const a = document.getElementById('id_anggota').value;
+    if (!p && !a) { showError('#id_pelanggan_error', 'Pilih pelanggan atau anggota.', '#id_pelanggan'); hasError = true; }
+    if (p && a) { showError('#id_pelanggan_error', 'Hanya boleh pilih satu.', '#id_pelanggan'); hasError = true; }
 
-    // Validate ekspedisi
+    // Barang
+    const rows = barangContainer.querySelectorAll('.barang-row');
+    if (rows.length === 0) { showError('#barang_error', 'Minimal satu barang.'); hasError = true; }
+    rows.forEach(r => {
+      const s = r.querySelector('select').value;
+      const i = r.querySelector('input').value;
+      if (!s) r.querySelector('select').classList.add('border-red-500', 'bg-red-50');
+      if (!i || i < 1) r.querySelector('input').classList.add('border-red-500', 'bg-red-50');
+      if (!s || !i) hasError = true;
+    });
+
+    // Ekspedisi (hanya jika dicentang)
     if (ekspedisiCheckbox.checked) {
-      const fields = ['id_agen_ekspedisi', 'nama_penerima', 'telepon_penerima', 'alamat_penerima', 'kode_pos', 'biaya_pengiriman'];
-      fields.forEach(field => {
-        const el = document.querySelector(`#${field}`);
+      ['id_agen_ekspedisi', 'nama_penerima', 'telepon_penerima', 'alamat_penerima', 'kode_pos', 'biaya_pengiriman'].forEach(id => {
+        const el = document.getElementById(id);
         if (!el.value) {
-          showError(`#${field}_error`, 'Field ini wajib diisi.', `#${field}`);
+          showError(`#${id}_error`, 'Wajib diisi.', `#${id}`);
           hasError = true;
         }
       });
     }
 
-    // Validate lainnya
-    const diskon = document.querySelector('#diskon_penjualan').value;
-    if (diskon !== '' && (diskon < 0 || diskon > 100)) {
-      showError('#diskon_penjualan_error', 'Diskon maksimal 100%.', '#diskon_penjualan');
-      hasError = true;
-    }
+    // Lainnya
+    const diskon = document.getElementById('diskon_penjualan').value;
+    if (diskon && (diskon < 0 || diskon > 100)) { showError('#diskon_penjualan_error', 'Maksimal 100%.'); hasError = true; }
+    if (!document.getElementById('jenis_pembayaran').value) { showError('#jenis_pembayaran_error', 'Wajib dipilih.'); hasError = true; }
+    if (!document.getElementById('jumlah_bayar').value) { showError('#jumlah_bayar_error', 'Wajib diisi.'); hasError = true; }
 
-    const jenisPembayaran = document.querySelector('#jenis_pembayaran').value;
-    if (!jenisPembayaran) {
-      showError('#jenis_pembayaran_error', 'Jenis pembayaran wajib dipilih.', '#jenis_pembayaran');
-      hasError = true;
-    }
-
-    const jumlahBayar = document.querySelector('#jumlah_bayar').value;
-    if (!jumlahBayar || jumlahBayar < 0) {
-      showError('#jumlah_bayar_error', 'Jumlah bayar wajib diisi.', '#jumlah_bayar');
-      hasError = true;
-    }
-
-    if (hasError) return;
-
-    const isEdit = form.querySelector('input[name="_method"]')?.value === 'PUT';
-    const message = isEdit ? 'Apakah Anda yakin ingin mengedit data penjualan ini?' : 'Apakah Anda yakin ingin menyimpan data penjualan ini?';
-    if (confirm(message)) {
+    if (!hasError && confirm('Simpan data penjualan?')) {
       form.submit();
     }
   });
 
-  function showError(errorSelector, message, inputSelector = null) {
-    const errorEl = document.querySelector(errorSelector);
-    errorEl.textContent = message;
-    errorEl.classList.remove('hidden');
-    if (inputSelector) {
-      document.querySelector(inputSelector).classList.add('border-red-500', 'bg-red-50');
-    }
+  function showError(sel, msg, input = null) {
+    const el = document.querySelector(sel);
+    el.textContent = msg;
+    el.classList.remove('hidden');
+    if (input) document.querySelector(input).classList.add('border-red-500', 'bg-red-50');
   }
-
-  // Edit mode: disable submit if no changes
-  @if(isset($isEdit) && $isEdit)
-  const initial = {
-    id_pelanggan: document.querySelector('#id_pelanggan').value,
-    id_anggota: document.querySelector('#id_anggota').value,
-  };
-
-  function checkChanges() {
-    const current = {
-      id_pelanggan: document.querySelector('#id_pelanggan').value,
-      id_anggota: document.querySelector('#id_anggota').value,
-    };
-    const same = Object.keys(initial).every(k => initial[k] === current[k]);
-    submitButton.disabled = same;
-    submitButton.classList.toggle('opacity-50', same);
-  }
-
-  document.querySelectorAll('input, select, textarea').forEach(el => {
-    el.addEventListener('input', checkChanges);
-    el.addEventListener('change', checkChanges);
-  });
-  checkChanges(); // Initial check
-  @endif
 });
 </script>
