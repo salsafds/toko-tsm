@@ -20,7 +20,10 @@
   {{-- Pelanggan atau Anggota --}}
   <div class="grid grid-cols-2 gap-3">
     <div class="grid grid-cols-1 gap-1">
-      <label for="id_pelanggan" class="block text-sm font-medium text-gray-700">Pelanggan</label>
+      <div>
+        <label for="id_pelanggan" class="block text-sm font-medium text-gray-700">Pelanggan</label>
+        <p class="text-xs text-gray-500 -mt-1 mb-1">Pilih pelanggan jika pembeli adalah pelanggan.</p>
+      </div>
       <select id="id_pelanggan" name="id_pelanggan" class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('id_pelanggan') ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-blue-500 focus:ring-blue-100' }}">
         <option value="">-- Pilih Pelanggan --</option>
         @foreach($pelanggans as $p)
@@ -31,12 +34,14 @@
         <p class="text-sm text-red-600 mt-1">{{ $errors->first('id_pelanggan') }}</p>
       @else
         <p id="id_pelanggan_error" class="text-sm text-red-600 mt-1 hidden"></p>
-        <p class="text-xs text-gray-500 mt-1">Pilih pelanggan jika pembeli adalah pelanggan.</p>
       @endif
     </div>
 
     <div class="grid grid-cols-1 gap-1">
-      <label for="id_anggota" class="block text-sm font-medium text-gray-700">Anggota</label>
+      <div>
+        <label for="id_anggota" class="block text-sm font-medium text-gray-700">Anggota</label>
+        <p class="text-xs text-gray-500 -mt-1 mb-1">Pilih anggota jika pembeli adalah anggota.</p>
+      </div>
       <select id="id_anggota" name="id_anggota" class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('id_anggota') ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-blue-500 focus:ring-blue-100' }}">
         <option value="">-- Pilih Anggota --</option>
         @foreach($anggotas as $a)
@@ -47,7 +52,6 @@
         <p class="text-sm text-red-600 mt-1">{{ $errors->first('id_anggota') }}</p>
       @else
         <p id="id_anggota_error" class="text-sm text-red-600 mt-1 hidden"></p>
-        <p class="text-xs text-gray-500 mt-1">Pilih anggota jika pembeli adalah anggota.</p>
       @endif
     </div>
   </div>
@@ -178,15 +182,15 @@
         </div>
 
         <div>
-          <label for="biaya_pengiriman" class="block text-sm font-medium text-gray-700">Biaya Pengiriman <span class="text-rose-600">*</span></label>
-          <input type="number" name="biaya_pengiriman" id="biaya_pengiriman" value="{{ old('biaya_pengiriman', $penjualan->pengiriman->biaya_pengiriman ?? '') }}" class="w-full rounded-md border px-3 py-2 text-sm border-gray-300" step="0.01" min="0">
-          <p id="biaya_pengiriman_error" class="text-sm text-red-600 mt-1 hidden"></p>
+          <label for="biaya_pengiriman" class="block text-sm font-medium text-gray-700">Biaya Pengiriman</label>
+          <input type="number" name="biaya_pengiriman" id="biaya_pengiriman" value="{{ old('biaya_pengiriman', $penjualan->pengiriman->biaya_pengiriman ?? '') }}" class="w-full rounded-md border px-3 py-2 text-sm border-gray-300" step="0.01" min="0" placeholder="0">
+          <p class="text-xs text-gray-500">Opsional, jika tidak diisi = Rp 0</p>
         </div>
       </div>
     </div>
   </div>
 
-  {{-- KASIR – KONDISIONAL uang_diterima --}}
+  {{-- KASIR --}}
   <div class="mt-6 pt-5 border-t border-gray-300">
     <h3 class="text-lg font-semibold text-gray-800 mb-4">Kasir</h3>
 
@@ -222,16 +226,22 @@
         <p id="jenis_pembayaran_error" class="text-sm text-red-600 mt-1 hidden"></p>
       </div>
 
-      <!-- Uang Diterima (KONDISIONAL) -->
+      <!-- Uang Diterima -->
       <div>
         <label for="uang_diterima" class="block text-sm font-medium text-gray-700">
           Jumlah Uang Dibayarkan 
           <span id="wajib_tunai" class="text-rose-600 hidden">*</span>
         </label>
-        <input type="number" name="uang_diterima" id="uang_diterima" 
-               value="{{ old('uang_diterima', $penjualan->uang_diterima ?? '') }}" 
-               class="w-full rounded-md border px-3 py-2 text-sm border-gray-200" 
-               step="0.01" min="0">
+        <input 
+          type="number" 
+          name="uang_diterima" 
+          id="uang_diterima" 
+          value="{{ old('uang_diterima', $penjualan->uang_diterima ?? '') }}" 
+          class="w-full rounded-md border px-3 py-2 text-sm border-gray-200 bg-gray-100 cursor-not-allowed" 
+          step="0.01" 
+          min="0"
+          readonly
+        >
         <p id="uang_diterima_error" class="text-sm text-red-600 mt-1 hidden"></p>
       </div>
 
@@ -239,7 +249,7 @@
       <div>
         <label class="block text-sm font-medium text-gray-700">Uang Kembalian</label>
         <input type="text" id="kembalianDisplay" readonly 
-               class="w-full rounded-md border bg-gray-100 px-3 py-2 text-sm font-bold cursor-not-allowed" 
+               class="w-full rounded-md border bg-gray-100 px-3 py-2 text-sm font-bold text-gray-700 cursor-not-allowed" 
                value="Rp 0">
       </div>
     </div>
@@ -270,6 +280,7 @@
 document.addEventListener('DOMContentLoaded', function () {
   const ekspedisiCheckbox = document.getElementById('ekspedisi');
   const ekspedisiForm = document.getElementById('ekspedisiForm');
+  const biayaPengirimanInput = document.getElementById('biaya_pengiriman');
   const barangContainer = document.getElementById('barangContainer');
   const diskonInput = document.getElementById('diskon_penjualan');
   const jenisPembayaranSelect = document.getElementById('jenis_pembayaran');
@@ -279,25 +290,54 @@ document.addEventListener('DOMContentLoaded', function () {
   const totalBayarDisplay = document.getElementById('totalBayarDisplay');
   const kembalianDisplay = document.getElementById('kembalianDisplay');
 
+  // === Pelanggan & Anggota Lock ===
+  const pelangganSelect = document.getElementById('id_pelanggan');
+  const anggotaSelect = document.getElementById('id_anggota');
+
+  function togglePembeliLock() {
+    const pVal = pelangganSelect.value;
+    const aVal = anggotaSelect.value;
+
+    if (pVal) {
+      anggotaSelect.disabled = true;
+      anggotaSelect.classList.add('bg-gray-100', 'cursor-not-allowed');
+    } else {
+      anggotaSelect.disabled = false;
+      anggotaSelect.classList.remove('bg-gray-100', 'cursor-not-allowed');
+    }
+
+    if (aVal) {
+      pelangganSelect.disabled = true;
+      pelangganSelect.classList.add('bg-gray-100', 'cursor-not-allowed');
+    } else {
+      pelangganSelect.disabled = false;
+      pelangganSelect.classList.remove('bg-gray-100', 'cursor-not-allowed');
+    }
+  }
+
+  pelangganSelect.addEventListener('change', togglePembeliLock);
+  anggotaSelect.addEventListener('change', togglePembeliLock);
+  togglePembeliLock();
+
   let barangIndex = {{ $isEdit ?? false ? $penjualan->detailPenjualan->count() : 1 }};
 
-  // --- FUNGSI KONDISI UANG DITERIMA ---
+  // --- UANG DITERIMA ---
   function toggleUangDiterima() {
     const isTunai = jenisPembayaranSelect.value === 'tunai';
     
     if (isTunai) {
-      uangDiterimaInput.disabled = false;
       uangDiterimaInput.removeAttribute('readonly');
+      uangDiterimaInput.classList.remove('bg-gray-100', 'cursor-not-allowed');
       wajibTunaiSpan.classList.remove('hidden');
     } else {
-      uangDiterimaInput.disabled = true;
+      uangDiterimaInput.setAttribute('readonly', 'readonly');
+      uangDiterimaInput.classList.add('bg-gray-100', 'cursor-not-allowed');
       uangDiterimaInput.value = '';
       wajibTunaiSpan.classList.add('hidden');
-      // Reset kembalian ke 0
       kembalianDisplay.value = 'Rp 0';
       kembalianDisplay.className = 'w-full rounded-md border bg-gray-100 px-3 py-2 text-sm font-bold text-gray-700 cursor-not-allowed';
     }
-    hitungTotal(); // Update kembalian
+    hitungTotal();
   }
 
   jenisPembayaranSelect.addEventListener('change', toggleUangDiterima);
@@ -313,6 +353,7 @@ document.addEventListener('DOMContentLoaded', function () {
     } else {
       ekspedisiForm.querySelectorAll('input, select, textarea').forEach(f => f.disabled = false);
     }
+    hitungTotal();
   }
   ekspedisiCheckbox.addEventListener('change', toggleEkspedisi);
   toggleEkspedisi();
@@ -381,15 +422,18 @@ document.addEventListener('DOMContentLoaded', function () {
   document.querySelectorAll('.barang-row').forEach(attachBarangEvents);
   updateActionButtons();
 
-  // --- HITUNG TOTAL ---
+  // --- HITUNG TOTAL (SUB TOTAL + BIAYA PENGIRIMAN) ---
   function hitungTotal() {
-    let subTotal = 0;
+    let subTotalBarang = 0;
     document.querySelectorAll('.barang-row').forEach(row => {
       const select = row.querySelector('select');
       const qty = parseFloat(row.querySelector('input').value) || 0;
       const harga = parseFloat(select.selectedOptions[0]?.dataset.harga) || 0;
-      subTotal += harga * qty;
+      subTotalBarang += harga * qty;
     });
+
+    const biayaPengiriman = ekspedisiCheckbox.checked ? (parseFloat(biayaPengirimanInput.value) || 0) : 0;
+    const subTotal = subTotalBarang + biayaPengiriman;
 
     const diskonPersen = parseFloat(diskonInput.value) || 0;
     const diskon = subTotal * (diskonPersen / 100);
@@ -398,7 +442,6 @@ document.addEventListener('DOMContentLoaded', function () {
     subTotalDisplay.value = `Rp ${formatRupiah(subTotal)}`;
     totalBayarDisplay.value = `Rp ${formatRupiah(totalBayar)}`;
 
-    // Hanya hitung kembalian jika tunai
     if (jenisPembayaranSelect.value === 'tunai') {
       const uangDiterima = parseFloat(uangDiterimaInput.value) || 0;
       const kembalian = uangDiterima - totalBayar;
@@ -422,8 +465,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
   diskonInput.addEventListener('input', hitungTotal);
   uangDiterimaInput.addEventListener('input', hitungTotal);
+  biayaPengirimanInput.addEventListener('input', hitungTotal);
 
-  // Inisialisasi awal
+  // Inisialisasi
   toggleUangDiterima();
   hitungTotal();
 
@@ -435,10 +479,18 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.text-red-600:not(.hidden)').forEach(el => el.classList.add('hidden'));
     document.querySelectorAll('input, select').forEach(el => el.classList.remove('border-red-500', 'bg-red-50'));
 
-    const p = document.getElementById('id_pelanggan').value;
-    const a = document.getElementById('id_anggota').value;
-    if (!p && !a) { showError('#id_pelanggan_error', 'Pilih pelanggan atau anggota.', '#id_pelanggan'); error = true; }
-    if (p && a) { showError('#id_pelanggan_error', 'Hanya boleh pilih satu.', '#id_pelanggan'); error = true; }
+    const p = pelangganSelect.value;
+    const a = anggotaSelect.value;
+
+    if (!p && !a) {
+      showError('#id_pelanggan_error', 'Pilih pelanggan atau anggota.', '#id_pelanggan');
+      showError('#id_anggota_error', 'Pilih pelanggan atau anggota.', '#id_anggota');
+      error = true;
+    } else if (p && a) {
+      showError('#id_pelanggan_error', 'Hanya boleh pilih satu.', '#id_pelanggan');
+      showError('#id_anggota_error', 'Hanya boleh pilih satu.', '#id_anggota');
+      error = true;
+    }
 
     const rows = document.querySelectorAll('.barang-row');
     if (rows.length === 0) { showError('#barang_error', 'Minimal satu barang.'); error = true; }
@@ -451,7 +503,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     if (ekspedisiCheckbox.checked) {
-      ['id_agen_ekspedisi', 'nama_penerima', 'telepon_penerima', 'alamat_penerima', 'kode_pos', 'biaya_pengiriman'].forEach(id => {
+      ['id_agen_ekspedisi', 'nama_penerima', 'telepon_penerima', 'alamat_penerima', 'kode_pos'].forEach(id => {
         const el = document.getElementById(id);
         if (!el.value) { showError(`#${id}_error`, 'Wajib diisi.', `#${id}`); error = true; }
       });
@@ -466,7 +518,6 @@ document.addEventListener('DOMContentLoaded', function () {
       error = true;
     }
 
-    // Validasi uang_diterima hanya jika tunai
     if (jenisPembayaranSelect.value === 'tunai') {
       if (!uangDiterimaInput.value || uangDiterimaInput.value < 0) {
         showError('#uang_diterima_error', 'Wajib diisi saat pembayaran tunai.', '#uang_diterima');

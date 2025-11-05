@@ -74,7 +74,6 @@ class PenjualanController extends Controller
             'jenis_pembayaran.required' => 'Jenis pembayaran wajib dipilih.',
         ];
 
-        // Hanya validasi ekspedisi jika checkbox dikirim dan bernilai 1
         if ($request->has('ekspedisi') && $request->ekspedisi == '1') {
             $rules += [
                 'id_agen_ekspedisi' => 'required|exists:agen_ekspedisi,id_ekspedisi',
@@ -82,7 +81,7 @@ class PenjualanController extends Controller
                 'telepon_penerima' => 'required|string|max:20',
                 'alamat_penerima' => 'required|string',
                 'kode_pos' => 'required|string|max:10',
-                'biaya_pengiriman' => 'required|numeric|min:0',
+                'biaya_pengiriman' => 'nullable|numeric|min:0', // BISA KOSONG
                 'nomor_resi' => 'nullable|string|max:255',
             ];
 
@@ -93,13 +92,11 @@ class PenjualanController extends Controller
                 'telepon_penerima.required' => 'Telepon penerima wajib diisi.',
                 'alamat_penerima.required' => 'Alamat penerima wajib diisi.',
                 'kode_pos.required' => 'Kode pos wajib diisi.',
-                'biaya_pengiriman.required' => 'Biaya pengiriman wajib diisi.',
             ];
         }
 
         $request->validate($rules, $messages);
 
-        // Validasi mutual exclusive
         if (!$request->id_pelanggan && !$request->id_anggota) {
             return back()->withErrors(['id_pelanggan' => 'Pilih pelanggan atau anggota.'])->withInput();
         }
@@ -108,11 +105,15 @@ class PenjualanController extends Controller
         }
 
         DB::transaction(function () use ($request) {
-            $subTotal = 0;
+            $subTotalBarang = 0;
             foreach ($request->barang as $item) {
                 $barang = Barang::findOrFail($item['id_barang']);
-                $subTotal += $barang->retail * $item['kuantitas'];
+                $subTotalBarang += $barang->retail * $item['kuantitas'];
             }
+
+            $biayaPengiriman = $request->has('ekspedisi') && $request->ekspedisi == '1' ? ($request->biaya_pengiriman ?? 0) : 0;
+            $subTotal = $subTotalBarang + $biayaPengiriman;
+
             $diskon = $request->filled('diskon_penjualan') ? $request->diskon_penjualan : 0;
             $totalHarga = $subTotal - ($subTotal * $diskon / 100);
 
@@ -124,6 +125,7 @@ class PenjualanController extends Controller
                 'diskon_penjualan' => $diskon,
                 'total_harga_penjualan' => $totalHarga,
                 'jenis_pembayaran' => $request->jenis_pembayaran,
+                'uang_diterima' => $request->uang_diterima ?? 0,
                 'catatan' => $request->catatan,
             ]);
 
@@ -145,7 +147,7 @@ class PenjualanController extends Controller
                     'id_agen_ekspedisi' => $request->id_agen_ekspedisi,
                     'id_penjualan' => $penjualan->id_penjualan,
                     'nomor_resi' => $request->nomor_resi,
-                    'biaya_pengiriman' => $request->biaya_pengiriman,
+                    'biaya_pengiriman' => $biayaPengiriman,
                     'nama_penerima' => $request->nama_penerima,
                     'telepon_penerima' => $request->telepon_penerima,
                     'alamat_penerima' => $request->alamat_penerima,
@@ -200,7 +202,7 @@ class PenjualanController extends Controller
                 'telepon_penerima' => 'required|string|max:20',
                 'alamat_penerima' => 'required|string',
                 'kode_pos' => 'required|string|max:10',
-                'biaya_pengiriman' => 'required|numeric|min:0',
+                'biaya_pengiriman' => 'nullable|numeric|min:0', // BISA KOSONG
                 'nomor_resi' => 'nullable|string|max:255',
             ];
 
@@ -211,7 +213,6 @@ class PenjualanController extends Controller
                 'telepon_penerima.required' => 'Telepon penerima wajib diisi.',
                 'alamat_penerima.required' => 'Alamat penerima wajib diisi.',
                 'kode_pos.required' => 'Kode pos wajib diisi.',
-                'biaya_pengiriman.required' => 'Biaya pengiriman wajib diisi.',
             ];
         }
 
@@ -233,11 +234,15 @@ class PenjualanController extends Controller
             $penjualan->detailPenjualan()->delete();
             $penjualan->pengiriman()->delete();
 
-            $subTotal = 0;
+            $subTotalBarang = 0;
             foreach ($request->barang as $item) {
                 $barang = Barang::findOrFail($item['id_barang']);
-                $subTotal += $barang->retail * $item['kuantitas'];
+                $subTotalBarang += $barang->retail * $item['kuantitas'];
             }
+
+            $biayaPengiriman = $request->has('ekspedisi') && $request->ekspedisi == '1' ? ($request->biaya_pengiriman ?? 0) : 0;
+            $subTotal = $subTotalBarang + $biayaPengiriman;
+
             $diskon = $request->filled('diskon_penjualan') ? $request->diskon_penjualan : 0;
             $totalHarga = $subTotal - ($subTotal * $diskon / 100);
 
@@ -247,6 +252,7 @@ class PenjualanController extends Controller
                 'diskon_penjualan' => $diskon,
                 'total_harga_penjualan' => $totalHarga,
                 'jenis_pembayaran' => $request->jenis_pembayaran,
+                'uang_diterima' => $request->uang_diterima ?? 0,
                 'catatan' => $request->catatan,
             ]);
 
@@ -267,7 +273,7 @@ class PenjualanController extends Controller
                     'id_pengiriman' => $this->generatePengirimanId(),
                     'id_agen_ekspedisi' => $request->id_agen_ekspedisi,
                     'id_penjualan' => $penjualan->id_penjualan,
-                    'biaya_pengiriman' => $request->biaya_pengiriman,
+                    'biaya_pengiriman' => $biayaPengiriman,
                     'nama_penerima' => $request->nama_penerima,
                     'telepon_penerima' => $request->telepon_penerima,
                     'alamat_penerima' => $request->alamat_penerima,
