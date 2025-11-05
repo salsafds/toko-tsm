@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('penjualan', function (Blueprint $table) {
             $table->string('id_penjualan', 11)->primary();
-            $table->string('id_pelanggan', 11);
+            $table->string('id_pelanggan', 11)->nullable();
             $table->string('id_anggota', 11)->nullable();
             $table->string('id_user', 11);
             $table->timestamp('tanggal_order')->useCurrent();

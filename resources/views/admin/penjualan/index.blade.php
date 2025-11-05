@@ -57,47 +57,76 @@
       <thead class="bg-gray-50">
         <tr class="text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
           <th class="w-24 sm:w-32 px-2 sm:px-4 py-2 sm:py-3 border-r border-gray-200">ID</th>
-          <th class="flex-1 px-2 sm:px-4 py-2 sm:py-3 border-r">Pelanggan/Anggota</th>
-          <th class="w-32 sm:w-40 px-2 sm:px-4 py-2 sm:py-3 border-r">Tanggal Order</th>
-          <th class="w-32 sm:w-40 px-2 sm:px-4 py-2 sm:py-3 border-r">Total Harga</th>
-          <th class="w-32 sm:w-40 px-2 sm:px-4 py-2 sm:py-3 border-r">Status</th>
-          <th class="w-32 sm:w-40 px-2 sm:px-4 py-2 sm:py-3 border-r">Aksi</th>
+          <th class="px-2 sm:px-4 py-2 sm:py-3 border-r">User</th>
+          <th class="px-2 sm:px-4 py-2 sm:py-3 border-r">Pembeli</th>
+          <th class="px-2 sm:px-4 py-2 sm:py-3 border-r">Jenis Pembeli</th>
+          <th class="px-2 sm:px-4 py-2 sm:py-3 border-r">Total Harga</th>
+          <th class="px-2 sm:px-4 py-2 sm:py-3 border-r">Jenis Bayar</th>
+          <th class="px-2 sm:px-4 py-2 sm:py-3 border-r">Tanggal Order</th>
+          <th class="px-2 sm:px-4 py-2 sm:py-3 border-r">Tanggal Selesai</th>
+          <th class="px-2 sm:px-4 py-2 sm:py-3">Aksi</th>
         </tr>
       </thead>
       <tbody class="bg-white divide-y divide-gray-100">
         @forelse($penjualans as $item)
+          @php
+            $isSelesai = !is_null($item->tanggal_selesai);
+            $namaPembeli = $item->pelanggan ? $item->pelanggan->nama_pelanggan : ($item->anggota ? $item->anggota->nama_anggota : 'N/A');
+            $jenisPembeli = $item->pelanggan ? 'Pelanggan' : ($item->anggota ? 'Anggota' : 'N/A');
+          @endphp
           <tr class="hover:bg-gray-50 transition-colors">
             <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r border-gray-100">{{ $item->id_penjualan }}</td>
-            <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->pelanggan ? $item->pelanggan->nama_pelanggan : ($item->anggota ? $item->anggota->nama_anggota : 'N/A') }}</td>
-            <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->tanggal_order->format('d-m-Y') }}</td>
-            <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">Rp {{ number_format($item->total_harga_penjualan, 0, ',', '.') }}</td>
-            <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->tanggal_selesai ? 'Selesai' : 'Pending' }}</td>
-            <td class="px-2 sm:px-4 py-2 text-center border-r">
-              <div class="flex justify-center items-center gap-2 sm:gap-3">
-                <a href="{{ route('admin.penjualan.edit', $item->id_penjualan) }}"
-                   class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300">
-                  Edit
-                </a>
-                <form action="{{ route('admin.penjualan.destroy', $item->id_penjualan) }}" method="POST"
-                      onsubmit="return confirm('Apakah Anda yakin ingin menghapus data penjualan ini?');">
+            <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->user?->nama_lengkap ?? 'N/A' }}</td>
+            <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $namaPembeli }}</td>
+            <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-center border-r">
+              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {{ $item->pelanggan ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700' }}">
+                {{ $jenisPembeli }}
+              </span>
+            </td>
+            <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r text-right">Rp {{ number_format($item->total_harga_penjualan, 0, ',', '.') }}</td>
+            <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r text-center">
+              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {{ $item->jenis_pembayaran === 'tunai' ? 'bg-yellow-100 text-yellow-700' : 'bg-purple-100 text-purple-700' }}">
+                {{ ucfirst($item->jenis_pembayaran) }}
+              </span>
+            </td>
+            <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r text-center">{{ $item->tanggal_order->format('d-m-Y H:i') }}</td>
+            <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r text-center">
+              @if($isSelesai)
+                <span class="text-green-600 font-medium">{{ $item->tanggal_selesai->format('d-m-Y H:i') }}</span>
+              @else
+                <form action="{{ route('admin.penjualan.selesai', $item->id_penjualan) }}" method="POST" class="inline">
                   @csrf
-                  @method('DELETE')
-                  <button type="submit"
-                          class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-rose-100 text-rose-700 hover:bg-rose-200 focus:outline-none focus:ring-2 focus:ring-rose-300">
-                    Delete
+                  @method('PATCH')
+                  <button type="submit" 
+                          class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 hover:bg-green-200 transition-colors"
+                          onclick="return confirm('Tandai transaksi ini selesai? Stok akan dikurangi.');">
+                    Selesai
                   </button>
                 </form>
-                @if(!$item->tanggal_selesai)
-                  <form action="{{ route('admin.penjualan.selesai', $item->id_penjualan) }}" method="POST" class="inline">
+              @endif
+            </td>
+            <td class="px-2 sm:px-4 py-2 text-center">
+              <div class="flex justify-center items-center gap-1 sm:gap-2">
+                @if(!$isSelesai)
+                  <a href="{{ route('admin.penjualan.edit', $item->id_penjualan) }}"
+                     class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 hover:bg-blue-200">
+                    Edit
+                  </a>
+                  <form action="{{ route('admin.penjualan.destroy', $item->id_penjualan) }}" method="POST"
+                        onsubmit="return confirm('Hapus transaksi ini?');" class="inline">
                     @csrf
-                    @method('PATCH')
-                    <button type="submit" class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 hover:bg-green-200">
-                      Selesai
+                    @method('DELETE')
+                    <button type="submit"
+                            class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-rose-100 text-rose-700 hover:bg-rose-200">
+                      Delete
                     </button>
                   </form>
+                @else
+                  <span class="text-xs text-gray-400">Edit</span>
+                  <span class="text-xs text-gray-400">Delete</span>
                 @endif
                 <a href="{{ route('admin.penjualan.print', $item->id_penjualan) }}" target="_blank"
-                   class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700 hover:bg-purple-200">
+                   class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700 hover:bg-purple-200">
                   Print
                 </a>
               </div>
@@ -105,7 +134,7 @@
           </tr>
         @empty
           <tr>
-            <td colspan="6" class="px-4 py-6 sm:py-8 text-center text-xs sm:text-sm text-gray-500">
+            <td colspan="9" class="px-4 py-6 sm:py-8 text-center text-xs sm:text-sm text-gray-500">
               Tidak ada data penjualan.
             </td>
           </tr>
@@ -128,33 +157,4 @@
     </div>
   </div>
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  const searchInput = document.querySelector('input[name="q"]');
-  const tableBody = document.querySelector('tbody');
-  const perPageSelect = document.querySelector('#per_page');
-
-  function fetchData() {
-    const query = searchInput.value;
-    const perPage = perPageSelect.value;
-
-    fetch(`{{ route('admin.penjualan.index') }}?q=${encodeURIComponent(query)}&per_page=${perPage}`, {
-      headers: { 'X-Requested-With': 'XMLHttpRequest' }
-    })
-    .then(response => response.text())
-    .then(html => {
-      const parser = new DOMParser();
-      const newDoc = parser.parseFromString(html, 'text/html');
-      const newTbody = newDoc.querySelector('tbody');
-      if (newTbody) {
-        tableBody.innerHTML = newTbody.innerHTML;
-      }
-    })
-    .catch(error => console.error('Error:', error));
-  }
-
-  if (searchInput) searchInput.addEventListener('keyup', fetchData);
-});
-</script>
 @endsection

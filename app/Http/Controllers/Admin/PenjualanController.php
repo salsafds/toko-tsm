@@ -29,6 +29,9 @@ class PenjualanController extends Controller
                   })
                   ->orWhereHas('anggota', function ($sub) use ($search) {
                       $sub->where('nama_anggota', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('user', function ($sub) use ($search) {
+                      $sub->where('name', 'like', "%{$search}%");
                   });
             });
         }
@@ -81,7 +84,7 @@ class PenjualanController extends Controller
                 'telepon_penerima' => 'required|string|max:20',
                 'alamat_penerima' => 'required|string',
                 'kode_pos' => 'required|string|max:10',
-                'biaya_pengiriman' => 'nullable|numeric|min:0', // BISA KOSONG
+                'biaya_pengiriman' => 'nullable|numeric|min:0',
                 'nomor_resi' => 'nullable|string|max:255',
             ];
 
@@ -138,7 +141,7 @@ class PenjualanController extends Controller
                     'kuantitas' => $item['kuantitas'],
                     'sub_total' => $barang->retail * $item['kuantitas'],
                 ]);
-                $barang->decrement('stok', $item['kuantitas']);
+                // STOK TIDAK DIKURANGI DI SINI
             }
 
             if ($request->has('ekspedisi') && $request->ekspedisi == '1') {
@@ -163,6 +166,10 @@ class PenjualanController extends Controller
     public function edit($id)
     {
         $penjualan = Penjualan::with(['detailPenjualan.barang', 'pengiriman'])->findOrFail($id);
+        if ($penjualan->tanggal_selesai) {
+            return back()->withErrors(['error' => 'Transaksi sudah selesai dan tidak bisa diedit.']);
+        }
+
         $pelanggans = Pelanggan::orderBy('nama_pelanggan')->get();
         $anggotas = Anggota::orderBy('nama_anggota')->get();
         $barangs = Barang::where('stok', '>', 0)->orderBy('nama_barang')->get();
@@ -173,6 +180,11 @@ class PenjualanController extends Controller
 
     public function update(Request $request, $id)
     {
+        $penjualan = Penjualan::findOrFail($id);
+        if ($penjualan->tanggal_selesai) {
+            return back()->withErrors(['error' => 'Transaksi sudah selesai dan tidak bisa diubah.']);
+        }
+
         $rules = [
             'id_pelanggan' => 'nullable|exists:pelanggan,id_pelanggan',
             'id_anggota' => 'nullable|exists:anggota,id_anggota',
@@ -185,16 +197,6 @@ class PenjualanController extends Controller
             'catatan' => 'nullable|string|max:255',
         ];
 
-        $messages = [
-            'id_pelanggan.exists' => 'Pelanggan tidak valid.',
-            'id_anggota.exists' => 'Anggota tidak valid.',
-            'barang.required' => 'Minimal satu barang harus dipilih.',
-            'barang.*.id_barang.required' => 'Barang wajib dipilih.',
-            'barang.*.kuantitas.required' => 'Kuantitas wajib diisi.',
-            'diskon_penjualan.max' => 'Diskon maksimal 100%.',
-            'jenis_pembayaran.required' => 'Jenis pembayaran wajib dipilih.',
-        ];
-
         if ($request->has('ekspedisi') && $request->ekspedisi == '1') {
             $rules += [
                 'id_agen_ekspedisi' => 'required|exists:agen_ekspedisi,id_ekspedisi',
@@ -202,21 +204,12 @@ class PenjualanController extends Controller
                 'telepon_penerima' => 'required|string|max:20',
                 'alamat_penerima' => 'required|string',
                 'kode_pos' => 'required|string|max:10',
-                'biaya_pengiriman' => 'nullable|numeric|min:0', // BISA KOSONG
+                'biaya_pengiriman' => 'nullable|numeric|min:0',
                 'nomor_resi' => 'nullable|string|max:255',
-            ];
-
-            $messages += [
-                'id_agen_ekspedisi.required' => 'Agen ekspedisi wajib dipilih.',
-                'id_agen_ekspedisi.exists' => 'Agen ekspedisi tidak valid.',
-                'nama_penerima.required' => 'Nama penerima wajib diisi.',
-                'telepon_penerima.required' => 'Telepon penerima wajib diisi.',
-                'alamat_penerima.required' => 'Alamat penerima wajib diisi.',
-                'kode_pos.required' => 'Kode pos wajib diisi.',
             ];
         }
 
-        $request->validate($rules, $messages);
+        $request->validate($rules);
 
         if (!$request->id_pelanggan && !$request->id_anggota) {
             return back()->withErrors(['id_pelanggan' => 'Pilih pelanggan atau anggota.'])->withInput();
@@ -225,12 +218,7 @@ class PenjualanController extends Controller
             return back()->withErrors(['id_pelanggan' => 'Hanya boleh pilih satu: pelanggan atau anggota.'])->withInput();
         }
 
-        $penjualan = Penjualan::findOrFail($id);
-
         DB::transaction(function () use ($request, $penjualan) {
-            foreach ($penjualan->detailPenjualan as $detail) {
-                $detail->barang->increment('stok', $detail->kuantitas);
-            }
             $penjualan->detailPenjualan()->delete();
             $penjualan->pengiriman()->delete();
 
@@ -265,7 +253,6 @@ class PenjualanController extends Controller
                     'kuantitas' => $item['kuantitas'],
                     'sub_total' => $barang->retail * $item['kuantitas'],
                 ]);
-                $barang->decrement('stok', $item['kuantitas']);
             }
 
             if ($request->has('ekspedisi') && $request->ekspedisi == '1') {
@@ -290,9 +277,12 @@ class PenjualanController extends Controller
     public function destroy($id)
     {
         $penjualan = Penjualan::findOrFail($id);
-        foreach ($penjualan->detailPenjualan as $detail) {
-            $detail->barang->increment('stok', $detail->kuantitas);
+        if ($penjualan->tanggal_selesai) {
+            return back()->withErrors(['error' => 'Transaksi sudah selesai dan tidak bisa dihapus.']);
         }
+
+        $penjualan->detailPenjualan()->delete();
+        $penjualan->pengiriman()->delete();
         $penjualan->delete();
 
         return redirect()->route('admin.penjualan.index')
@@ -301,11 +291,20 @@ class PenjualanController extends Controller
 
     public function selesai($id)
     {
-        $penjualan = Penjualan::findOrFail($id);
-        $penjualan->update(['tanggal_selesai' => now()]);
+        $penjualan = Penjualan::with('detailPenjualan.barang')->findOrFail($id);
+        if ($penjualan->tanggal_selesai) {
+            return back()->with('success', 'Transaksi sudah selesai sebelumnya.');
+        }
+
+        DB::transaction(function () use ($penjualan) {
+            foreach ($penjualan->detailPenjualan as $detail) {
+                $detail->barang->decrement('stok', $detail->kuantitas);
+            }
+            $penjualan->update(['tanggal_selesai' => now()]);
+        });
 
         return redirect()->route('admin.penjualan.index')
-                         ->with('success', 'Penjualan ditandai selesai.');
+                         ->with('success', 'Penjualan ditandai selesai dan stok telah dikurangi.');
     }
 
     public function print($id)
