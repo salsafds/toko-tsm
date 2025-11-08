@@ -21,12 +21,19 @@ class Pembelian extends Model
         'id_supplier',
         'id_user',
         'jenis_pembayaran',
+        'diskon',
+        'ppn',
+        'biaya_pengiriman',
         'jumlah_bayar',
+        'catatan',
     ];
 
     protected $casts = [
         'tanggal_pembelian' => 'date',
         'tanggal_terima' => 'datetime',
+        'diskon' => 'decimal:2',
+        'ppn' => 'decimal:2',
+        'biaya_pengiriman' => 'decimal:2',
         'jumlah_bayar' => 'decimal:2',
     ];
 

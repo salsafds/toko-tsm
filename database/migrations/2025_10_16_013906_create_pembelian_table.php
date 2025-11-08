@@ -15,7 +15,11 @@ return new class extends Migration
             $table->string('id_supplier', 11);
             $table->string('id_user', 11);
             $table->enum('jenis_pembayaran', ['Cash', 'Transfer', 'Kredit'])->nullable();
+            $table->decimal('diskon', 15, 2)->default(0);
+            $table->decimal('ppn', 15, 2)->default(0);
+            $table->decimal('biaya_pengiriman', 15, 2)->default(0);
             $table->decimal('jumlah_bayar', 15, 2)->default(0);
+            $table->text('catatan')->nullable();
 
             $table->timestamps();
 

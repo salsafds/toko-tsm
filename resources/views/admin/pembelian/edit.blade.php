@@ -30,7 +30,10 @@ document.addEventListener('DOMContentLoaded', function () {
   const submitButton = document.getElementById('submitButton');
   const supplierSelect = document.getElementById('id_supplier');
   const jenisSelect = document.getElementById('jenis_pembayaran');
-  const jumlahInput = document.getElementById('jumlah_bayar');
+  const diskonInput = document.getElementById('diskon');
+  const ppnInput = document.getElementById('ppn');
+  const biayaPengirimanInput = document.getElementById('biaya_pengiriman');
+  const catatanInput = document.getElementById('catatan');
   const detailContainer = document.getElementById('detail_container');
 
   if (!form || !submitButton) return;
@@ -38,7 +41,10 @@ document.addEventListener('DOMContentLoaded', function () {
   const initial = {
     supplier: supplierSelect?.value || '',
     jenis: jenisSelect?.value || '',
-    jumlah: jumlahInput?.value || '',
+    diskon: diskonInput?.value || '0',
+    ppn: ppnInput?.value || '0',
+    biayaPengiriman: biayaPengirimanInput?.value || '0',
+    catatan: catatanInput?.value || '',
     details: getDetailValues()
   };
 
@@ -57,16 +63,22 @@ document.addEventListener('DOMContentLoaded', function () {
     const current = {
       supplier: supplierSelect?.value || '',
       jenis: jenisSelect?.value || '',
-      jumlah: jumlahInput?.value || '',
+      diskon: diskonInput?.value || '0',
+      ppn: ppnInput?.value || '0',
+      biayaPengiriman: biayaPengirimanInput?.value || '0',
+      catatan: catatanInput?.value || '',
       details: getDetailValues()
     };
 
     const sameMain = initial.supplier === current.supplier &&
                      initial.jenis === current.jenis &&
-                     initial.jumlah === current.jumlah;
+                     initial.diskon === current.diskon &&
+                     initial.ppn === current.ppn &&
+                     initial.biayaPengiriman === current.biayaPengiriman &&
+                     initial.catatan === current.catatan;
 
     const sameDetails = initial.details.length === current.details.length &&
-                        initial.details.every((d, i) => 
+                        initial.details.every((d, i) =>
                           d.idBarang === current.details[i].idBarang &&
                           d.harga === current.details[i].harga &&
                           d.kuantitas === current.details[i].kuantitas
@@ -78,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function () {
     submitButton.classList.toggle('opacity-50', !hasChanges);
   }
 
-  [supplierSelect, jenisSelect, jumlahInput].forEach(el => {
+  [supplierSelect, jenisSelect, diskonInput, ppnInput, biayaPengirimanInput, catatanInput].forEach(el => {
     if (el) {
       el.addEventListener('input', checkChanges);
       el.addEventListener('change', checkChanges);

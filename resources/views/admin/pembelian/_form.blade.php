@@ -62,14 +62,52 @@
     <p class="text-xs text-gray-500">Pilih jenis pembayaran.</p>
   </div>
 
-  {{-- Jumlah Bayar --}}
+  {{-- Diskon (%) --}}
   <div>
-    <label class="block text-sm font-medium text-gray-700">Jumlah Bayar <span class="text-rose-600">*</span></label>
-    <input id="jumlah_bayar" name="jumlah_bayar" type="number" step="0.01"
-           value="{{ old('jumlah_bayar', $pembelian->jumlah_bayar ?? '') }}"
+    <label class="block text-sm font-medium text-gray-700">Diskon (%) <span class="text-rose-600">*</span></label>
+    <input id="diskon" name="diskon" type="number" step="0.01" min="0" max="100"
+           value="{{ old('diskon', $pembelian->diskon ?? '0.00') }}"
            class="w-full rounded-md border px-3 py-2 text-sm border-gray-200 focus:border-blue-500">
+    <p id="diskon_error" class="text-xs text-rose-600 mt-1 hidden"></p>
+    <p class="text-xs text-gray-500">Masukkan diskon dalam persen (0-100, default 0).</p>
+  </div>
+
+  {{-- PPN (%) --}}
+  <div>
+    <label class="block text-sm font-medium text-gray-700">PPN (%) <span class="text-rose-600">*</span></label>
+    <input id="ppn" name="ppn" type="number" step="0.01" min="0" max="100"
+           value="{{ old('ppn', $pembelian->ppn ?? '0.00') }}"
+           class="w-full rounded-md border px-3 py-2 text-sm border-gray-200 focus:border-blue-500">
+    <p id="ppn_error" class="text-xs text-rose-600 mt-1 hidden"></p>
+    <p class="text-xs text-gray-500">Masukkan PPN dalam persen (0-100, default 0).</p>
+  </div>
+
+  {{-- Biaya Pengiriman (Rp) --}}
+  <div>
+    <label class="block text-sm font-medium text-gray-700">Biaya Pengiriman (Rp) <span class="text-rose-600">*</span></label>
+    <input id="biaya_pengiriman" name="biaya_pengiriman" type="number" step="0.01" min="0"
+           value="{{ old('biaya_pengiriman', $pembelian->biaya_pengiriman ?? '0.00') }}"
+           class="w-full rounded-md border px-3 py-2 text-sm border-gray-200 focus:border-blue-500">
+    <p id="biaya_pengiriman_error" class="text-xs text-rose-600 mt-1 hidden"></p>
+    <p class="text-xs text-gray-500">Masukkan biaya pengiriman dalam Rupiah (default 0).</p>
+  </div>
+
+  {{-- Jumlah Bayar (Rp) --}}
+  <div>
+    <label class="block text-sm font-medium text-gray-700">Jumlah Bayar (Rp) <span class="text-rose-600">*</span></label>
+    <input id="jumlah_bayar" name="jumlah_bayar" type="number" step="0.01"
+           value="{{ old('jumlah_bayar', $pembelian->jumlah_bayar ?? '0.00') }}"
+           readonly class="w-full rounded-md border bg-gray-100 px-3 py-2 text-sm text-gray-700 cursor-not-allowed">
     <p id="jumlah_bayar_error" class="text-xs text-rose-600 mt-1 hidden"></p>
-    <p class="text-xs text-gray-500">Masukkan jumlah bayar manual.</p>
+    <p class="text-xs text-gray-500">Jumlah bayar dihitung otomatis (Sub Total - Diskon% + PPN% + Biaya Pengiriman).</p>
+  </div>
+
+  {{-- Catatan --}}
+  <div>
+    <label class="block text-sm font-medium text-gray-700">Catatan</label>
+    <textarea id="catatan" name="catatan" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200 focus:border-blue-500"
+              rows="4">{{ old('catatan', $pembelian->catatan ?? '') }}</textarea>
+    <p class="text-xs text-gray-500">Masukkan catatan atau keterangan (opsional).</p>
   </div>
 
   {{-- Section Detail Barang --}}
@@ -254,13 +292,40 @@ document.addEventListener('DOMContentLoaded', function () {
   const detailContainer = document.getElementById('detail_container');
   const pembelianForm = document.getElementById('pembelianForm');
 
+  function calculateJumlahBayar() {
+    const detailRows = document.querySelectorAll('.detail_row');
+    let totalSubTotal = 0;
+
+    detailRows.forEach(row => {
+      const hargaInput = row.querySelector('input[name*="[harga_beli]"]');
+      const qtyInput = row.querySelector('input[name*="[kuantitas]"]');
+      const subTotalInput = row.querySelector('input[readonly]');
+      const harga = parseFloat(hargaInput.value) || 0;
+      const qty = parseInt(qtyInput.value) || 0;
+      const subTotal = harga * qty;
+      subTotalInput.value = subTotal.toFixed(2);
+      totalSubTotal += subTotal;
+    });
+
+    const diskon = parseFloat(document.getElementById('diskon').value) || 0;
+    const ppn = parseFloat(document.getElementById('ppn').value) || 0;
+    const biayaPengiriman = parseFloat(document.getElementById('biaya_pengiriman').value) || 0;
+
+    const nilaiDiskon = (diskon / 100) * totalSubTotal;
+    const setelahDiskon = totalSubTotal - nilaiDiskon;
+    const nilaiPpn = (ppn / 100) * setelahDiskon;
+    const totalSetelahPpn = setelahDiskon + nilaiPpn;
+    const jumlahBayar = totalSetelahPpn + biayaPengiriman;
+
+    document.getElementById('jumlah_bayar').value = jumlahBayar.toFixed(2);
+  }
+
   if (tambahBarangCheckbox && formTambahBarang) {
     tambahBarangCheckbox.addEventListener('change', function () {
       formTambahBarang.classList.toggle('hidden', !this.checked);
     });
   }
 
-  // Fungsi untuk reset error di form tambah barang
   function resetTambahBarangErrors() {
     ['nama_barang', 'id_kategori_barang', 'id_supplier_barang', 'id_satuan'].forEach(id => {
       const errorEl = document.querySelector(`[data-error="${id}"]`);
@@ -280,7 +345,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       let hasError = false;
 
-      // Validasi Nama Barang
+
       const namaBarang = this.querySelector('[name="nama_barang"]');
       if (!namaBarang.value.trim()) {
         const errorEl = this.querySelector('[data-error="nama_barang"]');
@@ -292,7 +357,7 @@ document.addEventListener('DOMContentLoaded', function () {
         hasError = true;
       }
 
-      // Validasi Kategori Barang
+
       const kategoriBarang = this.querySelector('[name="id_kategori_barang"]');
       if (!kategoriBarang.value) {
         const errorEl = this.querySelector('[data-error="id_kategori_barang"]');
@@ -304,7 +369,6 @@ document.addEventListener('DOMContentLoaded', function () {
         hasError = true;
       }
 
-      // Validasi Supplier Barang
       const supplierBarang = this.querySelector('[name="id_supplier_barang"]');
       if (!supplierBarang.value) {
         const errorEl = this.querySelector('[data-error="id_supplier_barang"]');
@@ -316,7 +380,7 @@ document.addEventListener('DOMContentLoaded', function () {
         hasError = true;
       }
 
-      // Validasi Satuan
+ 
       const satuan = this.querySelector('[name="id_satuan"]');
       if (!satuan.value) {
         const errorEl = this.querySelector('[data-error="id_satuan"]');
@@ -330,7 +394,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       if (hasError) return;
 
-      // Jika valid, submit via fetch
+
       fetch("{{ route('admin.pembelian.storeBarang') }}", {
         method: "POST",
         headers: {
@@ -342,7 +406,7 @@ document.addEventListener('DOMContentLoaded', function () {
       .then(r => r.json())
       .then(data => {
         if (data.success) {
-          alert(data.message); // Tetap alert untuk success, atau ubah jika perlu
+          alert(data.message);
           this.reset();
           formTambahBarang.classList.add('hidden');
           tambahBarangCheckbox.checked = false;
@@ -366,11 +430,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
       clone.querySelectorAll('input, select').forEach(el => {
         el.value = '';
-        // Perbaiki regex dari /\$\d+\$/ ke /\$\d+\$/ untuk mengganti [angka] dengan benar
-        el.name = el.name.replace(/\$\d+\$/, '[' + idx + ']');
+        el.name = el.name.replace(/\$\d+\$/, `[${idx}]`);
       });
 
-      // Reset error elements in clone
+
       clone.querySelectorAll('[data-error]').forEach(el => {
         el.textContent = '';
         el.classList.add('hidden');
@@ -381,21 +444,22 @@ document.addEventListener('DOMContentLoaded', function () {
       removeBtn.className = 'remove_detail inline-flex items-center px-3 py-2 bg-red-600 text-white text-sm rounded-md hover:bg-red-700';
 
       detailContainer.appendChild(clone);
+      calculateJumlahBayar();
     }
 
     if (e.target.classList.contains('remove_detail')) {
       const row = e.target.closest('.detail_row');
       if (detailContainer.querySelectorAll('.detail_row').length > 1) {
         row.remove();
+        calculateJumlahBayar();
       }
     }
   });
 
   // Reset errors sebelum validasi
   function resetErrors() {
-    // Reset field utama
-    ['id_supplier', 'jenis_pembayaran', 'jumlah_bayar'].forEach(id => {
-      const errorEl = document.querySelector('#' + id + '_error');
+    ['id_supplier', 'jenis_pembayaran', 'diskon', 'ppn', 'biaya_pengiriman', 'jumlah_bayar'].forEach(id => {
+      const errorEl = document.querySelector(`#${id}_error`);
       if (errorEl) {
         errorEl.textContent = '';
         errorEl.classList.add('hidden');
@@ -413,7 +477,7 @@ document.addEventListener('DOMContentLoaded', function () {
   if (pembelianForm) {
     pembelianForm.addEventListener('submit', function (e) {
       e.preventDefault();
-      resetErrors(); // Reset error sebelum validasi
+      resetErrors();
 
       let hasError = false;
 
@@ -441,13 +505,52 @@ document.addEventListener('DOMContentLoaded', function () {
         hasError = true;
       }
 
+      // Validasi Diskon
+      const diskonInput = document.getElementById('diskon');
+      const diskon = parseFloat(diskonInput.value);
+      if (isNaN(diskon) || diskon < 0 || diskon > 100) {
+        const errorEl = document.querySelector('#diskon_error');
+        if (errorEl) {
+          errorEl.textContent = 'Diskon harus antara 0 hingga 100%.';
+          errorEl.classList.remove('hidden');
+        }
+        diskonInput.classList.add('border-red-500', 'bg-red-50');
+        hasError = true;
+      }
+
+      // Validasi PPN
+      const ppnInput = document.getElementById('ppn');
+      const ppn = parseFloat(ppnInput.value);
+      if (isNaN(ppn) || ppn < 0 || ppn > 100) {
+        const errorEl = document.querySelector('#ppn_error');
+        if (errorEl) {
+          errorEl.textContent = 'PPN harus antara 0 hingga 100%.';
+          errorEl.classList.remove('hidden');
+        }
+        ppnInput.classList.add('border-red-500', 'bg-red-50');
+        hasError = true;
+      }
+
+      // Validasi Biaya Pengiriman
+      const biayaPengirimanInput = document.getElementById('biaya_pengiriman');
+      const biayaPengiriman = parseFloat(biayaPengirimanInput.value);
+      if (isNaN(biayaPengiriman) || biayaPengiriman < 0) {
+        const errorEl = document.querySelector('#biaya_pengiriman_error');
+        if (errorEl) {
+          errorEl.textContent = 'Biaya pengiriman tidak boleh kurang dari 0.';
+          errorEl.classList.remove('hidden');
+        }
+        biayaPengirimanInput.classList.add('border-red-500', 'bg-red-50');
+        hasError = true;
+      }
+
       // Validasi Jumlah Bayar
       const jumlahInput = document.getElementById('jumlah_bayar');
       const jumlah = parseFloat(jumlahInput.value);
-      if (!jumlahInput.value || isNaN(jumlah) || jumlah <= 0) {
+      if (isNaN(jumlah) || jumlah < 0) {
         const errorEl = document.querySelector('#jumlah_bayar_error');
         if (errorEl) {
-          errorEl.textContent = 'Jumlah bayar harus lebih dari 0.';
+          errorEl.textContent = 'Jumlah bayar tidak boleh kurang dari 0.';
           errorEl.classList.remove('hidden');
         }
         jumlahInput.classList.add('border-red-500', 'bg-red-50');
@@ -456,6 +559,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
       // Validasi Detail Barang
       const detailRows = document.querySelectorAll('.detail_row');
+      if (detailRows.length === 0) {
+        alert('Harus ada setidaknya satu detail barang.');
+        hasError = true;
+      }
+
       detailRows.forEach((row, index) => {
         const idBarang = row.querySelector('select[name$="[id_barang]"]');
         const hargaBeli = row.querySelector('input[name$="[harga_beli]"]');
@@ -463,7 +571,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Validasi Barang
         if (!idBarang.value) {
-          const errorEl = row.querySelector('[data-error="id_barang_' + index + '"]');
+          const errorEl = row.querySelector(`[data-error="id_barang_${index}"]`);
           if (errorEl) {
             errorEl.textContent = 'Barang wajib dipilih.';
             errorEl.classList.remove('hidden');
@@ -475,7 +583,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Validasi Harga Beli
         const harga = parseFloat(hargaBeli.value);
         if (!hargaBeli.value || isNaN(harga) || harga <= 0) {
-          const errorEl = row.querySelector('[data-error="harga_beli_' + index + '"]');
+          const errorEl = row.querySelector(`[data-error="harga_beli_${index}"]`);
           if (errorEl) {
             errorEl.textContent = 'Harga beli harus lebih dari 0.';
             errorEl.classList.remove('hidden');
@@ -487,7 +595,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Validasi Kuantitas
         const qty = parseInt(kuantitas.value);
         if (!kuantitas.value || isNaN(qty) || qty <= 0) {
-          const errorEl = row.querySelector('[data-error="kuantitas_' + index + '"]');
+          const errorEl = row.querySelector(`[data-error="kuantitas_${index}"]`);
           if (errorEl) {
             errorEl.textContent = 'Kuantitas harus lebih dari 0.';
             errorEl.classList.remove('hidden');
@@ -497,26 +605,27 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       });
 
-      // Jika ada error, hentikan submit
       if (hasError) return;
 
-      // Jika valid, baru confirm
       if (confirm('Simpan data pembelian?')) {
-        this.submit(); 
+        this.submit();
       }
     });
   }
-  document.addEventListener('input', function(e) {
-    if (e.target.name && (e.target.name.includes('[harga_beli]') || e.target.name.includes('[kuantitas]'))) {
-      const row = e.target.closest('.detail_row');
-      const hargaInput = row.querySelector('input[name*="[harga_beli]"]');
-      const qtyInput = row.querySelector('input[name*="[kuantitas]"]');
-      const subTotalInput = row.querySelector('input[readonly]'); 
-      const harga = parseFloat(hargaInput.value) || 0;
-      const qty = parseInt(qtyInput.value) || 0;
-      const subTotal = harga * qty;
-      subTotalInput.value = subTotal.toFixed(2);
+
+
+  document.addEventListener('input', function (e) {
+    if (
+      e.target.name.includes('[harga_beli]') ||
+      e.target.name.includes('[kuantitas]') ||
+      e.target.id === 'diskon' ||
+      e.target.id === 'ppn' ||
+      e.target.id === 'biaya_pengiriman'
+    ) {
+      calculateJumlahBayar();
     }
   });
+
+  calculateJumlahBayar();
 });
 </script>
