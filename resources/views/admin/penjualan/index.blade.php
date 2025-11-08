@@ -109,7 +109,7 @@
               <div class="flex justify-center items-center gap-1 sm:gap-2">
                 @if(!$isSelesai)
                   <a href="{{ route('admin.penjualan.edit', $item->id_penjualan) }}"
-                     class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 hover:bg-blue-200">
+                    class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 hover:bg-blue-200">
                     Edit
                   </a>
                   <form action="{{ route('admin.penjualan.destroy', $item->id_penjualan) }}" method="POST"
@@ -122,11 +122,15 @@
                     </button>
                   </form>
                 @else
-                  <span class="text-xs text-gray-400">Edit</span>
-                  <span class="text-xs text-gray-400">Delete</span>
+                  <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
+                    Edit
+                  </span>
+                  <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
+                    Delete
+                  </span>
                 @endif
                 <a href="{{ route('admin.penjualan.print', $item->id_penjualan) }}" target="_blank"
-                   class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700 hover:bg-purple-200">
+                  class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700 hover:bg-purple-200">
                   Print
                 </a>
               </div>
