@@ -34,10 +34,8 @@ document.addEventListener('DOMContentLoaded', function () {
   const ppnInput = document.getElementById('ppn');
   const biayaPengirimanInput = document.getElementById('biaya_pengiriman');
   const catatanInput = document.getElementById('catatan');
-  const detailContainer = document.getElementById('detail_container');
-
-  if (!form || !submitButton) return;
-
+  const detailContainer = document.getElementById('barangContainer');
+  if (!form || !submitButton || !detailContainer) return;
   const initial = {
     supplier: supplierSelect?.value || '',
     jenis: jenisSelect?.value || '',
@@ -47,10 +45,9 @@ document.addEventListener('DOMContentLoaded', function () {
     catatan: catatanInput?.value || '',
     details: getDetailValues()
   };
-
   function getDetailValues() {
     const details = [];
-    document.querySelectorAll('.detail_row').forEach(row => {
+    document.querySelectorAll('.barang-row').forEach(row => {
       const idBarang = row.querySelector('select[name$="[id_barang]"]')?.value || '';
       const harga = row.querySelector('input[name$="[harga_beli]"]')?.value || '';
       const kuantitas = row.querySelector('input[name$="[kuantitas]"]')?.value || '';
@@ -58,7 +55,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     return details;
   }
-
   function checkChanges() {
     const current = {
       supplier: supplierSelect?.value || '',
@@ -69,39 +65,32 @@ document.addEventListener('DOMContentLoaded', function () {
       catatan: catatanInput?.value || '',
       details: getDetailValues()
     };
-
     const sameMain = initial.supplier === current.supplier &&
                      initial.jenis === current.jenis &&
                      initial.diskon === current.diskon &&
                      initial.ppn === current.ppn &&
                      initial.biayaPengiriman === current.biayaPengiriman &&
                      initial.catatan === current.catatan;
-
     const sameDetails = initial.details.length === current.details.length &&
                         initial.details.every((d, i) =>
                           d.idBarang === current.details[i].idBarang &&
                           d.harga === current.details[i].harga &&
                           d.kuantitas === current.details[i].kuantitas
                         );
-
     const hasChanges = !(sameMain && sameDetails);
-
     submitButton.disabled = !hasChanges;
     submitButton.classList.toggle('opacity-50', !hasChanges);
   }
-
   [supplierSelect, jenisSelect, diskonInput, ppnInput, biayaPengirimanInput, catatanInput].forEach(el => {
     if (el) {
       el.addEventListener('input', checkChanges);
       el.addEventListener('change', checkChanges);
     }
   });
-
   const observer = new MutationObserver(checkChanges);
   observer.observe(detailContainer, { childList: true, subtree: true });
   detailContainer.addEventListener('input', checkChanges);
   detailContainer.addEventListener('change', checkChanges);
-
   checkChanges();
 });
 </script>

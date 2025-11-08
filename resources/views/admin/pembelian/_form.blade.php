@@ -1,19 +1,17 @@
-<form action="{{ isset($pembelian) ? route('admin.pembelian.update', $pembelian->id_pembelian) : route('admin.pembelian.store') }}" 
+<form action="{{ isset($pembelian) ? route('admin.pembelian.update', $pembelian->id_pembelian) : route('admin.pembelian.store') }}"
       method="POST" class="space-y-6" id="pembelianForm">
   @csrf
   @if(isset($pembelian))
     @method('PUT')
   @endif
-
   {{-- ID Pembelian --}}
   <div>
     <label class="block text-sm font-medium text-gray-700">ID Pembelian</label>
-    <input type="text" name="id_pembelian" 
-           value="{{ old('id_pembelian', isset($pembelian) ? $pembelian->id_pembelian : ($nextId ?? '')) }}" 
+    <input type="text" name="id_pembelian"
+           value="{{ old('id_pembelian', isset($pembelian) ? $pembelian->id_pembelian : ($nextId ?? '')) }}"
            readonly class="w-full rounded-md border bg-gray-100 px-3 py-2 text-sm text-gray-700 cursor-not-allowed">
     <p class="text-xs text-gray-500">ID dibuat otomatis secara berurutan. Preview: {{ $nextId ?? '' }}.</p>
   </div>
-
   {{-- Supplier --}}
   <div>
     <label class="block text-sm font-medium text-gray-700">Supplier <span class="text-rose-600">*</span></label>
@@ -28,12 +26,8 @@
     <p id="id_supplier_error" class="text-xs text-rose-600 mt-1 hidden"></p>
     <p class="text-xs text-gray-500">Pilih supplier.</p>
   </div>
-
   {{-- User --}}
   <input type="hidden" name="id_user" value="{{ auth()->id() }}">
-
-
-
   {{-- Section Detail Barang --}}
   <div id="barangContainer">
     <label class="block text-sm font-medium text-gray-700 mb-1">Barang <span class="text-rose-600">*</span></label>
@@ -72,16 +66,15 @@
                            placeholder="Qty">
                     <p class="text-sm text-red-600 mt-1 hidden" data-error="kuantitas_{{ $barangIndex }}"></p>
                 </div>
-                <div class="col-span-2 flex justify-center">
+                <div class="col-span-2 flex items-center gap-4 max-w-[6rem]">
+                    <button type="button"
+                            class="remove-barang-btn bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full text-xs font-bold flex items-center justify-center shadow-sm">
+                        -
+                    </button>
                     @if($loop->last)
                         <button type="button"
                                 class="add-barang-btn bg-blue-500 hover:bg-blue-600 text-white w-8 h-8 rounded-full text-xs font-bold flex items-center justify-center shadow-sm">
                             +
-                        </button>
-                    @else
-                        <button type="button"
-                                class="remove-barang-btn bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full text-xs font-bold flex items-center justify-center shadow-sm">
-                            -
                         </button>
                     @endif
                 </div>
@@ -118,7 +111,11 @@
                        placeholder="Qty">
                 <p class="text-sm text-red-600 mt-1 hidden" data-error="kuantitas_0"></p>
             </div>
-            <div class="col-span-2 flex justify-center">
+            <div class="col-span-2 flex items-center gap-4 max-w-[6rem]">
+                <button type="button"
+                        class="remove-barang-btn bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full text-xs font-bold flex items-center justify-center shadow-sm">
+                    -
+                </button>
                 <button type="button"
                         class="add-barang-btn bg-blue-500 hover:bg-blue-600 text-white w-8 h-8 rounded-full text-xs font-bold flex items-center justify-center shadow-sm">
                     +
@@ -132,7 +129,6 @@
         <p id="details_error" class="text-sm text-red-600 mt-1 hidden"></p>
     @endif
   </div>
-
   {{-- Section Pembayaran --}}
   <div class="mt-6 pt-5 border-t border-gray-300">
     <h3 class="text-lg font-semibold text-gray-800 mb-4">Pembayaran</h3>
@@ -199,7 +195,6 @@
         </div>
     </div>
   </div>
-
   {{-- Catatan --}}
   <div>
     <label class="block text-sm font-medium text-gray-700">Catatan</label>
@@ -207,8 +202,6 @@
               rows="4">{{ old('catatan', $pembelian->catatan ?? '') }}</textarea>
     <p class="text-xs text-gray-500">Masukkan catatan atau keterangan (opsional).</p>
   </div>
-
-
   {{-- Tombol Simpan / Update & Batal --}}
   <div class="flex items-center gap-3">
     <button type="submit" id="submitButton" class="inline-flex items-center px-4 py-2 bg-blue-700 text-white text-sm rounded-md hover:bg-blue-800 {{ isset($pembelian) ? 'opacity-50' : '' }}" {{ isset($pembelian) ? 'disabled' : '' }}>
@@ -217,18 +210,15 @@
     <a href="{{ route('admin.pembelian.index') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 text-sm rounded-md hover:bg-gray-50">Batal</a>
   </div>
 </form>
-
-  {{-- Form Tambah Barang Baru --}}
+{{-- Form Tambah Barang Baru --}}
 <div class="border-t pt-6 mt-10">
   <div class="flex items-center mb-4">
     <input id="tambah_barang" type="checkbox" name="tambah_barang" class="rounded border-gray-300">
     <label for="tambah_barang" class="ml-2 text-sm text-gray-700">Tambah Barang Baru</label>
   </div>
-
   <form id="formTambahBarang" class="hidden space-y-4 border rounded-lg p-6 bg-gray-50">
     @csrf
     <h3 class="text-lg font-semibold text-gray-800 mb-2">Form Tambah Barang</h3>
-    
     <div class="grid grid-cols-2 gap-4">
       <div>
         <label class="block text-sm font-medium text-gray-700">ID Barang</label>
@@ -298,7 +288,7 @@
         @endif
       </div>
     </div>
-    <button type="submit" class="mt-4 px-4 py-2 bg-green-600 text-white text-sm rounded-md hover:bg-green-700">Simpan Barang</button>
+    <button type="button" id="simpanBarangBtn" class="mt-4 px-4 py-2 bg-green-600 text-white text-sm rounded-md hover:bg-green-700">Simpan Barang</button>
   </form>
 </div>
 
@@ -308,42 +298,172 @@ document.addEventListener('DOMContentLoaded', function () {
   const formTambahBarang = document.getElementById('formTambahBarang');
   const barangContainer = document.getElementById('barangContainer');
   const pembelianForm = document.getElementById('pembelianForm');
+  const simpanBarangBtn = document.getElementById('simpanBarangBtn');
+  let barangIndex = {{ $isEdit ?? false ? $pembelian->detailPembelian->count() : 1 }};
 
+  // --- BARANG DYNAMIC ---
+  function updateActionButtons() {
+    const rows = barangContainer.querySelectorAll('.barang-row');
+    rows.forEach((row, index) => {
+      const actionCell = row.querySelector('.col-span-2');
+      actionCell.innerHTML = ''; // Clear existing buttons
+      // Add remove button for all rows
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'remove-barang-btn bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full text-xs font-bold flex items-center justify-center shadow-sm';
+      removeBtn.textContent = '-';
+      actionCell.appendChild(removeBtn);
+      // Add add button only for the last row if less than 10 rows
+      if (index === rows.length - 1 && rows.length < 10) {
+        const addBtn = document.createElement('button');
+        addBtn.type = 'button';
+        addBtn.className = 'add-barang-btn bg-blue-500 hover:bg-blue-600 text-white w-8 h-8 rounded-full text-xs font-bold flex items-center justify-center shadow-sm';
+        addBtn.textContent = '+';
+        actionCell.appendChild(addBtn);
+      }
+    });
+  }
+
+  function addNewRow() {
+    const rows = barangContainer.querySelectorAll('.barang-row');
+    if (rows.length >= 10) {
+      alert('Maksimum 10 barang dapat ditambahkan.');
+      return;
+    }
+    const newRow = document.createElement('div');
+    newRow.className = 'grid grid-cols-12 gap-2 mb-2 barang-row items-center';
+    const options = @json($barangs).map(b => `<option value="${b.id_barang}" data-harga="${b.harga_beli}">${b.nama_barang}</option>`).join('');
+    newRow.innerHTML = `
+      <div class="col-span-4">
+        <select name="details[${barangIndex}][id_barang]" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200">
+          <option value="">-- Pilih Barang --</option>${options}
+        </select>
+        <p class="text-sm text-red-600 mt-1 hidden" data-error="id_barang_${barangIndex}"></p>
+      </div>
+      <div class="col-span-3">
+        <input type="number" name="details[${barangIndex}][harga_beli]" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200" step="0.01" min="0" placeholder="Harga Beli">
+        <p class="text-sm text-red-600 mt-1 hidden" data-error="harga_beli_${barangIndex}"></p>
+      </div>
+      <div class="col-span-3">
+        <input type="number" name="details[${barangIndex}][kuantitas]" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200" min="1" placeholder="Qty">
+        <p class="text-sm text-red-600 mt-1 hidden" data-error="kuantitas_${barangIndex}"></p>
+      </div>
+      <div class="col-span-2 flex items-center gap-4 max-w-[6rem]"></div>
+    `;
+    barangContainer.appendChild(newRow);
+    barangIndex++;
+    updateActionButtons();
+    attachBarangEvents(newRow);
+    calculateTotals();
+  }
+
+  function removeRow(row) {
+    const rows = barangContainer.querySelectorAll('.barang-row');
+    if (rows.length > 1) {
+      row.remove();
+      updateActionButtons();
+      calculateTotals();
+    } else {
+      alert('Minimal satu barang harus ada.');
+    }
+  }
+
+  function attachBarangEvents(row) {
+    const select = row.querySelector('select');
+    const inputs = row.querySelectorAll('input');
+    select.addEventListener('change', calculateTotals);
+    inputs.forEach(input => input.addEventListener('input', calculateTotals));
+  }
+
+  document.addEventListener('click', function (e) {
+    if (e.target.classList.contains('add-barang-btn')) {
+      addNewRow();
+    } else if (e.target.classList.contains('remove-barang-btn')) {
+      removeRow(e.target.closest('.barang-row'));
+    }
+  });
+
+  document.querySelectorAll('.barang-row').forEach(attachBarangEvents);
+  updateActionButtons();
+
+  // --- CALCULATE TOTALS ---
   function calculateTotals() {
     const barangRows = document.querySelectorAll('.barang-row');
     let totalSubTotal = 0;
-
     barangRows.forEach(row => {
       const hargaInput = row.querySelector('input[name*="[harga_beli]"]');
       const qtyInput = row.querySelector('input[name*="[kuantitas]"]');
       const harga = parseFloat(hargaInput.value) || 0;
       const qty = parseInt(qtyInput.value) || 0;
-      const subTotal = harga * qty;
-      totalSubTotal += subTotal;
+      totalSubTotal += harga * qty;
     });
-
     const diskon = parseFloat(document.getElementById('diskon').value) || 0;
     const ppn = parseFloat(document.getElementById('ppn').value) || 0;
     const biayaPengiriman = parseFloat(document.getElementById('biaya_pengiriman').value) || 0;
-
     const nilaiDiskon = (diskon / 100) * totalSubTotal;
     const setelahDiskon = totalSubTotal - nilaiDiskon;
     const nilaiPpn = (ppn / 100) * setelahDiskon;
     const totalSetelahPpn = setelahDiskon + nilaiPpn;
     const totalBayar = totalSetelahPpn + biayaPengiriman;
-
     document.getElementById('subTotalDisplay').value = 'Rp ' + totalSubTotal.toLocaleString('id-ID');
     document.getElementById('totalBayarDisplay').value = 'Rp ' + totalBayar.toLocaleString('id-ID');
   }
 
-  if (tambahBarangCheckbox && formTambahBarang) {
+  // --- TAMBAH BARANG ---
+  if (tambahBarangCheckbox && formTambahBarang && simpanBarangBtn) {
     tambahBarangCheckbox.addEventListener('change', function () {
       formTambahBarang.classList.toggle('hidden', !this.checked);
+    });
+
+    simpanBarangBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      resetTambahBarangErrors();
+      let hasError = false;
+      ['nama_barang', 'id_kategori_barang', 'id_supplier_barang', 'id_satuan', 'berat', 'margin'].forEach(id => {
+        const el = formTambahBarang.querySelector(`[name="${id}"]`);
+        const errorEl = formTambahBarang.querySelector(`[data-error="${id}"]`);
+        if (!el.value || (id === 'berat' && parseFloat(el.value) <= 0) || (id === 'margin' && (parseFloat(el.value) < 0 || parseFloat(el.value) > 100))) {
+          errorEl.textContent = id === 'berat' ? 'Berat harus lebih dari 0.' : id === 'margin' ? 'Margin harus antara 0-100%.' : 'Wajib diisi.';
+          errorEl.classList.remove('hidden');
+          el.classList.add('border-red-500', 'bg-red-50');
+          hasError = true;
+        } else {
+          errorEl.textContent = '';
+          errorEl.classList.add('hidden');
+          el.classList.remove('border-red-500', 'bg-red-50');
+        }
+      });
+      if (hasError) return;
+      fetch("{{ route('admin.pembelian.storeBarang') }}", {
+        method: "POST",
+        headers: {
+          "X-CSRF-TOKEN": "{{ csrf_token() }}",
+          "Accept": "application/json"
+        },
+        body: new FormData(formTambahBarang)
+      })
+        .then(r => r.json())
+        .then(data => {
+          if (data.success) {
+            alert(data.message);
+            formTambahBarang.reset();
+            formTambahBarang.classList.add('hidden');
+            tambahBarangCheckbox.checked = false;
+            document.querySelectorAll('select[name^="details["][name$="][id_barang]"]').forEach(sel => {
+              const opt = new Option(data.barang.nama_barang, data.barang.id_barang, false, false);
+              sel.add(opt);
+            });
+            calculateTotals();
+          } else {
+            alert(data.message || 'Gagal menambah barang.');
+          }
+        })
+        .catch(() => alert('Terjadi kesalahan jaringan.'));
     });
   }
 
   function resetTambahBarangErrors() {
-    ['nama_barang', 'id_kategori_barang', 'id_supplier_barang', 'id_satuan'].forEach(id => {
+    ['nama_barang', 'id_kategori_barang', 'id_supplier_barang', 'id_satuan', 'berat', 'margin'].forEach(id => {
       const errorEl = document.querySelector(`[data-error="${id}"]`);
       if (errorEl) {
         errorEl.textContent = '';
@@ -354,144 +474,12 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  if (formTambahBarang) {
-    formTambahBarang.addEventListener('submit', function (e) {
-      e.preventDefault();
-      resetTambahBarangErrors();
-
-      let hasError = false;
-
-      const namaBarang = this.querySelector('[name="nama_barang"]');
-      if (!namaBarang.value.trim()) {
-        const errorEl = this.querySelector('[data-error="nama_barang"]');
-        if (errorEl) {
-          errorEl.textContent = 'Nama barang wajib diisi.';
-          errorEl.classList.remove('hidden');
-        }
-        namaBarang.classList.add('border-red-500', 'bg-red-50');
-        hasError = true;
-      }
-
-      const kategoriBarang = this.querySelector('[name="id_kategori_barang"]');
-      if (!kategoriBarang.value) {
-        const errorEl = this.querySelector('[data-error="id_kategori_barang"]');
-        if (errorEl) {
-          errorEl.textContent = 'Kategori barang wajib dipilih.';
-          errorEl.classList.remove('hidden');
-        }
-        kategoriBarang.classList.add('border-red-500', 'bg-red-50');
-        hasError = true;
-      }
-
-      const supplierBarang = this.querySelector('[name="id_supplier_barang"]');
-      if (!supplierBarang.value) {
-        const errorEl = this.querySelector('[data-error="id_supplier_barang"]');
-        if (errorEl) {
-          errorEl.textContent = 'Supplier wajib dipilih.';
-          errorEl.classList.remove('hidden');
-        }
-        supplierBarang.classList.add('border-red-500', 'bg-red-50');
-        hasError = true;
-      }
-
-      const satuan = this.querySelector('[name="id_satuan"]');
-      if (!satuan.value) {
-        const errorEl = this.querySelector('[data-error="id_satuan"]');
-        if (errorEl) {
-          errorEl.textContent = 'Satuan wajib dipilih.';
-          errorEl.classList.remove('hidden');
-        }
-        satuan.classList.add('border-red-500', 'bg-red-50');
-        hasError = true;
-      }
-
-      if (hasError) return;
-
-      fetch("{{ route('admin.pembelian.storeBarang') }}", {
-        method: "POST",
-        headers: {
-          "X-CSRF-TOKEN": "{{ csrf_token() }}",
-          "Accept": "application/json"
-        },
-        body: new FormData(this)
-      })
-      .then(r => r.json())
-      .then(data => {
-        if (data.success) {
-          alert(data.message);
-          this.reset();
-          formTambahBarang.classList.add('hidden');
-          tambahBarangCheckbox.checked = false;
-          document.querySelectorAll('select[name^="details["][name$="][id_barang]"]').forEach(sel => {
-            const opt = new Option(data.barang.nama_barang, data.barang.id_barang, false, false);
-            sel.add(opt);
-          });
-        } else {
-          alert(data.message || 'Gagal menambah barang.');
-        }
-      })
-      .catch(() => alert('Terjadi kesalahan jaringan.'));
-    });
-  }
-
-  document.addEventListener('click', function (e) {
-    if (e.target.classList.contains('add-barang-btn')) {
-      const rows = barangContainer.querySelectorAll('.barang-row');
-      const idx = rows.length;
-      const clone = rows[rows.length - 1].cloneNode(true);
-
-      clone.querySelectorAll('input, select').forEach(el => {
-        el.value = '';
-        el.name = el.name.replace(/\d+/, idx);
-      });
-
-      clone.querySelectorAll('[data-error]').forEach(el => {
-        el.textContent = '';
-        el.classList.add('hidden');
-      });
-
-      const addBtn = clone.querySelector('.add-barang-btn');
-      addBtn.className = 'remove-barang-btn bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full text-xs font-bold flex items-center justify-center shadow-sm';
-      addBtn.textContent = '-';
-
-      barangContainer.appendChild(clone);
-      calculateTotals();
-    }
-
-    if (e.target.classList.contains('remove-barang-btn')) {
-      const row = e.target.closest('.barang-row');
-      if (barangContainer.querySelectorAll('.barang-row').length > 1) {
-        row.remove();
-        calculateTotals();
-      }
-    }
-  });
-
-  // Reset errors sebelum validasi
-  function resetErrors() {
-    ['id_supplier', 'diskon', 'ppn', 'biaya_pengiriman', 'jenis_pembayaran'].forEach(id => {
-      const errorEl = document.querySelector(`#${id}_error`);
-      if (errorEl) {
-        errorEl.textContent = '';
-        errorEl.classList.add('hidden');
-      }
-      const el = document.getElementById(id);
-      if (el) el.classList.remove('border-red-500', 'bg-red-50');
-    });
-    // Reset error detail
-    document.querySelectorAll('[data-error]').forEach(el => {
-      el.textContent = '';
-      el.classList.add('hidden');
-    });
-  }
-
+  // --- VALIDASI & SUBMIT ---
   if (pembelianForm) {
     pembelianForm.addEventListener('submit', function (e) {
       e.preventDefault();
       resetErrors();
-
       let hasError = false;
-
       // Validasi Supplier
       const supplierSelect = document.getElementById('id_supplier');
       if (!supplierSelect.value) {
@@ -503,7 +491,6 @@ document.addEventListener('DOMContentLoaded', function () {
         supplierSelect.classList.add('border-red-500', 'bg-red-50');
         hasError = true;
       }
-
       // Validasi Jenis Pembayaran
       const jenisSelect = document.getElementById('jenis_pembayaran');
       if (!jenisSelect.value) {
@@ -515,7 +502,6 @@ document.addEventListener('DOMContentLoaded', function () {
         jenisSelect.classList.add('border-red-500', 'bg-red-50');
         hasError = true;
       }
-
       // Validasi Diskon
       const diskonInput = document.getElementById('diskon');
       const diskon = parseFloat(diskonInput.value);
@@ -528,7 +514,6 @@ document.addEventListener('DOMContentLoaded', function () {
         diskonInput.classList.add('border-red-500', 'bg-red-50');
         hasError = true;
       }
-
       // Validasi PPN
       const ppnInput = document.getElementById('ppn');
       const ppn = parseFloat(ppnInput.value);
@@ -541,7 +526,6 @@ document.addEventListener('DOMContentLoaded', function () {
         ppnInput.classList.add('border-red-500', 'bg-red-50');
         hasError = true;
       }
-
       // Validasi Biaya Pengiriman
       const biayaPengirimanInput = document.getElementById('biaya_pengiriman');
       const biayaPengiriman = parseFloat(biayaPengirimanInput.value);
@@ -554,20 +538,18 @@ document.addEventListener('DOMContentLoaded', function () {
         biayaPengirimanInput.classList.add('border-red-500', 'bg-red-50');
         hasError = true;
       }
-
       // Validasi Detail Barang
       const barangRows = document.querySelectorAll('.barang-row');
       if (barangRows.length === 0) {
-        alert('Harus ada setidaknya satu detail barang.');
+        const errorEl = document.querySelector('#details_error');
+        errorEl.textContent = 'Harus ada setidaknya satu detail barang.';
+        errorEl.classList.remove('hidden');
         hasError = true;
       }
-
       barangRows.forEach((row, index) => {
         const idBarang = row.querySelector('select[name$="[id_barang]"]');
         const hargaBeli = row.querySelector('input[name$="[harga_beli]"]');
         const kuantitas = row.querySelector('input[name$="[kuantitas]"]');
-
-        // Validasi Barang
         if (!idBarang.value) {
           const errorEl = row.querySelector(`[data-error="id_barang_${index}"]`);
           if (errorEl) {
@@ -577,8 +559,6 @@ document.addEventListener('DOMContentLoaded', function () {
           idBarang.classList.add('border-red-500', 'bg-red-50');
           hasError = true;
         }
-
-        // Validasi Harga Beli
         const harga = parseFloat(hargaBeli.value);
         if (!hargaBeli.value || isNaN(harga) || harga <= 0) {
           const errorEl = row.querySelector(`[data-error="harga_beli_${index}"]`);
@@ -589,8 +569,6 @@ document.addEventListener('DOMContentLoaded', function () {
           hargaBeli.classList.add('border-red-500', 'bg-red-50');
           hasError = true;
         }
-
-        // Validasi Kuantitas
         const qty = parseInt(kuantitas.value);
         if (!kuantitas.value || isNaN(qty) || qty <= 0) {
           const errorEl = row.querySelector(`[data-error="kuantitas_${index}"]`);
@@ -602,27 +580,29 @@ document.addEventListener('DOMContentLoaded', function () {
           hasError = true;
         }
       });
-
-      if (hasError) return;
-
-      if (confirm('Simpan data pembelian?')) {
+      if (!hasError && confirm('Simpan data pembelian?')) {
         this.submit();
       }
     });
   }
 
-  document.addEventListener('input', function (e) {
-    if (
-      e.target.name.includes('[harga_beli]') ||
-      e.target.name.includes('[kuantitas]') ||
-      e.target.id === 'diskon' ||
-      e.target.id === 'ppn' ||
-      e.target.id === 'biaya_pengiriman'
-    ) {
-      calculateTotals();
-    }
-  });
+  function resetErrors() {
+    ['id_supplier', 'diskon', 'ppn', 'biaya_pengiriman', 'jenis_pembayaran', 'details'].forEach(id => {
+      const errorEl = document.querySelector(`#${id}_error`);
+      if (errorEl) {
+        errorEl.textContent = '';
+        errorEl.classList.add('hidden');
+      }
+      const el = document.getElementById(id);
+      if (el) el.classList.remove('border-red-500', 'bg-red-50');
+    });
+    document.querySelectorAll('[data-error]').forEach(el => {
+      el.textContent = '';
+      el.classList.add('hidden');
+    });
+  }
 
+  // Initialize totals and buttons
   calculateTotals();
 });
 </script>
