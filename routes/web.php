@@ -118,6 +118,8 @@ Route::middleware(['auth', 'role:R02'])->name('admin.')->group(function () {
     Route::resource('pembelian', PembelianController::class);
     Route::patch('pembelian/{id_pembelian}/selesai', [PembelianController::class, 'selesai'])->name('pembelian.selesai');
     Route::post('pembelian/store-barang', [PembelianController::class, 'storeBarang'])->name('pembelian.storeBarang');
+    Route::get('/admin/pembelian/{id}/view', [PembelianController::class, 'show'])->name('admin.pembelian.show');
+
     
     //data barang
     Route::resource('data-barang', BarangController::class);

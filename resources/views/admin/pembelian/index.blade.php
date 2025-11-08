@@ -94,8 +94,7 @@
                 @else
                   <span class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500">Delete</span>
                 @endif
-                <a href="#" class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700 hover:bg-purple-200">Print</a> <!-- Placeholder untuk print -->
-              </div>
+                <a href="{{ route('admin.pembelian.show', $item->id_pembelian) }}" class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700 hover:bg-purple-200">View</a>
             </td>
           </tr>
         @empty

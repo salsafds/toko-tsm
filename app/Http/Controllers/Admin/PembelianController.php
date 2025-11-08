@@ -308,4 +308,11 @@ class PembelianController extends Controller
             'barang' => $barang
         ]);
     }
+    public function show($id)
+    {
+
+    $pembelian = Pembelian::with(['supplier', 'user', 'detailPembelian.barang']) 
+        ->findOrFail($id);
+    return view('admin.pembelian.show', compact('pembelian'));
+    }
 }

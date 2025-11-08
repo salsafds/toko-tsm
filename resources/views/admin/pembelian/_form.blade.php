@@ -283,7 +283,7 @@
         <input type="text" name="merk_barang" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200">
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-700">Berat (kg)</label>
+        <label class="block text-sm font-medium text-gray-700">Berat</label>
         <input type="number" step="0.01" name="berat" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200">
       </div>
       <div>
@@ -303,7 +303,7 @@
           <p class="text-sm text-red-600 mt-1">{{ $errors->first('margin') }}</p>
         @else
           <p id="margin_error" class="text-sm text-red-600 mt-1 hidden"></p>
-          <p class="text-xs text-gray-500">Margin keuntungan dalam persen (0-100)</p>
+          <p class="text-xs text-gray-500">Margin keuntungan dalam persen</p>
         @endif
       </div>
     </div>
