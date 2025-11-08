@@ -14,15 +14,6 @@
     <p class="text-xs text-gray-500">ID dibuat otomatis secara berurutan. Preview: {{ $nextId ?? '' }}.</p>
   </div>
 
-  {{-- Tanggal Pembelian --}}
-  <div>
-    <label class="block text-sm font-medium text-gray-700">Tanggal Pembelian <span class="text-rose-600">*</span></label>
-    <input id="tanggal_pembelian" name="tanggal_pembelian" type="date"
-           value="{{ now()->format('Y-m-d') }}" readonly
-           class="w-full rounded-md border bg-gray-100 px-3 py-2 text-sm text-gray-700 cursor-not-allowed">
-    <p class="text-xs text-gray-500">Tanggal diisi otomatis dengan waktu sekarang.</p>
-  </div>
-
   {{-- Supplier --}}
   <div>
     <label class="block text-sm font-medium text-gray-700">Supplier <span class="text-rose-600">*</span></label>

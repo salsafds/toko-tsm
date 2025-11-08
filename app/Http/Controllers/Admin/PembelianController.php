@@ -55,7 +55,6 @@ class PembelianController extends Controller
     {
         $request->validate([
             'id_pembelian' => 'required|string|unique:pembelian,id_pembelian',
-            'tanggal_pembelian' => 'required|date',
             'id_supplier' => 'required|exists:supplier,id_supplier',
             'jenis_pembayaran' => 'required|in:Cash,Kredit',
             'diskon' => 'required|numeric|min:0|max:100',
@@ -87,7 +86,7 @@ class PembelianController extends Controller
 
         $pembelian = Pembelian::create([
             'id_pembelian' => $request->id_pembelian,
-            'tanggal_pembelian' => $request->tanggal_pembelian,
+            'tanggal_pembelian' => now(),
             'id_supplier' => $request->id_supplier,
             'id_user' => Auth::user()->id_user,
             'jenis_pembayaran' => $request->jenis_pembayaran,
@@ -132,7 +131,6 @@ class PembelianController extends Controller
     public function update(Request $request, $id_pembelian)
     {
         $request->validate([
-            'tanggal_pembelian' => 'required|date',
             'id_supplier' => 'required|exists:supplier,id_supplier',
             'jenis_pembayaran' => 'required|in:Cash,Kredit',
             'diskon' => 'required|numeric|min:0|max:100',
@@ -169,7 +167,6 @@ class PembelianController extends Controller
         }
 
         $pembelian->update([
-            'tanggal_pembelian' => $request->tanggal_pembelian,
             'id_supplier' => $request->id_supplier,
             'jenis_pembayaran' => $request->jenis_pembayaran,
             'diskon' => $request->diskon,
