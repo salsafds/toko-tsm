@@ -78,17 +78,9 @@
             <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r border-gray-100">{{ $item->id_penjualan }}</td>
             <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->user?->nama_lengkap ?? 'N/A' }}</td>
             <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $namaPembeli }}</td>
-            <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-center border-r">
-              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {{ $item->pelanggan ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700' }}">
-                {{ $jenisPembeli }}
-              </span>
-            </td>
+            <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r text-center">{{ $jenisPembeli }}</td>
             <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r text-right">Rp {{ number_format($item->total_harga_penjualan, 0, ',', '.') }}</td>
-            <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r text-center">
-              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {{ $item->jenis_pembayaran === 'tunai' ? 'bg-yellow-100 text-yellow-700' : 'bg-purple-100 text-purple-700' }}">
-                {{ ucfirst($item->jenis_pembayaran) }}
-              </span>
-            </td>
+            <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r text-center">{{ ucfirst($item->jenis_pembayaran) }}</td>
             <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r text-center">{{ $item->tanggal_order->format('d-m-Y H:i') }}</td>
             <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r text-center">
               @if($isSelesai)
