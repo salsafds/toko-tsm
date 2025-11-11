@@ -63,7 +63,7 @@
         <th class="w-24 sm:w-32 px-2 sm:px-4 py-2 sm:py-3 border-r">Satuan</th>
         <th class="w-32 sm:w-40 px-2 sm:px-4 py-2 sm:py-3 border-r">Harga Retail</th>
         <th class="w-32 sm:w-40 px-2 sm:px-4 py-2 sm:py-3 border-r">Harga Beli</th>
-        <th class="w-24 sm:w-32 px-2 sm:px-4 py-2 sm:py-3 border-r">Margin (%)</th> <!-- Tambahkan ini -->
+        <th class="w-24 sm:w-32 px-2 sm:px-4 py-2 sm:py-3 border-r">Margin (%)</th> 
         <th class="w-32 sm:w-40 px-2 sm:px-4 py-2 sm:py-3">Aksi</th>
       </tr>
     </thead>
@@ -77,7 +77,7 @@
           <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->satuan->nama_satuan }}</td>
           <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ number_format($item->retail, 0, ',', '.') }}</td>
           <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ number_format($item->harga_beli, 0, ',', '.') }}</td>
-          <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->margin }}%</td> <!-- Tambahkan ini -->
+          <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->margin }}%</td> 
           <td class="px-2 sm:px-4 py-2 text-center">
             <div class="flex justify-center items-center gap-2 sm:gap-3">
               <a href="{{ route('admin.data-barang.edit', $item->id_barang) }}"
@@ -98,7 +98,7 @@
         </tr>
       @empty
         <tr>
-          <td colspan="9" class="px-4 py-6 sm:py-8 text-center text-xs sm:text-sm text-gray-500"> <!-- Update colspan dari 8 ke 9 -->
+          <td colspan="9" class="px-4 py-6 sm:py-8 text-center text-xs sm:text-sm text-gray-500"> 
             Tidak ada data barang.
           </td>
         </tr>

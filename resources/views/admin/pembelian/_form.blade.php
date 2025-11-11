@@ -296,144 +296,109 @@
 document.addEventListener('DOMContentLoaded', function () {
   const tambahBarangCheckbox = document.getElementById('tambah_barang');
   const formTambahBarang = document.getElementById('formTambahBarang');
+  const simpanBarangBtn = document.getElementById('simpanBarangBtn');
   const barangContainer = document.getElementById('barangContainer');
   const pembelianForm = document.getElementById('pembelianForm');
-  const simpanBarangBtn = document.getElementById('simpanBarangBtn');
   let barangIndex = {{ $isEdit ?? false ? $pembelian->detailPembelian->count() : 1 }};
 
-  // --- BARANG DYNAMIC ---
-  function updateActionButtons() {
-    const rows = barangContainer.querySelectorAll('.barang-row');
-    rows.forEach((row, index) => {
-      const actionCell = row.querySelector('.col-span-2');
-      actionCell.innerHTML = ''; // Clear existing buttons
-      // Add remove button for all rows
-      const removeBtn = document.createElement('button');
-      removeBtn.type = 'button';
-      removeBtn.className = 'remove-barang-btn bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full text-xs font-bold flex items-center justify-center shadow-sm';
-      removeBtn.textContent = '-';
-      actionCell.appendChild(removeBtn);
-      // Add add button only for the last row if less than 10 rows
-      if (index === rows.length - 1 && rows.length < 10) {
-        const addBtn = document.createElement('button');
-        addBtn.type = 'button';
-        addBtn.className = 'add-barang-btn bg-blue-500 hover:bg-blue-600 text-white w-8 h-8 rounded-full text-xs font-bold flex items-center justify-center shadow-sm';
-        addBtn.textContent = '+';
-        actionCell.appendChild(addBtn);
+  function resetTambahBarangErrors() {
+    ['nama_barang', 'id_kategori_barang', 'id_supplier_barang', 'id_satuan', 'berat', 'margin'].forEach(id => {
+      const el = formTambahBarang?.querySelector(`[name="${id}"]`);
+      const errorEl = formTambahBarang?.querySelector(`[data-error="${id}"]`);
+      if (errorEl) {
+        errorEl.textContent = '';
+        errorEl.classList.add('hidden');
+      }
+      if (el) el.classList.remove('border-red-500', 'bg-red-50');
+    });
+  }
+
+  function showError(id, message) {
+    const errorEl = document.querySelector(`#${id}_error`);
+    const inputEl = document.getElementById(id);
+    if (errorEl) {
+      errorEl.textContent = message;
+      errorEl.classList.remove('hidden');
+    }
+    if (inputEl) inputEl.classList.add('border-red-500', 'bg-red-50');
+  }
+
+  function showRowError(row, errorKey, message) {
+    const errorEl = row.querySelector(`[data-error="${errorKey}"]`);
+    if (errorEl) {
+      errorEl.textContent = message;
+      errorEl.classList.remove('hidden');
+    }
+    const input = row.querySelector(`[name*="[${errorKey.split('_')[1] || errorKey.split('_')[0]}]"]`);
+    if (input) input.classList.add('border-red-500', 'bg-red-50');
+  }
+
+  function resetAllErrors() {
+    document.querySelectorAll('[data-error], [id$="_error"]').forEach(el => {
+      el.textContent = '';
+      el.classList.add('hidden');
+    });
+    document.querySelectorAll('input, select').forEach(el => {
+      el.classList.remove('border-red-500', 'bg-red-50');
+    });
+  }
+
+  if (tambahBarangCheckbox && formTambahBarang) {
+    tambahBarangCheckbox.addEventListener('change', function () {
+      formTambahBarang.classList.toggle('hidden', !this.checked);
+      if (!this.checked) {
+        formTambahBarang.reset();
+        resetTambahBarangErrors();
       }
     });
   }
 
-  function addNewRow() {
-    const rows = barangContainer.querySelectorAll('.barang-row');
-    if (rows.length >= 10) {
-      alert('Maksimum 10 barang dapat ditambahkan.');
-      return;
-    }
-    const newRow = document.createElement('div');
-    newRow.className = 'grid grid-cols-12 gap-2 mb-2 barang-row items-center';
-    const options = @json($barangs).map(b => `<option value="${b.id_barang}" data-harga="${b.harga_beli}">${b.nama_barang}</option>`).join('');
-    newRow.innerHTML = `
-      <div class="col-span-4">
-        <select name="details[${barangIndex}][id_barang]" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200">
-          <option value="">-- Pilih Barang --</option>${options}
-        </select>
-        <p class="text-sm text-red-600 mt-1 hidden" data-error="id_barang_${barangIndex}"></p>
-      </div>
-      <div class="col-span-3">
-        <input type="number" name="details[${barangIndex}][harga_beli]" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200" step="0.01" min="0" placeholder="Harga Beli">
-        <p class="text-sm text-red-600 mt-1 hidden" data-error="harga_beli_${barangIndex}"></p>
-      </div>
-      <div class="col-span-3">
-        <input type="number" name="details[${barangIndex}][kuantitas]" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200" min="1" placeholder="Qty">
-        <p class="text-sm text-red-600 mt-1 hidden" data-error="kuantitas_${barangIndex}"></p>
-      </div>
-      <div class="col-span-2 flex items-center gap-4 max-w-[6rem]"></div>
-    `;
-    barangContainer.appendChild(newRow);
-    barangIndex++;
-    updateActionButtons();
-    attachBarangEvents(newRow);
-    calculateTotals();
-  }
-
-  function removeRow(row) {
-    const rows = barangContainer.querySelectorAll('.barang-row');
-    if (rows.length > 1) {
-      row.remove();
-      updateActionButtons();
-      calculateTotals();
-    } else {
-      alert('Minimal satu barang harus ada.');
-    }
-  }
-
-  function attachBarangEvents(row) {
-    const select = row.querySelector('select');
-    const inputs = row.querySelectorAll('input');
-    select.addEventListener('change', calculateTotals);
-    inputs.forEach(input => input.addEventListener('input', calculateTotals));
-  }
-
-  document.addEventListener('click', function (e) {
-    if (e.target.classList.contains('add-barang-btn')) {
-      addNewRow();
-    } else if (e.target.classList.contains('remove-barang-btn')) {
-      removeRow(e.target.closest('.barang-row'));
-    }
-  });
-
-  document.querySelectorAll('.barang-row').forEach(attachBarangEvents);
-  updateActionButtons();
-
-  // --- CALCULATE TOTALS ---
-  function calculateTotals() {
-    const barangRows = document.querySelectorAll('.barang-row');
-    let totalSubTotal = 0;
-    barangRows.forEach(row => {
-      const hargaInput = row.querySelector('input[name*="[harga_beli]"]');
-      const qtyInput = row.querySelector('input[name*="[kuantitas]"]');
-      const harga = parseFloat(hargaInput.value) || 0;
-      const qty = parseInt(qtyInput.value) || 0;
-      totalSubTotal += harga * qty;
-    });
-    const diskon = parseFloat(document.getElementById('diskon').value) || 0;
-    const ppn = parseFloat(document.getElementById('ppn').value) || 0;
-    const biayaPengiriman = parseFloat(document.getElementById('biaya_pengiriman').value) || 0;
-    const nilaiDiskon = (diskon / 100) * totalSubTotal;
-    const setelahDiskon = totalSubTotal - nilaiDiskon;
-    const nilaiPpn = (ppn / 100) * setelahDiskon;
-    const totalSetelahPpn = setelahDiskon + nilaiPpn;
-    const totalBayar = totalSetelahPpn + biayaPengiriman;
-    document.getElementById('subTotalDisplay').value = 'Rp ' + totalSubTotal.toLocaleString('id-ID');
-    document.getElementById('totalBayarDisplay').value = 'Rp ' + totalBayar.toLocaleString('id-ID');
-  }
-
-  // --- TAMBAH BARANG ---
-  if (tambahBarangCheckbox && formTambahBarang && simpanBarangBtn) {
-    tambahBarangCheckbox.addEventListener('change', function () {
-      formTambahBarang.classList.toggle('hidden', !this.checked);
-    });
-
+  if (simpanBarangBtn) {
     simpanBarangBtn.addEventListener('click', function (e) {
       e.preventDefault();
       resetTambahBarangErrors();
       let hasError = false;
-      ['nama_barang', 'id_kategori_barang', 'id_supplier_barang', 'id_satuan', 'berat', 'margin'].forEach(id => {
-        const el = formTambahBarang.querySelector(`[name="${id}"]`);
-        const errorEl = formTambahBarang.querySelector(`[data-error="${id}"]`);
-        if (!el.value || (id === 'berat' && parseFloat(el.value) <= 0) || (id === 'margin' && (parseFloat(el.value) < 0 || parseFloat(el.value) > 100))) {
-          errorEl.textContent = id === 'berat' ? 'Berat harus lebih dari 0.' : id === 'margin' ? 'Margin harus antara 0-100%.' : 'Wajib diisi.';
-          errorEl.classList.remove('hidden');
+
+      const required = [
+        { name: 'nama_barang', msg: 'Nama barang wajib diisi.' },
+        { name: 'id_kategori_barang', msg: 'Kategori wajib dipilih.' },
+        { name: 'id_supplier_barang', msg: 'Supplier wajib dipilih.' },
+        { name: 'id_satuan', msg: 'Satuan wajib dipilih.' },
+      ];
+
+      required.forEach(f => {
+        const el = formTambahBarang.querySelector(`[name="${f.name}"]`);
+        const err = formTambahBarang.querySelector(`[data-error="${f.name}"]`);
+        if (!el?.value.trim()) {
+          err.textContent = f.msg;
+          err.classList.remove('hidden');
           el.classList.add('border-red-500', 'bg-red-50');
           hasError = true;
-        } else {
-          errorEl.textContent = '';
-          errorEl.classList.add('hidden');
-          el.classList.remove('border-red-500', 'bg-red-50');
         }
       });
+
+      const berat = parseFloat(formTambahBarang.querySelector('[name="berat"]')?.value);
+      if (isNaN(berat) || berat <= 0) {
+        const err = formTambahBarang.querySelector('[data-error="berat"]');
+        err.textContent = 'Berat harus lebih dari 0.';
+        err.classList.remove('hidden');
+        formTambahBarang.querySelector('[name="berat"]').classList.add('border-red-500', 'bg-red-50');
+        hasError = true;
+      }
+
+      const margin = parseFloat(formTambahBarang.querySelector('[name="margin"]')?.value);
+      if (margin && (isNaN(margin) || margin < 0 || margin > 100)) {
+        const err = formTambahBarang.querySelector('[data-error="margin"]');
+        err.textContent = 'Margin harus 0-100%.';
+        err.classList.remove('hidden');
+        formTambahBarang.querySelector('[name="margin"]').classList.add('border-red-500', 'bg-red-50');
+        hasError = true;
+      }
+
       if (hasError) return;
+
+      if (!confirm('Yakin simpan barang baru?')) return;
+
       fetch("{{ route('admin.pembelian.storeBarang') }}", {
         method: "POST",
         headers: {
@@ -442,167 +407,191 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         body: new FormData(formTambahBarang)
       })
-        .then(r => r.json())
-        .then(data => {
-          if (data.success) {
-            alert(data.message);
-            formTambahBarang.reset();
-            formTambahBarang.classList.add('hidden');
-            tambahBarangCheckbox.checked = false;
-            document.querySelectorAll('select[name^="details["][name$="][id_barang]"]').forEach(sel => {
-              const opt = new Option(data.barang.nama_barang, data.barang.id_barang, false, false);
-              sel.add(opt);
-            });
-            calculateTotals();
-          } else {
-            alert(data.message || 'Gagal menambah barang.');
-          }
-        })
-        .catch(() => alert('Terjadi kesalahan jaringan.'));
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) {
+          window.location.reload();
+        } else {
+          alert(data.message || 'Gagal menyimpan barang.');
+        }
+      })
+      .catch(() => alert('Terjadi kesalahan jaringan.'));
     });
   }
 
-  function resetTambahBarangErrors() {
-    ['nama_barang', 'id_kategori_barang', 'id_supplier_barang', 'id_satuan', 'berat', 'margin'].forEach(id => {
-      const errorEl = document.querySelector(`[data-error="${id}"]`);
-      if (errorEl) {
-        errorEl.textContent = '';
-        errorEl.classList.add('hidden');
+  function attachBarangEvents(row) {
+    row.querySelector('select')?.addEventListener('change', calculateTotals);
+    row.querySelectorAll('input').forEach(input => {
+      input.addEventListener('input', calculateTotals);
+    });
+  }
+
+  function updateActionButtons() {
+    const rows = barangContainer.querySelectorAll('.barang-row');
+    rows.forEach((row, i) => {
+      const cell = row.querySelector('.col-span-2');
+      cell.innerHTML = '';
+      const del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'remove-barang-btn bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full text-xs font-bold';
+      del.textContent = '-';
+      cell.appendChild(del);
+
+      if (i === rows.length - 1 && rows.length < 10) {
+        const add = document.createElement('button');
+        add.type = 'button';
+        add.className = 'add-barang-btn bg-blue-500 hover:bg-blue-600 text-white w-8 h-8 rounded-full text-xs font-bold ml-2';
+        add.textContent = '+';
+        cell.appendChild(add);
       }
-      const el = document.querySelector(`[name="${id}"]`);
-      if (el) el.classList.remove('border-red-500', 'bg-red-50');
     });
   }
 
-  // --- VALIDASI & SUBMIT ---
+  function addNewRow() {
+    if (barangContainer.querySelectorAll('.barang-row').length >= 10) {
+      alert('Maksimum 10 barang.');
+      return;
+    }
+    const row = document.createElement('div');
+    row.className = 'grid grid-cols-12 gap-2 mb-2 barang-row items-center';
+    const options = @json($barangs).map(b => `<option value="${b.id_barang}">${b.nama_barang}</option>`).join('');
+    row.innerHTML = `
+      <div class="col-span-4">
+        <select name="details[${barangIndex}][id_barang]" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200">
+          <option value="">-- Pilih Barang --</option>${options}
+        </select>
+        <p class="text-sm text-red-600 mt-1 hidden" data-error="id_barang_${barangIndex}"></p>
+      </div>
+      <div class="col-span-3">
+        <input type="number" name="details[${barangIndex}][harga_beli]" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200" step="0.01" min="0" placeholder="Harga">
+        <p class="text-sm text-red-600 mt-1 hidden" data-error="harga_beli_${barangIndex}"></p>
+      </div>
+      <div class="col-span-3">
+        <input type="number" name="details[${barangIndex}][kuantitas]" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200" min="1" placeholder="Qty">
+        <p class="text-sm text-red-600 mt-1 hidden" data-error="kuantitas_${barangIndex}"></p>
+      </div>
+      <div class="col-span-2"></div>
+    `;
+    barangContainer.appendChild(row);
+    barangIndex++;
+    updateActionButtons();
+    attachBarangEvents(row);
+    calculateTotals();
+  }
+
+  function removeRow(row) {
+    if (barangContainer.querySelectorAll('.barang-row').length > 1) {
+      row.remove();
+      updateActionButtons();
+      calculateTotals();
+    } else {
+      alert('Minimal 1 barang.');
+    }
+  }
+
+  document.addEventListener('click', e => {
+    if (e.target.classList.contains('add-barang-btn')) addNewRow();
+    if (e.target.classList.contains('remove-barang-btn')) removeRow(e.target.closest('.barang-row'));
+  });
+
+  document.querySelectorAll('.barang-row').forEach(attachBarangEvents);
+  updateActionButtons();
+
+  function calculateTotals() {
+    let subTotal = 0;
+    document.querySelectorAll('.barang-row').forEach(row => {
+      const harga = parseFloat(row.querySelector('input[name*="[harga_beli]"]')?.value) || 0;
+      const qty = parseInt(row.querySelector('input[name*="[kuantitas]"]')?.value) || 0;
+      subTotal += harga * qty;
+    });
+
+    const diskon = parseFloat(document.getElementById('diskon')?.value) || 0;
+    const ppn = parseFloat(document.getElementById('ppn')?.value) || 0;
+    const biaya = parseFloat(document.getElementById('biaya_pengiriman')?.value) || 0;
+
+    const diskonNilai = (diskon / 100) * subTotal;
+    const setelahDiskon = subTotal - diskonNilai;
+    const ppnNilai = (ppn / 100) * setelahDiskon;
+    const totalBayar = setelahDiskon + ppnNilai + biaya;
+
+    document.getElementById('subTotalDisplay').value = 'Rp ' + subTotal.toLocaleString('id-ID');
+    document.getElementById('totalBayarDisplay').value = 'Rp ' + totalBayar.toLocaleString('id-ID');
+  }
+
+  ['diskon', 'ppn', 'biaya_pengiriman'].forEach(id => {
+    document.getElementById(id)?.addEventListener('input', calculateTotals);
+    document.getElementById(id)?.addEventListener('change', calculateTotals);
+  });
+
+
   if (pembelianForm) {
     pembelianForm.addEventListener('submit', function (e) {
       e.preventDefault();
-      resetErrors();
+      resetAllErrors();
       let hasError = false;
-      // Validasi Supplier
-      const supplierSelect = document.getElementById('id_supplier');
-      if (!supplierSelect.value) {
-        const errorEl = document.querySelector('#id_supplier_error');
-        if (errorEl) {
-          errorEl.textContent = 'Supplier wajib dipilih.';
-          errorEl.classList.remove('hidden');
-        }
-        supplierSelect.classList.add('border-red-500', 'bg-red-50');
+
+      // Supplier
+      if (!document.getElementById('id_supplier')?.value) {
+        showError('id_supplier', 'Supplier wajib dipilih.');
         hasError = true;
       }
-      // Validasi Jenis Pembayaran
-      const jenisSelect = document.getElementById('jenis_pembayaran');
-      if (!jenisSelect.value) {
-        const errorEl = document.querySelector('#jenis_pembayaran_error');
-        if (errorEl) {
-          errorEl.textContent = 'Jenis pembayaran wajib dipilih.';
-          errorEl.classList.remove('hidden');
-        }
-        jenisSelect.classList.add('border-red-500', 'bg-red-50');
+
+      // Jenis Pembayaran
+      if (!document.getElementById('jenis_pembayaran')?.value) {
+        showError('jenis_pembayaran', 'Jenis pembayaran wajib dipilih.');
         hasError = true;
       }
-      // Validasi Diskon
-      const diskonInput = document.getElementById('diskon');
-      const diskon = parseFloat(diskonInput.value);
-      if (isNaN(diskon) || diskon < 0 || diskon > 100) {
-        const errorEl = document.querySelector('#diskon_error');
-        if (errorEl) {
-          errorEl.textContent = 'Diskon harus antara 0 hingga 100%.';
-          errorEl.classList.remove('hidden');
-        }
-        diskonInput.classList.add('border-red-500', 'bg-red-50');
+
+      // Diskon
+      const diskon = parseFloat(document.getElementById('diskon')?.value) || 0;
+      if (diskon < 0 || diskon > 100) {
+        showError('diskon', 'Diskon harus 0-100%.');
         hasError = true;
       }
-      // Validasi PPN
-      const ppnInput = document.getElementById('ppn');
-      const ppn = parseFloat(ppnInput.value);
-      if (isNaN(ppn) || ppn < 0 || ppn > 100) {
-        const errorEl = document.querySelector('#ppn_error');
-        if (errorEl) {
-          errorEl.textContent = 'PPN harus antara 0 hingga 100%.';
-          errorEl.classList.remove('hidden');
-        }
-        ppnInput.classList.add('border-red-500', 'bg-red-50');
+
+      // PPN
+      const ppn = parseFloat(document.getElementById('ppn')?.value) || 0;
+      if (ppn < 0 || ppn > 100) {
+        showError('ppn', 'PPN harus 0-100%.');
         hasError = true;
       }
-      // Validasi Biaya Pengiriman
-      const biayaPengirimanInput = document.getElementById('biaya_pengiriman');
-      const biayaPengiriman = parseFloat(biayaPengirimanInput.value);
-      if (isNaN(biayaPengiriman) || biayaPengiriman < 0) {
-        const errorEl = document.querySelector('#biaya_pengiriman_error');
-        if (errorEl) {
-          errorEl.textContent = 'Biaya pengiriman tidak boleh kurang dari 0.';
-          errorEl.classList.remove('hidden');
-        }
-        biayaPengirimanInput.classList.add('border-red-500', 'bg-red-50');
+
+      // Biaya Pengiriman
+      const biaya = parseFloat(document.getElementById('biaya_pengiriman')?.value) || 0;
+      if (biaya < 0) {
+        showError('biaya_pengiriman', 'Biaya tidak boleh negatif.');
         hasError = true;
       }
-      // Validasi Detail Barang
-      const barangRows = document.querySelectorAll('.barang-row');
-      if (barangRows.length === 0) {
-        const errorEl = document.querySelector('#details_error');
-        errorEl.textContent = 'Harus ada setidaknya satu detail barang.';
-        errorEl.classList.remove('hidden');
+
+      // Detail Barang
+      const rows = document.querySelectorAll('.barang-row');
+      if (rows.length === 0) {
+        document.querySelector('#details_error')?.classList.remove('hidden');
         hasError = true;
       }
-      barangRows.forEach((row, index) => {
+
+      rows.forEach((row, i) => {
         const idBarang = row.querySelector('select[name$="[id_barang]"]');
-        const hargaBeli = row.querySelector('input[name$="[harga_beli]"]');
-        const kuantitas = row.querySelector('input[name$="[kuantitas]"]');
-        if (!idBarang.value) {
-          const errorEl = row.querySelector(`[data-error="id_barang_${index}"]`);
-          if (errorEl) {
-            errorEl.textContent = 'Barang wajib dipilih.';
-            errorEl.classList.remove('hidden');
-          }
-          idBarang.classList.add('border-red-500', 'bg-red-50');
-          hasError = true;
-        }
-        const harga = parseFloat(hargaBeli.value);
-        if (!hargaBeli.value || isNaN(harga) || harga <= 0) {
-          const errorEl = row.querySelector(`[data-error="harga_beli_${index}"]`);
-          if (errorEl) {
-            errorEl.textContent = 'Harga beli harus lebih dari 0.';
-            errorEl.classList.remove('hidden');
-          }
-          hargaBeli.classList.add('border-red-500', 'bg-red-50');
-          hasError = true;
-        }
-        const qty = parseInt(kuantitas.value);
-        if (!kuantitas.value || isNaN(qty) || qty <= 0) {
-          const errorEl = row.querySelector(`[data-error="kuantitas_${index}"]`);
-          if (errorEl) {
-            errorEl.textContent = 'Kuantitas harus lebih dari 0.';
-            errorEl.classList.remove('hidden');
-          }
-          kuantitas.classList.add('border-red-500', 'bg-red-50');
-          hasError = true;
-        }
+        const harga = row.querySelector('input[name$="[harga_beli]"]');
+        const qty = row.querySelector('input[name$="[kuantitas]"]');
+
+        if (!idBarang?.value) showRowError(row, `id_barang_${i}`, 'Pilih barang.');
+        if (!harga?.value || parseFloat(harga.value) <= 0) showRowError(row, `harga_beli_${i}`, 'Harga > 0.');
+        if (!qty?.value || parseInt(qty.value) <= 0) showRowError(row, `kuantitas_${i}`, 'Qty > 0.');
+        if (!idBarang?.value || !harga?.value || !qty?.value) hasError = true;
       });
-      if (!hasError && confirm('Simpan data pembelian?')) {
-        this.submit();
+
+      if (hasError) {
+        alert('Periksa kembali isian Anda.');
+        return;
       }
+
+      if (!confirm('Simpan data pembelian?')) return;
+
+      this.submit();
     });
   }
 
-  function resetErrors() {
-    ['id_supplier', 'diskon', 'ppn', 'biaya_pengiriman', 'jenis_pembayaran', 'details'].forEach(id => {
-      const errorEl = document.querySelector(`#${id}_error`);
-      if (errorEl) {
-        errorEl.textContent = '';
-        errorEl.classList.add('hidden');
-      }
-      const el = document.getElementById(id);
-      if (el) el.classList.remove('border-red-500', 'bg-red-50');
-    });
-    document.querySelectorAll('[data-error]').forEach(el => {
-      el.textContent = '';
-      el.classList.add('hidden');
-    });
-  }
-
-  // Initialize totals and buttons
   calculateTotals();
 });
 </script>

@@ -32,9 +32,9 @@ class AgenEkspedisiController extends Controller
     {
         $nextId = $this->generateNextId();
         $negara = Negara::orderBy('nama_negara')->get();
-        $provinsi = collect([]); // Empty initially, populated via AJAX
-        $kota = collect([]); // Empty initially, populated via AJAX
-
+        $provinsi = collect([]); 
+        $kota = collect([]); 
+        
         return view('master.data-agen-ekspedisi.create', compact('nextId', 'negara', 'provinsi', 'kota'));
     }
 

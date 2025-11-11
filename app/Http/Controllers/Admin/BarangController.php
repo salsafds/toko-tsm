@@ -11,12 +11,9 @@ use Illuminate\Http\Request;
 
 class BarangController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    
     public function index(Request $request)
     {
-        // Tidak ada perubahan di sini, tetap tampilkan semua data termasuk stok dan harga
         $query = Barang::query()->with(['kategoriBarang', 'satuan']);
 
         if ($search = $request->query('q')) {
@@ -35,12 +32,8 @@ class BarangController extends Controller
         return view('admin.data-barang.index', compact('barang'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        // Tidak ada perubahan
         $kategoriBarang = KategoriBarang::all();
         $supplier = Supplier::all();
         $satuan = Satuan::all();
@@ -51,7 +44,7 @@ class BarangController extends Controller
 
     public function store(Request $request)
     {
-        // Cek apakah barang dengan nama yang sama sudah ada
+
         if (Barang::where('nama_barang', $request->nama_barang)->exists()) {
             return response()->json([
                 'success' => false,
@@ -59,19 +52,19 @@ class BarangController extends Controller
             ], 409);
         }
 
-        // Validasi (tambahkan validasi untuk margin)
+        
         $request->validate([
             'nama_barang' => 'required|string|max:100',
             'id_kategori_barang' => 'required|exists:kategori_barang,id_kategori_barang',
             'id_supplier' => 'required|exists:supplier,id_supplier',
             'id_satuan' => 'required|exists:satuan,id_satuan',
             'berat' => 'required|numeric|min:0.01',
-            'margin' => 'nullable|numeric|min:0|max:100', // Tambahkan validasi margin (opsional, 0-100%)
+            'margin' => 'nullable|numeric|min:0|max:100', 
         ]);
 
-        // Buat ID otomatis
+  
          $nextId = $this->generateNextId();
-    // Simpan data
+
     Barang::create([
         'id_barang' => $nextId,
         'nama_barang' => $request->nama_barang,
@@ -85,14 +78,14 @@ class BarangController extends Controller
         'retail' => 0,
         'margin' => $request->margin ?? 0,
     ]);
-    // Redirect ke index dengan success message
+    
     return redirect()->route('admin.data-barang.index')
                     ->with('success', 'Barang berhasil ditambahkan.');
 }
 
     public function edit($id_barang)
     {
-        // Tidak ada perubahan
+        
         $barang = Barang::findOrFail($id_barang);
         $kategoriBarang = KategoriBarang::all();
         $supplier = Supplier::all();
@@ -101,12 +94,9 @@ class BarangController extends Controller
         return view('admin.data-barang.edit', compact('barang', 'kategoriBarang', 'supplier', 'satuan'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, $id_barang)
 {
-    // Validasi tetap sama
+    
     $request->validate([
         'nama_barang' => 'required|string|max:100',
         'id_kategori_barang' => 'required|exists:kategori_barang,id_kategori_barang',
@@ -116,7 +106,7 @@ class BarangController extends Controller
         'berat' => 'required|numeric|min:0.01',
         'margin' => 'nullable|numeric|min:0|max:100',
     ], [
-        // Pesan error tetap sama
+
         'nama_barang.required' => 'Nama barang wajib diisi.',
         'nama_barang.string' => 'Nama barang harus berupa teks.',
         'nama_barang.max' => 'Nama barang tidak boleh lebih dari 100 karakter.',
@@ -138,10 +128,10 @@ class BarangController extends Controller
 
     $barang = Barang::findOrFail($id_barang);
 
-    // Simpan margin lama untuk cek apakah berubah
+    
     $marginLama = $barang->margin ?? 0;
 
-    // Update data barang
+
     $barang->update([
         'nama_barang' => $request->nama_barang,
         'id_kategori_barang' => $request->id_kategori_barang,
@@ -152,12 +142,12 @@ class BarangController extends Controller
         'margin' => $request->margin ?? 0,
     ]);
 
-    // Jika margin berubah dan harga_beli > 0, hitung ulang harga retail
+    
     $marginBaru = $request->margin ?? 0;
     if ($marginLama != $marginBaru && $barang->harga_beli > 0) {
         $hargaRetailBaru = $barang->harga_beli * (1 + ($marginBaru / 100));
         $barang->update([
-            'retail' => round($hargaRetailBaru, 2), // Bulatkan ke 2 desimal
+            'retail' => round($hargaRetailBaru, 2), 
         ]);
     }
 
@@ -177,7 +167,7 @@ class BarangController extends Controller
 
     private function generateNextId()
     {
-        // Tidak ada perubahan
+ 
         $maxNum = Barang::selectRaw('MAX(CAST(SUBSTRING(id_barang, 4) AS UNSIGNED)) as max_num')
                         ->value('max_num') ?? 0;
         $nextNumber = $maxNum + 1;
@@ -192,10 +182,9 @@ class BarangController extends Controller
         $stok_lama = $barang->stok ?? 0;
         $harga_beli_lama = $barang->harga_beli ?? 0;
 
-        // Hitung total stok baru
+        
         $stok_total = $stok_lama + $kuantitas_baru;
 
-        // Jika stok total 0 (kasus ekstrem), set ulang semua nilai
         if ($stok_total <= 0) {
             $barang->update([
                 'stok' => 0,
@@ -205,16 +194,13 @@ class BarangController extends Controller
             return;
         }
 
-        // Hitung harga beli rata-rata tertimbang (weighted average)
         $harga_beli_rata = (
             ($stok_lama * $harga_beli_lama) + ($kuantitas_baru * $harga_beli_baru)
         ) / $stok_total;
 
-        // Gunakan margin per barang dari database (bukan hardcoded 30%)
-        $margin = ($barang->margin ?? 0) / 100; // Bagi 100 karena disimpan sebagai persen
+        $margin = ($barang->margin ?? 0) / 100; 
         $harga_retail_baru = $harga_beli_rata * (1 + $margin);
 
-        // Update data barang
         $barang->update([
             'stok' => $stok_total,
             'harga_beli' => round($harga_beli_rata, 2),
