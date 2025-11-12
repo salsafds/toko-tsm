@@ -618,7 +618,7 @@
             class="absolute left-0 bottom-12 w-full bg-white border rounded shadow-md overflow-hidden z-10"
         >
             <a 
-                href="{{ route('layouts.profile.edit') ?? '#' }}" 
+                href="{{ route('profile.profile.edit') }}"
                 class="flex items-center gap-3 px-3 py-2 hover:bg-gray-50"
                 x-tooltip="!isOpen && isDesktop ? 'My profile' : ''"
             >

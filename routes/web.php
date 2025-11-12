@@ -31,7 +31,7 @@ use App\Http\Controllers\Admin\PenjualanController;
 // Landing page
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
 
-Route::middleware(['auth'])->name('layouts.')->group(function () {
+Route::middleware(['auth'])->name('profile.')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::post('/profile/check-username', [ProfileController::class, 'checkUsername'])->name('profile.check-username');

@@ -23,7 +23,7 @@
             </div>
         @endif
 
-        <form id="profileForm" action="{{ route('layouts.profile.update') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+        <form id="profileForm" action="{{ route('profile.profile.update') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
             @csrf
 
             <!-- Foto Profil -->
@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         try {
-            const res = await fetch('{{ route('layouts.profile.verify-password') }}', {
+            const res = await fetch('{{ route('profile.profile.verify-password') }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
