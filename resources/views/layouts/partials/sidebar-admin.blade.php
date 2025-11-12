@@ -108,7 +108,7 @@
 
     <a 
       href="{{ $dashboardRoute ?? '#' }}" 
-      class="flex items-center gap-3 px-2 py-2 rounded relative group transition-colors"
+      class="flex items-center gap-3 px-2 py-2 rounded-lg relative group transition-colors"
       :class="{
         'justify-center': !isOpen && isDesktop,
         'bg-blue-50 text-blue-700': '{{ $isDashboardActive }}' === '1',
@@ -126,7 +126,7 @@
 
     <a 
       href="{{ $dashboardRoute ?? '#' }}" 
-      class="flex items-center gap-3 px-2 py-2 rounded relative group transition-colors"
+      class="flex items-center gap-3 px-2 py-2 rounded-lg relative group transition-colors"
       :class="{
         'justify-center': !isOpen && isDesktop,
         'bg-blue-50 text-blue-700': '{{ $isDashboardActive }}' === '1',
@@ -154,7 +154,7 @@
       @php $penjualanActive = request()->routeIs('admin.penjualan.*'); @endphp
       <a 
         href="{{ route('admin.penjualan.index') ?? '#' }}"
-        class="flex items-center gap-3 px-3 py-2 rounded relative group transition-colors"
+        class="flex items-center gap-3 px-3 py-2 rounded-lg relative group transition-colors"
         :class="{
           'justify-center': !isOpen && isDesktop,
           'bg-blue-50 text-blue-700': {{ $penjualanActive ? 'true' : 'false' }},
@@ -184,7 +184,7 @@
       @php $pembelianActive = request()->routeIs('admin.pembelian.*'); @endphp
       <a 
         href="{{ route('admin.pembelian.index') ?? '#' }}" 
-        class="flex items-center gap-3 px-3 py-2 rounded relative group transition-colors"
+        class="flex items-center gap-3 px-3 py-2 rounded-lg relative group transition-colors"
         :class="{
           'justify-center': !isOpen && isDesktop,
           'bg-blue-50 text-blue-700': {{ $pembelianActive ? 'true' : 'false' }},
@@ -218,7 +218,7 @@
       @php $barangActive = request()->routeIs('admin.data-barang.*'); @endphp
       <a 
         href="{{ route('admin.data-barang.index') ?? '#' }}" 
-        class="flex items-center gap-3 px-3 py-2 rounded relative group transition-colors"
+        class="flex items-center gap-3 px-3 py-2 rounded-lg relative group transition-colors"
         :class="{
           'justify-center': !isOpen && isDesktop,
           'bg-blue-50 text-blue-700': {{ $barangActive ? 'true' : 'false' }},

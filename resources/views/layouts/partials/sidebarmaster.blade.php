@@ -124,7 +124,7 @@
     <a 
       href="{{ route('dashboard-master') ?? '#' }}" 
       @click="saveScrollPosition()"
-      class="flex items-center gap-3 px-2 py-2 rounded relative group transition-colors"
+      class="flex items-center gap-3 px-2 py-2 rounded-lg relative group transition-colors"
       :class="{
         'justify-center': !isOpen && isDesktop,
         'bg-blue-50 text-blue-700': {{ $dashboardMasterActive ? 'true' : 'false' }},
@@ -136,14 +136,14 @@
       <span 
         x-show="!isOpen && isDesktop" 
         x-cloak
-        class="absolute left-full ml-2 bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-10"
+        class="absolute left-full ml-2 bg-gray-800 text-white text-xs rounded-lg py-1 px-2 hidden group-hover:block z-10"
       >Dashboard</span>
     </a>
 
     <a 
       href="{{ route('dashboard-master') ?? '#' }}" 
       @click="saveScrollPosition()"
-      class="flex items-center gap-3 px-2 py-2 rounded relative group transition-colors"
+      class="flex items-center gap-3 px-2 py-2 rounded-lg relative group transition-colors"
       :class="{
         'justify-center': !isOpen && isDesktop,
         'bg-blue-50 text-blue-700': {{ $dashboardMasterActive ? 'true' : 'false' }},
@@ -155,7 +155,7 @@
       <span 
         x-show="!isOpen && isDesktop" 
         x-cloak
-        class="absolute left-full ml-2 bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-10"
+        class="absolute left-full ml-2 bg-gray-800 text-white text-xs rounded-lg py-1 px-2 hidden group-hover:block z-10"
       >Laporan</span>
     </a>
   </div>
@@ -177,7 +177,7 @@
       <a 
         href="{{ route('master.data-supplier.index') ?? '#' }}" 
         @click="saveScrollPosition()"
-        class="flex items-center gap-3 px-3 py-2 rounded relative group transition-colors"
+        class="flex items-center gap-3 px-3 py-2 rounded-lg relative group transition-colors"
         :class="{
           'justify-center': !isOpen && isDesktop,
           'bg-blue-50 text-blue-700': {{ $supplierActive ? 'true' : 'false' }},
@@ -208,7 +208,7 @@
       <a 
         href="{{ route('master.data-pelanggan.index') ?? '#' }}" 
         @click="saveScrollPosition()"
-        class="flex items-center gap-3 px-3 py-2 rounded relative group transition-colors"
+        class="flex items-center gap-3 px-3 py-2 rounded-lg relative group transition-colors"
         :class="{
           'justify-center': !isOpen && isDesktop,
           'bg-blue-50 text-blue-700': {{ $pelangganActive ? 'true' : 'false' }},
@@ -221,7 +221,7 @@
           x-show="!isOpen && isDesktop" 
           x-cloak
           x-ref="tooltip"
-          class="fixed left-[72px] bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
+          class="fixed left-[72px] bg-gray-800 text-white text-xs rounded-lg py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
           x-data="{ updatePosition() { 
             const parentRect = this.$el.parentElement.getBoundingClientRect(); 
             const scrollOffset = window.scrollY;
@@ -239,7 +239,7 @@
       <a 
         href="{{ route('master.data-user.index') ?? '#' }}" 
         @click="saveScrollPosition()"
-        class="flex items-center gap-3 px-3 py-2 rounded relative group transition-colors"
+        class="flex items-center gap-3 px-3 py-2 rounded-lg relative group transition-colors"
         :class="{
           'justify-center': !isOpen && isDesktop,
           'bg-blue-50 text-blue-700': {{ $karyawanActive ? 'true' : 'false' }},
@@ -252,7 +252,7 @@
           x-show="!isOpen && isDesktop" 
           x-cloak
           x-ref="tooltip"
-          class="fixed left-[72px] bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
+          class="fixed left-[72px] bg-gray-800 text-white text-xs rounded-lg py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
           x-data="{ updatePosition() { 
             const parentRect = this.$el.parentElement.getBoundingClientRect(); 
             const scrollOffset = window.scrollY;
@@ -274,7 +274,7 @@
       <a 
         href="{{ route('master.data-satuan.index') ?? '#' }}" 
         @click="saveScrollPosition()"
-        class="flex items-center gap-3 px-3 py-2 rounded relative group transition-colors"
+        class="flex items-center gap-3 px-3 py-2 rounded-lg relative group transition-colors"
         :class="{
           'justify-center': !isOpen && isDesktop,
           'bg-blue-50 text-blue-700': {{ $satuanActive ? 'true' : 'false' }},
@@ -287,7 +287,7 @@
           x-show="!isOpen && isDesktop" 
           x-cloak
           x-ref="tooltip"
-          class="fixed left-[72px] bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
+          class="fixed left-[72px] bg-gray-800 text-white text-xs rounded-lg py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
           x-data="{ updatePosition() { 
             const parentRect = this.$el.parentElement.getBoundingClientRect(); 
             const scrollOffset = window.scrollY;
@@ -305,7 +305,7 @@
       <a 
         href="{{ route('master.data-role.index') ?? '#' }}" 
         @click="saveScrollPosition()"
-        class="flex items-center gap-3 px-3 py-2 rounded relative group transition-colors"
+        class="flex items-center gap-3 px-3 py-2 rounded-lg relative group transition-colors"
         :class="{
           'justify-center': !isOpen && isDesktop,
           'bg-blue-50 text-blue-700': {{ $roleActive ? 'true' : 'false' }},
@@ -318,7 +318,7 @@
           x-show="!isOpen && isDesktop" 
           x-cloak
           x-ref="tooltip"
-          class="fixed left-[72px] bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
+          class="fixed left-[72px] bg-gray-800 text-white text-xs rounded-lg py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
           x-data="{ updatePosition() { 
             const parentRect = this.$el.parentElement.getBoundingClientRect(); 
             const scrollOffset = window.scrollY;
@@ -336,7 +336,7 @@
       <a 
         href="{{ route('master.data-jabatan.index') ?? '#' }}" 
         @click="saveScrollPosition()"
-        class="flex items-center gap-3 px-3 py-2 rounded relative group transition-colors"
+        class="flex items-center gap-3 px-3 py-2 rounded-lg relative group transition-colors"
         :class="{
           'justify-center': !isOpen && isDesktop,
           'bg-blue-50 text-blue-700': {{ $jabatanActive ? 'true' : 'false' }},
@@ -349,7 +349,7 @@
           x-show="!isOpen && isDesktop" 
           x-cloak
           x-ref="tooltip"
-          class="fixed left-[72px] bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
+          class="fixed left-[72px] bg-gray-800 text-white text-xs rounded-lg py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
           x-data="{ updatePosition() { 
             const parentRect = this.$el.parentElement.getBoundingClientRect(); 
             const scrollOffset = window.scrollY;
@@ -367,7 +367,7 @@
       <a 
         href="{{ route('master.data-kategori-barang.index') ?? '#' }}" 
         @click="saveScrollPosition()"
-        class="flex items-center gap-3 px-3 py-2 rounded relative group transition-colors"
+        class="flex items-center gap-3 px-3 py-2 rounded-lg relative group transition-colors"
         :class="{
           'justify-center': !isOpen && isDesktop,
           'bg-blue-50 text-blue-700': {{ $kategoriActive ? 'true' : 'false' }},
@@ -411,7 +411,7 @@
           x-show="!isOpen && isDesktop" 
           x-cloak
           x-ref="tooltip"
-          class="fixed left-[72px] bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
+          class="fixed left-[72px] bg-gray-800 text-white text-xs rounded-lg py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
           x-data="{ updatePosition() { 
             const parentRect = this.$el.parentElement.getBoundingClientRect(); 
             const scrollOffset = window.scrollY;
@@ -504,7 +504,7 @@
           x-show="!isOpen && isDesktop" 
           x-cloak
           x-ref="tooltip"
-          class="fixed left-[72px] bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
+          class="fixed left-[72px] bg-gray-800 text-white text-xs rounded-lg py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
           x-data="{ updatePosition() { 
             const parentRect = this.$el.parentElement.getBoundingClientRect(); 
             const scrollOffset = window.scrollY;
@@ -535,7 +535,7 @@
           x-show="!isOpen && isDesktop" 
           x-cloak
           x-ref="tooltip"
-          class="fixed left-[72px] bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
+          class="fixed left-[72px] bg-gray-800 text-white text-xs rounded-lg py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
           x-data="{ updatePosition() { 
             const parentRect = this.$el.parentElement.getBoundingClientRect(); 
             const scrollOffset = window.scrollY;
@@ -566,7 +566,7 @@
           x-show="!isOpen && isDesktop" 
           x-cloak
           x-ref="tooltip"
-          class="fixed left-[72px] bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
+          class="fixed left-[72px] bg-gray-800 text-white text-xs rounded-lg py-1 px-2 hidden group-hover:block z-50 transition-all duration-100"
           x-data="{ updatePosition() { 
             const parentRect = this.$el.parentElement.getBoundingClientRect(); 
             const scrollOffset = window.scrollY;
