@@ -29,20 +29,23 @@
     }
   }
 </style>
+
 <aside 
   x-cloak  
   class="fixed left-0 top-0 h-full bg-white border-r shadow-sm z-40 flex flex-col transition-transform duration-300"
-  x-data="{ isOpen: localStorage.getItem('sidebarOpen') === 'true' || localStorage.getItem('sidebarOpen') === null, isDesktop: isDesktop }"
+  x-data="{
+    isOpen: localStorage.getItem('sidebarOpen') === 'true' || localStorage.getItem('sidebarOpen') === null,
+    isDesktop: window.innerWidth >= 640,
+    currentPath: window.location.pathname
+  }"
   x-init="
     $watch('isOpen', value => {
       localStorage.setItem('sidebarOpen', value);
       $dispatch('sidebar-toggled', { isOpen: value });
-      console.log('Sidebar state updated, isOpen:', value);
     });
-    console.log('Sidebar initialized, isOpen:', isOpen);
     $dispatch('sidebar-toggled', { isOpen: isOpen });
     
-    // Tambahan: Real-time resize listener
+    // Real-time resize listener
     $watch('isDesktop', (newVal) => {
       if (!newVal) {
         isOpen = false;
@@ -51,7 +54,7 @@
     });
   "
   @resize.window.debounce.250ms="isDesktop = window.innerWidth >= 640"
-  @sidebar-toggled.window="isOpen = $event.detail.isOpen; console.log('Sidebar received sidebar-toggled, isOpen:', isOpen)"
+  @sidebar-toggled.window="isOpen = $event.detail.isOpen"
   :class="{ 
     'w-72': isOpen, 
     'w-16': !isOpen && isDesktop, 
@@ -75,8 +78,8 @@
     </div>
     <div class="relative group">
       <button 
-        @click="isOpen = !isOpen; $dispatch('sidebar-toggled', { isOpen: isOpen }); console.log('Toggle button clicked, isOpen:', isOpen)"
-        class="p-2 rounded hover:bg-gray-50 flex items-center justify-center"
+        @click="isOpen = !isOpen; $dispatch('sidebar-toggled', { isOpen: isOpen })"
+        class="p-2 rounded hover:bg-blue-50 flex items-center justify-center"
       >
         <img 
           :src="isOpen ? '{{ asset('img/icon/iconCloseSidebar.png') }}' : '{{ asset('img/icon/iconOpenSidebar.png') }}'"
@@ -98,13 +101,22 @@
 
   <!-- Quick links under header -->
   <div class="p-4 space-y-2" :class="{ 'px-2': !isOpen }" x-show="isOpen || isDesktop">
+    @php
+      $dashboardRoute = route('dashboard-admin');
+      $isDashboardActive = request()->is('admin/dashboard*') || request()->routeIs('dashboard-admin');
+    @endphp
+
     <a 
-      href="{{ route('dashboard-admin') ?? '#' }}" 
-      class="flex items-center gap-3 px-2 py-2 rounded hover:bg-gray-50 relative group"
-      :class="{ 'justify-center': !isOpen && isDesktop }"
+      href="{{ $dashboardRoute ?? '#' }}" 
+      class="flex items-center gap-3 px-2 py-2 rounded relative group transition-colors"
+      :class="{
+        'justify-center': !isOpen && isDesktop,
+        'bg-blue-50 text-blue-700': '{{ $isDashboardActive }}' === '1',
+        'hover:bg-blue-50 text-gray-700': '{{ $isDashboardActive }}' !== '1'
+      }"
     >
       <img src="{{ asset('img/icon/iconHome.png') }}" alt="Icon Home" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-      <span class="text-sm text-gray-700" x-show="isOpen" x-cloak>Dashboard</span>
+      <span class="text-sm" x-show="isOpen" x-cloak>Dashboard</span>
       <span 
         x-show="!isOpen && isDesktop" 
         x-cloak
@@ -113,12 +125,16 @@
     </a>
 
     <a 
-      href="{{ route('dashboard-admin') ?? '#' }}" 
-      class="flex items-center gap-3 px-2 py-2 rounded hover:bg-gray-50 relative group"
-      :class="{ 'justify-center': !isOpen && isDesktop }"
+      href="{{ $dashboardRoute ?? '#' }}" 
+      class="flex items-center gap-3 px-2 py-2 rounded relative group transition-colors"
+      :class="{
+        'justify-center': !isOpen && isDesktop,
+        'bg-blue-50 text-blue-700': '{{ $isDashboardActive }}' === '1',
+        'hover:bg-blue-50 text-gray-700': '{{ $isDashboardActive }}' !== '1'
+      }"
     >
       <img src="{{ asset('img/icon/iconLaporan.png') }}" alt="Icon Laporan" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-      <span class="text-sm text-gray-700" x-show="isOpen" x-cloak>Laporan</span>
+      <span class="text-sm" x-show="isOpen" x-cloak>Laporan</span>
       <span 
         x-show="!isOpen && isDesktop" 
         x-cloak
@@ -133,13 +149,20 @@
   <div class="flex-1 overflow-y-auto" x-show="isOpen || isDesktop">
     <nav class="p-4 space-y-2" aria-label="Main navigation" :class="{ 'px-2': !isOpen && isDesktop }">
       <div class="text-xs font-semibold text-gray-500 uppercase px-2" x-show="isOpen" x-cloak>Main</div>
+
+      <!-- Penjualan -->
+      @php $penjualanActive = request()->routeIs('admin.penjualan.*'); @endphp
       <a 
         href="{{ route('admin.penjualan.index') ?? '#' }}"
-        class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
-        :class="{ 'justify-center': !isOpen && isDesktop }"
+        class="flex items-center gap-3 px-3 py-2 rounded relative group transition-colors"
+        :class="{
+          'justify-center': !isOpen && isDesktop,
+          'bg-blue-50 text-blue-700': {{ $penjualanActive ? 'true' : 'false' }},
+          'hover:bg-blue-50 text-gray-700': {{ !$penjualanActive ? 'true' : 'false' }}
+        }"
       >
         <img src="{{ asset('img/icon/iconBarang.png') }}" alt="Icon Barang" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen" x-cloak>Penjualan</span>
+        <span class="text-sm" x-show="isOpen" x-cloak>Penjualan</span>
         <span 
           x-show="!isOpen && isDesktop" 
           x-cloak
@@ -157,13 +180,19 @@
         </span>
       </a>
 
-     <a 
+      <!-- Pembelian -->
+      @php $pembelianActive = request()->routeIs('admin.pembelian.*'); @endphp
+      <a 
         href="{{ route('admin.pembelian.index') ?? '#' }}" 
-        class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
-        :class="{ 'justify-center': !isOpen && isDesktop }"
+        class="flex items-center gap-3 px-3 py-2 rounded relative group transition-colors"
+        :class="{
+          'justify-center': !isOpen && isDesktop,
+          'bg-blue-50 text-blue-700': {{ $pembelianActive ? 'true' : 'false' }},
+          'hover:bg-blue-50 text-gray-700': {{ !$pembelianActive ? 'true' : 'false' }}
+        }"
       >
         <img src="{{ asset('img/icon/iconSupplier.png') }}" alt="Icon Supplier" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen" x-cloak>Pembelian</span>
+        <span class="text-sm" x-show="isOpen" x-cloak>Pembelian</span>
         <span 
           x-show="!isOpen && isDesktop" 
           x-cloak
@@ -185,13 +214,19 @@
 
       <div class="text-xs font-semibold text-gray-500 uppercase px-2" x-show="isOpen">Others</div>
 
+      <!-- Daftar Barang -->
+      @php $barangActive = request()->routeIs('admin.data-barang.*'); @endphp
       <a 
         href="{{ route('admin.data-barang.index') ?? '#' }}" 
-        class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
-        :class="{ 'justify-center': !isOpen && isDesktop }"
+        class="flex items-center gap-3 px-3 py-2 rounded relative group transition-colors"
+        :class="{
+          'justify-center': !isOpen && isDesktop,
+          'bg-blue-50 text-blue-700': {{ $barangActive ? 'true' : 'false' }},
+          'hover:bg-blue-50 text-gray-700': {{ !$barangActive ? 'true' : 'false' }}
+        }"
       >
         <img src="{{ asset('img/icon/iconBarang.png') }}" alt="Icon Barang" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen" x-cloak>Daftar Barang</span>
+        <span class="text-sm" x-show="isOpen" x-cloak>Daftar Barang</span>
         <span 
           x-show="!isOpen && isDesktop" 
           x-cloak
@@ -208,12 +243,11 @@
           Daftar Barang
         </span>
       </a>
-
     </nav>
   </div>
 
-<!-- Sidebar Footer -->
-<div class="border-t p-2" :class="{ 'px-2 ml-4': !isOpen }" x-show="isOpen || isDesktop">
+  <!-- Sidebar Footer -->
+  <div class="border-t p-2" :class="{ 'px-2 ml-4': !isOpen }" x-show="isOpen || isDesktop">
     @php
         $user = Auth::user();
         $foto = $user && $user->foto_user ? asset('storage/' . $user->foto_user) : asset('img/icon/iconProfil.png');
@@ -228,7 +262,7 @@
                 <div class="truncate text-xs text-gray-500">{{ $user && $user->role ? ucfirst($user->role->nama_role) : 'Role Tidak Dikenal' }}</div>
             </div>
             <button 
-                @click="open = !open; console.log('Arrow button clicked, dropdown open:', open)"
+                @click="open = !open"
                 class="flex-shrink-0 focus:outline-none"
                 x-tooltip="!isOpen && isDesktop ? '{{ $user ? $user->username : 'Guest' }}' : ''"
             >
@@ -289,5 +323,5 @@
             </form>
         </div>
     </div>
-</div>
+  </div>
 </aside>

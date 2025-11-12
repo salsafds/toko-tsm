@@ -29,29 +29,48 @@
     }
   }
 </style>
+
 <aside 
   x-cloak  
   class="fixed left-0 top-0 h-full bg-white border-r shadow-sm z-40 flex flex-col transition-transform duration-300"
-  x-data="{ isOpen: localStorage.getItem('sidebarOpen') === 'true' || localStorage.getItem('sidebarOpen') === null, isDesktop: isDesktop }"
+  x-data="{
+    isOpen: localStorage.getItem('sidebarOpen') === 'true' || localStorage.getItem('sidebarOpen') === null,
+    isDesktop: window.innerWidth >= 640,
+    saveScrollPosition() {
+      const body = this.$refs.sidebarBody;
+      if (body) {
+        sessionStorage.setItem('sidebarScroll', body.scrollTop);
+      }
+    },
+    restoreScrollPosition() {
+      const body = this.$refs.sidebarBody;
+      const saved = sessionStorage.getItem('sidebarScroll');
+      if (body && saved !== null) {
+        this.$nextTick(() => {
+          body.scrollTop = parseInt(saved);
+        });
+      }
+    }
+  }"
   x-init="
     $watch('isOpen', value => {
       localStorage.setItem('sidebarOpen', value);
       $dispatch('sidebar-toggled', { isOpen: value });
-      console.log('Sidebar state updated, isOpen:', value);
     });
-    console.log('Sidebar initialized, isOpen:', isOpen);
     $dispatch('sidebar-toggled', { isOpen: isOpen });
     
-    // Tambahan: Real-time resize listener
     $watch('isDesktop', (newVal) => {
       if (!newVal) {
         isOpen = false;
         $dispatch('sidebar-toggled', { isOpen: false });
       }
     });
+
+    // Kembalikan scroll saat halaman dimuat
+    restoreScrollPosition();
   "
   @resize.window.debounce.250ms="isDesktop = window.innerWidth >= 640"
-  @sidebar-toggled.window="isOpen = $event.detail.isOpen; console.log('Sidebar received sidebar-toggled, isOpen:', isOpen)"
+  @sidebar-toggled.window="isOpen = $event.detail.isOpen"
   :class="{ 
     'w-72': isOpen, 
     'w-16': !isOpen && isDesktop, 
@@ -75,8 +94,8 @@
     </div>
     <div class="relative group">
       <button 
-        @click="isOpen = !isOpen; $dispatch('sidebar-toggled', { isOpen: isOpen }); console.log('Toggle button clicked, isOpen:', isOpen)"
-        class="p-2 rounded hover:bg-gray-50 flex items-center justify-center"
+        @click="isOpen = !isOpen; $dispatch('sidebar-toggled', { isOpen: isOpen })"
+        class="p-2 rounded hover:bg-blue-50 flex items-center justify-center"
       >
         <img 
           :src="isOpen ? '{{ asset('img/icon/iconCloseSidebar.png') }}' : '{{ asset('img/icon/iconOpenSidebar.png') }}'"
@@ -98,13 +117,22 @@
 
   <!-- Quick links under header -->
   <div class="p-4 space-y-2" :class="{ 'px-2': !isOpen }" x-show="isOpen || isDesktop">
+    @php
+      $dashboardMasterActive = request()->routeIs('dashboard-master');
+    @endphp
+
     <a 
       href="{{ route('dashboard-master') ?? '#' }}" 
-      class="flex items-center gap-3 px-2 py-2 rounded hover:bg-gray-50 relative group"
-      :class="{ 'justify-center': !isOpen && isDesktop }"
+      @click="saveScrollPosition()"
+      class="flex items-center gap-3 px-2 py-2 rounded relative group transition-colors"
+      :class="{
+        'justify-center': !isOpen && isDesktop,
+        'bg-blue-50 text-blue-700': {{ $dashboardMasterActive ? 'true' : 'false' }},
+        'hover:bg-blue-50 text-gray-700': {{ !$dashboardMasterActive ? 'true' : 'false' }}
+      }"
     >
       <img src="{{ asset('img/icon/iconHome.png') }}" alt="Icon Home" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-      <span class="text-sm text-gray-700" x-show="isOpen" x-cloak>Dashboard</span>
+      <span class="text-sm" x-show="isOpen" x-cloak>Dashboard</span>
       <span 
         x-show="!isOpen && isDesktop" 
         x-cloak
@@ -114,11 +142,16 @@
 
     <a 
       href="{{ route('dashboard-master') ?? '#' }}" 
-      class="flex items-center gap-3 px-2 py-2 rounded hover:bg-gray-50 relative group"
-      :class="{ 'justify-center': !isOpen && isDesktop }"
+      @click="saveScrollPosition()"
+      class="flex items-center gap-3 px-2 py-2 rounded relative group transition-colors"
+      :class="{
+        'justify-center': !isOpen && isDesktop,
+        'bg-blue-50 text-blue-700': {{ $dashboardMasterActive ? 'true' : 'false' }},
+        'hover:bg-blue-50 text-gray-700': {{ !$dashboardMasterActive ? 'true' : 'false' }}
+      }"
     >
       <img src="{{ asset('img/icon/iconLaporan.png') }}" alt="Icon Laporan" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-      <span class="text-sm text-gray-700" x-show="isOpen" x-cloak>Laporan</span>
+      <span class="text-sm" x-show="isOpen" x-cloak>Laporan</span>
       <span 
         x-show="!isOpen && isDesktop" 
         x-cloak
@@ -129,17 +162,30 @@
 
   <hr class="mx-4 my-2 border-gray-200" x-show="isOpen" x-cloak>
 
-  <!-- Sidebar Body -->
-  <div class="flex-1 overflow-y-auto" x-show="isOpen || isDesktop">
+  <!-- Sidebar Body (Dengan x-ref untuk scroll) -->
+  <div 
+    class="flex-1 overflow-y-auto" 
+    x-ref="sidebarBody"
+    x-show="isOpen || isDesktop"
+    x-init="restoreScrollPosition()"
+  >
     <nav class="p-4 space-y-2" aria-label="Main navigation" :class="{ 'px-2': !isOpen && isDesktop }">
       <div class="text-xs font-semibold text-gray-500 uppercase px-2" x-show="isOpen" x-cloak>Main</div>
+
+      <!-- CRUD Data Barang -->
+      @php $barangActive = request()->routeIs('admin.data-barang.*'); @endphp
       <a 
         href="{{ route('admin.data-barang.index') ?? '#' }}" 
-        class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
-        :class="{ 'justify-center': !isOpen && isDesktop }"
+        @click="saveScrollPosition()"
+        class="flex items-center gap-3 px-3 py-2 rounded relative group transition-colors"
+        :class="{
+          'justify-center': !isOpen && isDesktop,
+          'bg-blue-50 text-blue-700': {{ $barangActive ? 'true' : 'false' }},
+          'hover:bg-blue-50 text-gray-700': {{ !$barangActive ? 'true' : 'false' }}
+        }"
       >
         <img src="{{ asset('img/icon/iconBarang.png') }}" alt="Icon Barang" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen" x-cloak>CRUD Data Barang</span>
+        <span class="text-sm" x-show="isOpen" x-cloak>CRUD Data Barang</span>
         <span 
           x-show="!isOpen && isDesktop" 
           x-cloak
@@ -157,13 +203,20 @@
         </span>
       </a>
 
+      <!-- CRUD Data Supplier -->
+      @php $supplierActive = request()->routeIs('master.data-supplier.*'); @endphp
       <a 
         href="{{ route('master.data-supplier.index') ?? '#' }}" 
-        class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
-        :class="{ 'justify-center': !isOpen && isDesktop }"
+        @click="saveScrollPosition()"
+        class="flex items-center gap-3 px-3 py-2 rounded relative group transition-colors"
+        :class="{
+          'justify-center': !isOpen && isDesktop,
+          'bg-blue-50 text-blue-700': {{ $supplierActive ? 'true' : 'false' }},
+          'hover:bg-blue-50 text-gray-700': {{ !$supplierActive ? 'true' : 'false' }}
+        }"
       >
         <img src="{{ asset('img/icon/iconSupplier.png') }}" alt="Icon Supplier" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen" x-cloak>CRUD Data Supplier</span>
+        <span class="text-sm" x-show="isOpen" x-cloak>CRUD Data Supplier</span>
         <span 
           x-show="!isOpen && isDesktop" 
           x-cloak
@@ -181,13 +234,20 @@
         </span>
       </a>
 
+      <!-- CRUD Data Pelanggan -->
+      @php $pelangganActive = request()->routeIs('master.data-pelanggan.*'); @endphp
       <a 
         href="{{ route('master.data-pelanggan.index') ?? '#' }}" 
-        class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
-        :class="{ 'justify-center': !isOpen && isDesktop }"
+        @click="saveScrollPosition()"
+        class="flex items-center gap-3 px-3 py-2 rounded relative group transition-colors"
+        :class="{
+          'justify-center': !isOpen && isDesktop,
+          'bg-blue-50 text-blue-700': {{ $pelangganActive ? 'true' : 'false' }},
+          'hover:bg-blue-50 text-gray-700': {{ !$pelangganActive ? 'true' : 'false' }}
+        }"
       >
         <img src="{{ asset('img/icon/iconPelanggan.png') }}" alt="Icon Pelanggan" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen" x-cloak>CRUD Data Pelanggan</span>
+        <span class="text-sm" x-show="isOpen" x-cloak>CRUD Data Pelanggan</span>
         <span 
           x-show="!isOpen && isDesktop" 
           x-cloak
@@ -205,13 +265,20 @@
         </span>
       </a>
 
+      <!-- CRUD Data Karyawan -->
+      @php $karyawanActive = request()->routeIs('master.data-user.*'); @endphp
       <a 
         href="{{ route('master.data-user.index') ?? '#' }}" 
-        class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
-        :class="{ 'justify-center': !isOpen && isDesktop }"
+        @click="saveScrollPosition()"
+        class="flex items-center gap-3 px-3 py-2 rounded relative group transition-colors"
+        :class="{
+          'justify-center': !isOpen && isDesktop,
+          'bg-blue-50 text-blue-700': {{ $karyawanActive ? 'true' : 'false' }},
+          'hover:bg-blue-50 text-gray-700': {{ !$karyawanActive ? 'true' : 'false' }}
+        }"
       >
         <img src="{{ asset('img/icon/iconKaryawan.png') }}" alt="Icon Karyawan" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen" x-cloak>CRUD Data Karyawan</span>
+        <span class="text-sm" x-show="isOpen" x-cloak>CRUD Data Karyawan</span>
         <span 
           x-show="!isOpen && isDesktop" 
           x-cloak
@@ -233,13 +300,20 @@
 
       <div class="text-xs font-semibold text-gray-500 uppercase px-2" x-show="isOpen">Data Konfigurasi</div>
 
+      <!-- Data Satuan -->
+      @php $satuanActive = request()->routeIs('master.data-satuan.*'); @endphp
       <a 
         href="{{ route('master.data-satuan.index') ?? '#' }}" 
-        class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
-        :class="{ 'justify-center': !isOpen && isDesktop }"
+        @click="saveScrollPosition()"
+        class="flex items-center gap-3 px-3 py-2 rounded relative group transition-colors"
+        :class="{
+          'justify-center': !isOpen && isDesktop,
+          'bg-blue-50 text-blue-700': {{ $satuanActive ? 'true' : 'false' }},
+          'hover:bg-blue-50 text-gray-700': {{ !$satuanActive ? 'true' : 'false' }}
+        }"
       >
         <img src="{{ asset('img/icon/iconSatuan.png') }}" alt="Icon Satuan" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen" x-cloak>Data Satuan</span>
+        <span class="text-sm" x-show="isOpen" x-cloak>Data Satuan</span>
         <span 
           x-show="!isOpen && isDesktop" 
           x-cloak
@@ -257,13 +331,20 @@
         </span>
       </a>
 
+      <!-- Data Role -->
+      @php $roleActive = request()->routeIs('master.data-role.*'); @endphp
       <a 
         href="{{ route('master.data-role.index') ?? '#' }}" 
-        class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
-        :class="{ 'justify-center': !isOpen && isDesktop }"
+        @click="saveScrollPosition()"
+        class="flex items-center gap-3 px-3 py-2 rounded relative group transition-colors"
+        :class="{
+          'justify-center': !isOpen && isDesktop,
+          'bg-blue-50 text-blue-700': {{ $roleActive ? 'true' : 'false' }},
+          'hover:bg-blue-50 text-gray-700': {{ !$roleActive ? 'true' : 'false' }}
+        }"
       >
         <img src="{{ asset('img/icon/iconRole.png') }}" alt="Icon Role" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen" x-cloak>Data Role</span>
+        <span class="text-sm" x-show="isOpen" x-cloak>Data Role</span>
         <span 
           x-show="!isOpen && isDesktop" 
           x-cloak
@@ -281,13 +362,20 @@
         </span>
       </a>
 
+      <!-- Data Jabatan -->
+      @php $jabatanActive = request()->routeIs('master.data-jabatan.*'); @endphp
       <a 
         href="{{ route('master.data-jabatan.index') ?? '#' }}" 
-        class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
-        :class="{ 'justify-center': !isOpen && isDesktop }"
+        @click="saveScrollPosition()"
+        class="flex items-center gap-3 px-3 py-2 rounded relative group transition-colors"
+        :class="{
+          'justify-center': !isOpen && isDesktop,
+          'bg-blue-50 text-blue-700': {{ $jabatanActive ? 'true' : 'false' }},
+          'hover:bg-blue-50 text-gray-700': {{ !$jabatanActive ? 'true' : 'false' }}
+        }"
       >
         <img src="{{ asset('img/icon/iconJabatan.png') }}" alt="Icon Jabatan" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen" x-cloak>Data Jabatan</span>
+        <span class="text-sm" x-show="isOpen" x-cloak>Data Jabatan</span>
         <span 
           x-show="!isOpen && isDesktop" 
           x-cloak
@@ -305,13 +393,20 @@
         </span>
       </a>
 
+      <!-- Data Kategori Barang -->
+      @php $kategoriActive = request()->routeIs('master.data-kategori-barang.*'); @endphp
       <a 
         href="{{ route('master.data-kategori-barang.index') ?? '#' }}" 
-        class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
-        :class="{ 'justify-center': !isOpen && isDesktop }"
+        @click="saveScrollPosition()"
+        class="flex items-center gap-3 px-3 py-2 rounded relative group transition-colors"
+        :class="{
+          'justify-center': !isOpen && isDesktop,
+          'bg-blue-50 text-blue-700': {{ $kategoriActive ? 'true' : 'false' }},
+          'hover:bg-blue-50 text-gray-700': {{ !$kategoriActive ? 'true' : 'false' }}
+        }"
       >
         <img src="{{ asset('img/icon/iconKategoriBarang.png') }}" alt="Icon Kategori Barang" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen" x-cloak>Data Kategori Barang</span>
+        <span class="text-sm" x-show="isOpen" x-cloak>Data Kategori Barang</span>
         <span 
           x-show="!isOpen && isDesktop" 
           x-cloak
@@ -329,13 +424,20 @@
         </span>
       </a>
 
+      <!-- Data Pendidikan -->
+      @php $pendidikanActive = request()->routeIs('master.data-pendidikan.*'); @endphp
       <a 
         href="{{ route('master.data-pendidikan.index') ?? '#' }}" 
-        class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
-        :class="{ 'justify-center': !isOpen && isDesktop }"
+        @click="saveScrollPosition()"
+        class="flex items-center gap-3 px-3 py-2 rounded-lg relative group transition-colors"
+        :class="{
+          'justify-center': !isOpen && isDesktop,
+          'bg-blue-50 text-blue-700': {{ $pendidikanActive ? 'true' : 'false' }},
+          'hover:bg-blue-50 text-gray-700': {{ !$pendidikanActive ? 'true' : 'false' }}
+        }"
       >
         <img src="{{ asset('img/icon/iconPendidikan.png') }}" alt="Icon Pendidikan" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen" x-cloak>Data Pendidikan</span>
+        <span class="text-sm" x-show="isOpen" x-cloak>Data Pendidikan</span>
         <span 
           x-show="!isOpen && isDesktop" 
           x-cloak
@@ -353,13 +455,20 @@
         </span>
       </a>
 
+      <!-- Data Negara -->
+      @php $negaraActive = request()->routeIs('master.data-negara.*'); @endphp
       <a 
         href="{{ route('master.data-negara.index') ?? '#' }}" 
-        class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
-        :class="{ 'justify-center': !isOpen && isDesktop }"
+        @click="saveScrollPosition()"
+        class="flex items-center gap-3 px-3 py-2 rounded-lg relative group transition-colors"
+        :class="{
+          'justify-center': !isOpen && isDesktop,
+          'bg-blue-50 text-blue-700': {{ $negaraActive ? 'true' : 'false' }},
+          'hover:bg-blue-50 text-gray-700': {{ !$negaraActive ? 'true' : 'false' }}
+        }"
       >
         <img src="{{ asset('img/icon/iconNegara.png') }}" alt="Icon Negara" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen" x-cloak>Data Negara</span>
+        <span class="text-sm" x-show="isOpen" x-cloak>Data Negara</span>
         <span 
           x-show="!isOpen && isDesktop" 
           x-cloak
@@ -377,13 +486,20 @@
         </span>
       </a>
 
+      <!-- Data Provinsi -->
+      @php $provinsiActive = request()->routeIs('master.data-provinsi.*'); @endphp
       <a 
         href="{{ route('master.data-provinsi.index') ?? '#' }}" 
-        class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
-        :class="{ 'justify-center': !isOpen && isDesktop }"
+        @click="saveScrollPosition()"
+        class="flex items-center gap-3 px-3 py-2 rounded-lg relative group transition-colors"
+        :class="{
+          'justify-center': !isOpen && isDesktop,
+          'bg-blue-50 text-blue-700': {{ $provinsiActive ? 'true' : 'false' }},
+          'hover:bg-blue-50 text-gray-700': {{ !$provinsiActive ? 'true' : 'false' }}
+        }"
       >
         <img src="{{ asset('img/icon/iconProvinsi.png') }}" alt="Icon Provinsi" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen" x-cloak>Data Provinsi</span>
+        <span class="text-sm" x-show="isOpen" x-cloak>Data Provinsi</span>
         <span 
           x-show="!isOpen && isDesktop" 
           x-cloak
@@ -401,13 +517,20 @@
         </span>
       </a>
 
+      <!-- Data Kota -->
+      @php $kotaActive = request()->routeIs('master.data-kota.*'); @endphp
       <a 
         href="{{ route('master.data-kota.index') ?? '#' }}" 
-        class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
-        :class="{ 'justify-center': !isOpen && isDesktop }"
+        @click="saveScrollPosition()"
+        class="flex items-center gap-3 px-3 py-2 rounded-lg relative group transition-colors"
+        :class="{
+          'justify-center': !isOpen && isDesktop,
+          'bg-blue-50 text-blue-700': {{ $kotaActive ? 'true' : 'false' }},
+          'hover:bg-blue-50 text-gray-700': {{ !$kotaActive ? 'true' : 'false' }}
+        }"
       >
         <img src="{{ asset('img/icon/iconKota.png') }}" alt="Icon Kota" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen" x-cloak>Data Kota</span>
+        <span class="text-sm" x-show="isOpen" x-cloak>Data Kota</span>
         <span 
           x-show="!isOpen && isDesktop" 
           x-cloak
@@ -425,13 +548,20 @@
         </span>
       </a>
 
+      <!-- Data Bahasa -->
+      @php $bahasaActive = request()->routeIs('master.data-bahasa.*'); @endphp
       <a 
         href="{{ route('master.data-bahasa.index') ?? '#' }}" 
-        class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
-        :class="{ 'justify-center': !isOpen && isDesktop }"
+        @click="saveScrollPosition()"
+        class="flex items-center gap-3 px-3 py-2 rounded-lg relative group transition-colors"
+        :class="{
+          'justify-center': !isOpen && isDesktop,
+          'bg-blue-50 text-blue-700': {{ $bahasaActive ? 'true' : 'false' }},
+          'hover:bg-blue-50 text-gray-700': {{ !$bahasaActive ? 'true' : 'false' }}
+        }"
       >
         <img src="{{ asset('img/icon/iconBahasa.png') }}" alt="Icon Bahasa" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen" x-cloak>Data Bahasa</span>
+        <span class="text-sm" x-show="isOpen" x-cloak>Data Bahasa</span>
         <span 
           x-show="!isOpen && isDesktop" 
           x-cloak
@@ -449,13 +579,20 @@
         </span>
       </a>
 
+      <!-- Data Agen Ekspedisi -->
+      @php $ekspedisiActive = request()->routeIs('master.data-agen-ekspedisi.*'); @endphp
       <a 
         href="{{ route('master.data-agen-ekspedisi.index') ?? '#' }}" 
-        class="flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-50 relative group"
-        :class="{ 'justify-center': !isOpen && isDesktop }"
+        @click="saveScrollPosition()"
+        class="flex items-center gap-3 px-3 py-2 rounded-lg relative group transition-colors"
+        :class="{
+          'justify-center': !isOpen && isDesktop,
+          'bg-blue-50 text-blue-700': {{ $ekspedisiActive ? 'true' : 'false' }},
+          'hover:bg-blue-50 text-gray-700': {{ !$ekspedisiActive ? 'true' : 'false' }}
+        }"
       >
         <img src="{{ asset('img/icon/iconAgenEkspedisi.png') }}" alt="Icon Agen Ekspedisi" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-        <span class="text-sm text-gray-700" x-show="isOpen" x-cloak>Data Agen Ekspedisi</span>
+        <span class="text-sm" x-show="isOpen" x-cloak>Data Agen Ekspedisi</span>
         <span 
           x-show="!isOpen && isDesktop" 
           x-cloak
@@ -475,8 +612,8 @@
     </nav>
   </div>
 
-<!-- Sidebar Footer -->
-<div class="border-t p-2" :class="{ 'px-2 ml-4': !isOpen }" x-show="isOpen || isDesktop">
+  <!-- Sidebar Footer -->
+  <div class="border-t p-2" :class="{ 'px-2 ml-4': !isOpen }" x-show="isOpen || isDesktop">
     @php
         $user = Auth::user();
         $foto = $user && $user->foto_user ? asset('storage/' . $user->foto_user) : asset('img/icon/iconProfil.png');
@@ -491,7 +628,7 @@
                 <div class="truncate text-xs text-gray-500">{{ $user && $user->role ? ucfirst($user->role->nama_role) : 'Role Tidak Dikenal' }}</div>
             </div>
             <button 
-                @click="open = !open; console.log('Arrow button clicked, dropdown open:', open)"
+                @click="open = !open"
                 class="flex-shrink-0 focus:outline-none"
                 x-tooltip="!isOpen && isDesktop ? '{{ $user ? $user->username : 'Guest' }}' : ''"
             >
@@ -552,5 +689,5 @@
             </form>
         </div>
     </div>
-</div>
+  </div>
 </aside>
