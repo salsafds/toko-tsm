@@ -31,7 +31,7 @@ class PenjualanController extends Controller
                       $sub->where('nama_anggota', 'like', "%{$search}%");
                   })
                   ->orWhereHas('user', function ($sub) use ($search) {
-                      $sub->where('name', 'like', "%{$search}%");
+                      $sub->where('nama_lengkap', 'like', "%{$search}%");
                   });
             });
         }

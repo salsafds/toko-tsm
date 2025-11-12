@@ -153,4 +153,34 @@
     </div>
   </div>
 </div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const searchInput = document.querySelector('input[name="q"]');
+  const tableBody = document.querySelector('tbody');
+  const perPageSelect = document.querySelector('#per_page');
+
+  function fetchData() {
+    const query = searchInput.value;
+    const perPage = perPageSelect.value;
+
+    fetch(`{{ route('admin.penjualan.index') }}?q=${encodeURIComponent(query)}&per_page=${perPage}`, {
+      headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(response => response.text())
+    .then(html => {
+      const parser = new DOMParser();
+      const newDoc = parser.parseFromString(html, 'text/html');
+      const newTbody = newDoc.querySelector('tbody');
+      if (newTbody) {
+        tableBody.innerHTML = newTbody.innerHTML;
+      }
+    })
+    .catch(error => console.error('Error:', error));
+  }
+
+  if (searchInput) searchInput.addEventListener('keyup', fetchData);
+});
+</script>
 @endsection
