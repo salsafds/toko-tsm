@@ -274,7 +274,10 @@
 
   {{-- Tombol --}}
   <div class="flex items-center gap-3">
-    <button id="submitButton" type="submit" class="inline-flex items-center px-4 py-2 bg-blue-700 text-white text-sm rounded-md hover:bg-blue-800">
+   <button id="submitButton" type="submit" 
+        class="inline-flex items-center px-4 py-2 bg-blue-700 text-white text-sm rounded-md hover:bg-blue-800 
+               {{ isset($penjualan) ? 'opacity-50 cursor-not-allowed' : '' }}"
+        {{ isset($penjualan) ? 'disabled' : '' }}>
       @if(isset($penjualan)) Update @else Simpan @endif
     </button>
     <a href="{{ route('admin.penjualan.index') }}" class="inline-flex items-center px-4 py-2 border rounded-md text-sm text-gray-700 hover:bg-gray-50">Batal</a>
@@ -295,7 +298,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const totalBayarDisplay = document.getElementById('totalBayarDisplay');
   const kembalianDisplay = document.getElementById('kembalianDisplay');
 
-  // Pelanggan & Anggota Lock
+
   const pelangganSelect = document.getElementById('id_pelanggan');
   const anggotaSelect = document.getElementById('id_anggota');
 
@@ -326,7 +329,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   let barangIndex = {{ $isEdit ?? false ? $penjualan->detailPenjualan->count() : 1 }};
 
-  // UANG DITERIMA
   function toggleUangDiterima() {
     const isTunai = jenisPembayaranSelect.value === 'tunai';
     

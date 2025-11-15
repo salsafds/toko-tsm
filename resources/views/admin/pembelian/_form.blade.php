@@ -205,7 +205,7 @@
   {{-- Tombol Simpan / Update & Batal --}}
   <div class="flex items-center gap-3">
     <button type="submit" id="submitButton" class="inline-flex items-center px-4 py-2 bg-blue-700 text-white text-sm rounded-md hover:bg-blue-800 {{ isset($pembelian) ? 'opacity-50' : '' }}" {{ isset($pembelian) ? 'disabled' : '' }}>
-      {{ isset($pembelian) ? 'Update' : 'Simpan Pembelian' }}
+      {{ isset($pembelian) ? 'Update' : 'Simpan' }}
     </button>
     <a href="{{ route('admin.pembelian.index') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 text-sm rounded-md hover:bg-gray-50">Batal</a>
   </div>

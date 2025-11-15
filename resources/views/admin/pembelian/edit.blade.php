@@ -23,6 +23,7 @@
     ])
   </div>
 </div>
+@endsection
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -94,4 +95,3 @@ document.addEventListener('DOMContentLoaded', function () {
   checkChanges();
 });
 </script>
-@endsection
