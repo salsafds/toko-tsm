@@ -73,22 +73,26 @@
             <select name="barang[{{ $barangIndex }}][id_barang]" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200">
               <option value="">-- Pilih Barang --</option>
               @foreach($barangs as $b)
-                <option value="{{ $b->id_barang }}" data-harga="{{ $b->retail }}" {{ $detail->id_barang == $b->id_barang ? 'selected' : '' }}>
-                  {{ $b->nama_barang }}
+                <option value="{{ $b->id_barang }}" data-harga="{{ $b->retail }}" data-stok="{{ $b->stok }}" {{ $detail->id_barang == $b->id_barang ? 'selected' : '' }}>
+                  {{ $b->nama_barang }} (Stok: {{ $b->stok }})
                 </option>
               @endforeach
             </select>
           </div>
-          <div class="col-span-4">
+          <div class="col-span-2">
+            <input type="text" readonly class="harga-retail w-full rounded-md border bg-gray-100 px-3 py-2 text-sm text-gray-700 cursor-not-allowed text-right" value="Rp {{ number_format($detail->barang->retail, 0, ',', '.') }}">
+          </div>
+          <div class="col-span-2">
             <input type="number" name="barang[{{ $barangIndex }}][kuantitas]" value="{{ old('barang.' . $barangIndex . '.kuantitas', $detail->kuantitas) }}" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200" min="1" placeholder="Qty">
           </div>
-          <div class="col-span-2 flex justify-center">
+          <div class="col-span-1 flex justify-center">
             @if($loop->last)
               <button type="button" class="add-barang-btn bg-blue-500 hover:bg-blue-600 text-white w-8 h-8 rounded-full text-xs font-bold flex items-center justify-center shadow-sm">+</button>
             @else
               <button type="button" class="remove-barang-btn bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full text-xs font-bold flex items-center justify-center shadow-sm">-</button>
             @endif
           </div>
+          <div class="col-span-1"></div>
         </div>
         @php $barangIndex++ @endphp
       @endforeach
@@ -98,16 +102,22 @@
           <select name="barang[0][id_barang]" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200">
             <option value="">-- Pilih Barang --</option>
             @foreach($barangs as $b)
-              <option value="{{ $b->id_barang }}" data-harga="{{ $b->retail }}">{{ $b->nama_barang }}</option>
+              <option value="{{ $b->id_barang }}" data-harga="{{ $b->retail }}" data-stok="{{ $b->stok }}">
+                {{ $b->nama_barang }} (Stok: {{ $b->stok }})
+              </option>
             @endforeach
           </select>
         </div>
-        <div class="col-span-4">
+        <div class="col-span-2">
+          <input type="text" readonly class="harga-retail w-full rounded-md border bg-gray-100 px-3 py-2 text-sm text-gray-700 cursor-not-allowed text-right" value="">
+        </div>
+        <div class="col-span-2">
           <input type="number" name="barang[0][kuantitas]" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200" min="1" placeholder="Qty">
         </div>
-        <div class="col-span-2 flex justify-center">
+        <div class="col-span-1 flex justify-center">
           <button type="button" class="add-barang-btn bg-blue-500 hover:bg-blue-600 text-white w-8 h-8 rounded-full text-xs font-bold flex items-center justify-center shadow-sm">+</button>
         </div>
+        <div class="col-span-1"></div>
       </div>
     @endif
 
@@ -195,13 +205,11 @@
     <h3 class="text-lg font-semibold text-gray-800 mb-4">Kasir</h3>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <!-- Sub Total -->
       <div>
         <label class="block text-sm font-medium text-gray-700">Sub Total</label>
         <input type="text" id="subTotalDisplay" readonly class="w-full rounded-md border bg-gray-100 px-3 py-2 text-sm text-gray-700 cursor-not-allowed" value="Rp 0">
       </div>
 
-      <!-- Diskon (%) -->
       <div>
         <label for="diskon_penjualan" class="block text-sm font-medium text-gray-700">Diskon (%)</label>
         <input type="number" name="diskon_penjualan" id="diskon_penjualan" 
@@ -210,23 +218,21 @@
         <p id="diskon_penjualan_error" class="text-sm text-red-600 mt-1 hidden"></p>
       </div>
 
-      <!-- Total Bayar -->
       <div>
         <label class="block text-sm font-medium text-gray-700">Total Bayar</label>
         <input type="text" id="totalBayarDisplay" readonly class="w-full rounded-md border bg-gray-100 px-3 py-2 text-sm font-bold text-blue-700 cursor-not-allowed" value="Rp 0">
       </div>
 
-      <!-- Jenis Pembayaran -->
       <div>
         <label for="jenis_pembayaran" class="block text-sm font-medium text-gray-700">Jenis Pembayaran <span class="text-rose-600">*</span></label>
         <select name="jenis_pembayaran" id="jenis_pembayaran" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200">
+          <option value="">-- Pilih Pembayaran --</option>
           <option value="tunai" {{ old('jenis_pembayaran', $penjualan->jenis_pembayaran ?? '') == 'tunai' ? 'selected' : '' }}>Tunai</option>
           <option value="kredit" {{ old('jenis_pembayaran', $penjualan->jenis_pembayaran ?? '') == 'kredit' ? 'selected' : '' }}>Kredit</option>
         </select>
         <p id="jenis_pembayaran_error" class="text-sm text-red-600 mt-1 hidden"></p>
       </div>
 
-      <!-- Uang Diterima -->
       <div>
         <label for="uang_diterima" class="block text-sm font-medium text-gray-700">
           Jumlah Uang Dibayarkan 
@@ -245,7 +251,6 @@
         <p id="uang_diterima_error" class="text-sm text-red-600 mt-1 hidden"></p>
       </div>
 
-      <!-- Uang Kembalian -->
       <div>
         <label class="block text-sm font-medium text-gray-700">Uang Kembalian</label>
         <input type="text" id="kembalianDisplay" readonly 
@@ -290,7 +295,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const totalBayarDisplay = document.getElementById('totalBayarDisplay');
   const kembalianDisplay = document.getElementById('kembalianDisplay');
 
-  // === Pelanggan & Anggota Lock ===
+  // Pelanggan & Anggota Lock
   const pelangganSelect = document.getElementById('id_pelanggan');
   const anggotaSelect = document.getElementById('id_anggota');
 
@@ -321,7 +326,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   let barangIndex = {{ $isEdit ?? false ? $penjualan->detailPenjualan->count() : 1 }};
 
-  // --- UANG DITERIMA ---
+  // UANG DITERIMA
   function toggleUangDiterima() {
     const isTunai = jenisPembayaranSelect.value === 'tunai';
     
@@ -342,7 +347,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   jenisPembayaranSelect.addEventListener('change', toggleUangDiterima);
 
-  // --- EKSPEDISI ---
+  // EKSPEDISI
   function toggleEkspedisi() {
     const isChecked = ekspedisiCheckbox.checked;
     ekspedisiForm.style.display = isChecked ? 'block' : 'none';
@@ -358,11 +363,11 @@ document.addEventListener('DOMContentLoaded', function () {
   ekspedisiCheckbox.addEventListener('change', toggleEkspedisi);
   toggleEkspedisi();
 
-  // --- BARANG DYNAMIC ---
+  // BARANG DYNAMIC
   function updateActionButtons() {
     const rows = barangContainer.querySelectorAll('.barang-row');
     rows.forEach((row, i) => {
-      const actionCell = row.querySelector('.col-span-2');
+      const actionCell = row.querySelector('.col-span-1');
       actionCell.innerHTML = '';
       if (i === rows.length - 1) {
         const btn = document.createElement('button');
@@ -385,17 +390,24 @@ document.addEventListener('DOMContentLoaded', function () {
   function addNewRow() {
     const newRow = document.createElement('div');
     newRow.className = 'grid grid-cols-12 gap-2 mb-2 barang-row items-center';
-    const options = @json($barangs).map(b => `<option value="${b.id_barang}" data-harga="${b.retail}">${b.nama_barang}</option>`).join('');
+    const options = @json($barangs).map(b => `
+      <option value="${b.id_barang}" data-harga="${b.retail}" data-stok="${b.stok}">
+        ${b.nama_barang} (Stok: ${b.stok})
+      </option>`).join('');
     newRow.innerHTML = `
       <div class="col-span-6">
         <select name="barang[${barangIndex}][id_barang]" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200">
           <option value="">-- Pilih Barang --</option>${options}
         </select>
       </div>
-      <div class="col-span-4">
+      <div class="col-span-2">
+        <input type="text" readonly class="harga-retail w-full rounded-md border bg-gray-100 px-3 py-2 text-sm text-gray-700 cursor-not-allowed text-right" value="">
+      </div>
+      <div class="col-span-2">
         <input type="number" name="barang[${barangIndex}][kuantitas]" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200" min="1" placeholder="Qty">
       </div>
-      <div class="col-span-2 flex justify-center"></div>
+      <div class="col-span-1 flex justify-center"></div>
+      <div class="col-span-1"></div>
     `;
     barangContainer.appendChild(newRow);
     barangIndex++;
@@ -407,27 +419,59 @@ document.addEventListener('DOMContentLoaded', function () {
     const rows = barangContainer.querySelectorAll('.barang-row');
     rows.forEach((row, idx) => {
       row.querySelector('select').name = `barang[${idx}][id_barang]`;
-      row.querySelector('input').name = `barang[${idx}][kuantitas]`;
+      row.querySelector('input[type="number"]').name = `barang[${idx}][kuantitas]`;
     });
     barangIndex = rows.length;
   }
 
   function attachBarangEvents(row) {
     const select = row.querySelector('select');
-    const input = row.querySelector('input');
-    select.addEventListener('change', hitungTotal);
-    input.addEventListener('input', hitungTotal);
+    const input = row.querySelector('input[type="number"]');
+    const hargaInput = row.querySelector('.harga-retail');
+
+    select.addEventListener('change', function () {
+      const option = this.selectedOptions[0];
+      const stok = option ? parseInt(option.dataset.stok) || 0 : 0;
+      const harga = option ? parseFloat(option.dataset.harga) || 0 : 0;
+
+      input.max = stok;
+      input.dataset.maxStok = stok;
+      hargaInput.value = harga > 0 ? 'Rp ' + formatRupiah(harga) : '';
+
+      if (parseInt(input.value) > stok) {
+        input.value = stok > 0 ? stok : '';
+      }
+      hitungTotal();
+    });
+
+    input.addEventListener('input', function () {
+      const maxStok = parseInt(this.dataset.maxStok) || 0;
+      const val = parseInt(this.value) || 0;
+      if (val > maxStok && maxStok > 0) this.value = maxStok;
+      if (val < 1 && this.value !== '') this.value = 1;
+      hitungTotal();
+    });
+
+    // Init saat load
+    if (select.value) {
+      const option = select.selectedOptions[0];
+      const stok = option ? parseInt(option.dataset.stok) || 0 : 0;
+      const harga = option ? parseFloat(option.dataset.harga) || 0 : 0;
+      input.max = stok;
+      input.dataset.maxStok = stok;
+      hargaInput.value = harga > 0 ? 'Rp ' + formatRupiah(harga) : '';
+    }
   }
 
   document.querySelectorAll('.barang-row').forEach(attachBarangEvents);
   updateActionButtons();
 
-  // --- HITUNG TOTAL (SUB TOTAL + BIAYA PENGIRIMAN) ---
+  // HITUNG TOTAL
   function hitungTotal() {
     let subTotalBarang = 0;
     document.querySelectorAll('.barang-row').forEach(row => {
       const select = row.querySelector('select');
-      const qty = parseFloat(row.querySelector('input').value) || 0;
+      const qty = parseFloat(row.querySelector('input[type="number"]').value) || 0;
       const harga = parseFloat(select.selectedOptions[0]?.dataset.harga) || 0;
       subTotalBarang += harga * qty;
     });
@@ -467,11 +511,10 @@ document.addEventListener('DOMContentLoaded', function () {
   uangDiterimaInput.addEventListener('input', hitungTotal);
   biayaPengirimanInput.addEventListener('input', hitungTotal);
 
-  // Inisialisasi
   toggleUangDiterima();
   hitungTotal();
 
-  // --- VALIDASI & SUBMIT ---
+  // VALIDASI SUBMIT
   document.getElementById('penjualanForm').addEventListener('submit', function (e) {
     e.preventDefault();
     let error = false;
@@ -494,12 +537,27 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const rows = document.querySelectorAll('.barang-row');
     if (rows.length === 0) { showError('#barang_error', 'Minimal satu barang.'); error = true; }
+
     rows.forEach(r => {
-      const s = r.querySelector('select').value;
-      const i = r.querySelector('input').value;
-      if (!s) r.querySelector('select').classList.add('border-red-500', 'bg-red-50');
-      if (!i || i < 1) r.querySelector('input').classList.add('border-red-500', 'bg-red-50');
-      if (!s || !i) error = true;
+      const select = r.querySelector('select');
+      const input = r.querySelector('input[type="number"]');
+      const qty = parseInt(input.value) || 0;
+      const stok = select.selectedOptions[0] ? parseInt(select.selectedOptions[0].dataset.stok) || 0 : 0;
+      const namaBarang = select.selectedOptions[0]?.text || 'barang';
+
+      if (!select.value) {
+        select.classList.add('border-red-500', 'bg-red-50');
+        error = true;
+      }
+      if (!input.value || qty < 1) {
+        input.classList.add('border-red-500', 'bg-red-50');
+        error = true;
+      }
+      if (qty > stok && stok > 0) {
+        showError('#barang_error', `Kuantitas ${namaBarang} melebihi stok (${stok})`, null);
+        input.classList.add('border-red-500', 'bg-red-50');
+        error = true;
+      }
     });
 
     if (ekspedisiCheckbox.checked) {
