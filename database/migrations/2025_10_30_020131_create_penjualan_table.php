@@ -12,8 +12,8 @@ return new class extends Migration
             $table->string('id_penjualan', 11)->primary();
             $table->string('id_pelanggan', 11)->nullable();
             $table->string('id_anggota', 11)->nullable();
-            $table->string('id_user', 11);
-            $table->enum('sumber_transaksi', ['toko', 'marketplace'])->default('toko');;
+            $table->string('id_user', 11)->nullable();
+            $table->string('sumber_transaksi', 11)->nullable();;
             $table->timestamp('tanggal_order')->useCurrent();
             $table->timestamp('tanggal_selesai')->nullable();
             $table->integer('diskon_penjualan')->default(0);
