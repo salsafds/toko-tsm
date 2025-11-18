@@ -62,6 +62,7 @@
           <th class="px-2 sm:px-4 py-2 sm:py-3 border-r">Jenis Pembeli</th>
           <th class="px-2 sm:px-4 py-2 sm:py-3 border-r">Total Harga</th>
           <th class="px-2 sm:px-4 py-2 sm:py-3 border-r">Jenis Bayar</th>
+          <th class="px-2 sm:px-4 py-2 sm:py-3 border-r">Sumber</th>
           <th class="px-2 sm:px-4 py-2 sm:py-3 border-r">Tanggal Order</th>
           <th class="px-2 sm:px-4 py-2 sm:py-3 border-r">Tanggal Selesai</th>
           <th class="px-2 sm:px-4 py-2 sm:py-3">Aksi</th>
@@ -81,6 +82,17 @@
             <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r text-center">{{ $jenisPembeli }}</td>
             <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r text-right">Rp {{ number_format($item->total_harga_penjualan, 0, ',', '.') }}</td>
             <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r text-center">{{ ucfirst($item->jenis_pembayaran) }}</td>
+            <td class="px-2 sm:px-4 py-2 text-center border-r">
+              @if($item->sumber_transaksi == 'toko')
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      Toko
+                  </span>
+              @else
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                      Marketplace
+                  </span>
+              @endif
+            </td>
             <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r text-center">{{ $item->tanggal_order->format('d-m-Y H:i') }}</td>
             <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r text-center">
               @if($isSelesai)
@@ -130,8 +142,8 @@
           </tr>
         @empty
           <tr>
-            <td colspan="9" class="px-4 py-6 sm:py-8 text-center text-xs sm:text-sm text-gray-500">
-              Tidak ada data penjualan.
+            <td colspan="10" class="px-4 py-6 sm:py-8 text-center text-xs sm:text-sm text-gray-500">
+                Tidak ada data penjualan.
             </td>
           </tr>
         @endforelse

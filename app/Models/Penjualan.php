@@ -19,6 +19,7 @@ class Penjualan extends Model
         'id_pelanggan',
         'id_anggota',
         'id_user', 
+        'sumber_transaksi',
         'tanggal_order',
         'tanggal_selesai',
         'diskon_penjualan',

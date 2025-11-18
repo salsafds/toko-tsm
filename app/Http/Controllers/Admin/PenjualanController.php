@@ -125,6 +125,7 @@ class PenjualanController extends Controller
                 'id_pelanggan' => $request->id_pelanggan,
                 'id_anggota' => $request->id_anggota,
                 'id_user' => Auth::id(),
+                'sumber_transaksi' => 'toko',
                 'diskon_penjualan' => $diskon,
                 'total_harga_penjualan' => $totalHarga,
                 'jenis_pembayaran' => $request->jenis_pembayaran,
