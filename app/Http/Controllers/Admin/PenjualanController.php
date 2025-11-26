@@ -288,19 +288,17 @@ class PenjualanController extends Controller
     public function selesai($id)
 {
     $penjualan = Penjualan::with('detailPenjualan.barang')->findOrFail($id);
-    
+
     if ($penjualan->tanggal_selesai) {
-        return back()->with('success', 'Transaksi sudah selesai sebelumnya.');
+        return redirect()->route('admin.penjualan.index')
+            ->with('info', 'Transaksi sudah selesai sebelumnya.');
     }
 
     DB::transaction(function () use ($penjualan) {
         foreach ($penjualan->detailPenjualan as $detail) {
-            $barang = $detail->barang;
-            
-            app(BarangController::class)->updateRetail(
-                $barang->id_barang,
-                -$detail->kuantitas,
-                $barang->harga_beli  
+            app(BarangController::class)->kurangiStokDariPenjualan(
+                $detail->id_barang,
+                $detail->kuantitas
             );
         }
 
@@ -308,7 +306,7 @@ class PenjualanController extends Controller
     });
 
     return redirect()->route('admin.penjualan.index')
-        ->with('success', 'Penjualan selesai! Stok dan harga retail telah diperbarui.');
+        ->with('success', 'Penjualan selesai! Stok telah dikurangi.');
 }
     public function print($id)
     {

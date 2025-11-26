@@ -19,8 +19,7 @@ class PembelianController extends Controller
     {
         $query = Pembelian::with(['supplier', 'user', 'detailPembelian'])
             ->where('id_user', Auth::user()->id_user)
-            ->orderBy('tanggal_pembelian', 'desc');
-
+            ->orderBy('id_pembelian', 'desc');  
         if ($search = $request->query('q')) {
             $query->where(function ($q) use ($search) {
                 $q->where('id_pembelian', 'like', "%{$search}%")
@@ -32,10 +31,8 @@ class PembelianController extends Controller
                   });
             });
         }
-
         $perPage = $request->query('per_page', 10);
         $pembelian = $query->paginate($perPage);
-
         return view('admin.pembelian.index', compact('pembelian'));
     }
 
@@ -57,15 +54,16 @@ class PembelianController extends Controller
             'id_pembelian' => 'required|string|unique:pembelian,id_pembelian',
             'id_supplier' => 'required|exists:supplier,id_supplier',
             'jenis_pembayaran' => 'required|in:Cash,Kredit',
-            'diskon' => 'required|numeric|min:0|max:100',
-            'ppn' => 'required|numeric|min:0|max:100',
-            'biaya_pengiriman' => 'required|numeric|min:0',
+            'diskon' => 'nullable|numeric|min:0|max:100',  // Diubah: nullable
+            'ppn' => 'nullable|numeric|min:0|max:100',  // Diubah: nullable
+            'biaya_pengiriman' => 'nullable|numeric|min:0',  // Diubah: nullable
             'catatan' => 'nullable|string',
             'details' => 'required|array|min:1',
             'details.*.id_barang' => 'required|exists:barang,id_barang',
             'details.*.harga_beli' => 'required|numeric|min:0',
             'details.*.kuantitas' => 'required|integer|min:1',
         ]);
+
 
         $totalSubTotal = 0;
         foreach ($request->details as $detail) {
@@ -133,9 +131,9 @@ class PembelianController extends Controller
         $request->validate([
             'id_supplier' => 'required|exists:supplier,id_supplier',
             'jenis_pembayaran' => 'required|in:Cash,Kredit',
-            'diskon' => 'required|numeric|min:0|max:100',
-            'ppn' => 'required|numeric|min:0|max:100',
-            'biaya_pengiriman' => 'required|numeric|min:0',
+            'diskon' => 'nullable|numeric|min:0|max:100',  
+            'ppn' => 'nullable|numeric|min:0|max:100', 
+            'biaya_pengiriman' => 'nullable|numeric|min:0',  // Diubah: nullable
             'catatan' => 'nullable|string',
             'details' => 'required|array|min:1',
             'details.*.id_barang' => 'required|exists:barang,id_barang',
@@ -219,39 +217,45 @@ class PembelianController extends Controller
     }
 
     public function selesai($id_pembelian)
-    {
+{
     $pembelian = Pembelian::with('detailPembelian')->findOrFail($id_pembelian);
 
     if ($pembelian->tanggal_terima) {
-        return redirect()->route('admin.pembelian.index')->with('error', 'Pembelian sudah selesai.');
+        return redirect()->route('admin.pembelian.index')
+            ->with('error', 'Pembelian sudah selesai.');
     }
+
+    $totalSebelumDiskon = $pembelian->detailPembelian->sum('sub_total');
+    $nilaiDiskon = $totalSebelumDiskon * ($pembelian->diskon / 100);
+    $totalSetelahDiskon = $totalSebelumDiskon - $nilaiDiskon;
+    $biayaTambahan = $pembelian->biaya_pengiriman ?? 0;
+    $totalNilaiPersediaan = $totalSetelahDiskon + $biayaTambahan;
+
 
     $pembelian->update(['tanggal_terima' => now()]);
 
-        $totalSubTotal = 0;
-        foreach ($pembelian->detailPembelian as $detail) {
-            $totalSubTotal += $detail->harga_beli * $detail->kuantitas;
-        }
-        $nilaiDiskon = ($pembelian->diskon / 100) * $totalSubTotal;
-        $setelahDiskon = $totalSubTotal - $nilaiDiskon;
-        $nilaiPpn = ($pembelian->ppn / 100) * $setelahDiskon;
-        $totalSetelahPpn = $setelahDiskon + $nilaiPpn;
-        $totalBiayaPengiriman = $pembelian->biaya_pengiriman;
-
     foreach ($pembelian->detailPembelian as $detail) {
+        $proporsi = $totalSebelumDiskon > 0 ? $detail->sub_total / $totalSebelumDiskon : 0;
 
-        $hargaBeliSetelahDiskon = $detail->harga_beli * (1 - ($pembelian->diskon / 100));
-        $hargaBeliSetelahPpn = $hargaBeliSetelahDiskon * (1 + ($pembelian->ppn / 100));
+        $diskonDialokasikan = $nilaiDiskon * $proporsi;
+        $biayaTambahanDialokasikan = $biayaTambahan * $proporsi;
 
-        $proporsiKuantitas = $detail->kuantitas / array_sum(array_column($pembelian->detailPembelian->toArray(), 'kuantitas'));
-        $biayaPengirimanPerUnit = $totalBiayaPengiriman * $proporsiKuantitas / $detail->kuantitas;
-        $hargaBeliFinal = $hargaBeliSetelahPpn + $biayaPengirimanPerUnit;
 
-        app(BarangController::class)->updateRetail($detail->id_barang, $detail->kuantitas, $hargaBeliFinal);
+        $hppPerUnit = $detail->kuantitas > 0
+            ? ($detail->sub_total - $diskonDialokasikan + $biayaTambahanDialokasikan) / $detail->kuantitas
+            : 0;
+
+        app(BarangController::class)->tambahStokDariPembelian(
+            $detail->id_barang,
+            $detail->kuantitas,
+            $hppPerUnit
+        );
     }
 
-    return redirect()->route('admin.pembelian.index')->with('success', 'Pembelian ditandai selesai dan stok diperbarui.');
-    }   
+    return redirect()->route('admin.pembelian.index')
+        ->with('success', 'Pembelian selesai! Stok & HPP diperbarui');
+}
+ 
     private function generateNextId()
     {
         $maxNum = Pembelian::selectRaw('MAX(CAST(SUBSTRING(id_pembelian, 4) AS UNSIGNED)) as max_num')->value('max_num') ?? 0;

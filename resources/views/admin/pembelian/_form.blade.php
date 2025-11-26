@@ -6,7 +6,7 @@
   @endif
   {{-- ID Pembelian --}}
   <div>
-    <label class="block text-sm font-medium text-gray-700">ID Pembelian</label>
+    <label class="block text-sm font-medium text-gray-700 mb-1">ID Pembelian</label>
     <input type="text" name="id_pembelian"
            value="{{ old('id_pembelian', isset($pembelian) ? $pembelian->id_pembelian : ($nextId ?? '')) }}"
            readonly class="w-full rounded-md border bg-gray-100 px-3 py-2 text-sm text-gray-700 cursor-not-allowed">
@@ -14,7 +14,7 @@
   </div>
   {{-- Supplier --}}
   <div>
-    <label class="block text-sm font-medium text-gray-700">Supplier <span class="text-rose-600">*</span></label>
+    <label class="block text-sm font-medium text-gray-700 mb-1">Supplier <span class="text-rose-600">*</span></label>
     <select id="id_supplier" name="id_supplier" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200 focus:border-blue-500">
       <option value="">-- Pilih Supplier --</option>
       @foreach($suppliers as $s)
@@ -142,30 +142,27 @@
         </div>
         <!-- Diskon (%) -->
         <div>
-            <label for="diskon" class="block text-sm font-medium text-gray-700">Diskon (%) <span
-                    class="text-rose-600">*</span></label>
-            <input type="number" name="diskon" id="diskon"
-                   value="{{ old('diskon', $pembelian->diskon ?? 0) }}"
-                   class="w-full rounded-md border px-3 py-2 text-sm border-gray-200" min="0" max="100" step="0.01">
-            <p id="diskon_error" class="text-sm text-red-600 mt-1 hidden"></p>
-        </div>
+        <label for="diskon" class="block text-sm font-medium text-gray-700">Diskon (%)</label>  <!-- Diubah: Hapus * karena tidak wajib -->
+        <input type="number" name="diskon" id="diskon"
+               value="{{ old('diskon', $pembelian->diskon ?? 0) }}"
+               class="w-full rounded-md border px-3 py-2 text-sm border-gray-200" min="0" max="100" step="0.01">
+        <p id="diskon_error" class="text-sm text-red-600 mt-1 hidden"></p>
+    </div>
         <!-- PPN (%) -->
         <div>
-            <label for="ppn" class="block text-sm font-medium text-gray-700">PPN (%) <span
-                    class="text-rose-600">*</span></label>
-            <input type="number" name="ppn" id="ppn"
-                   value="{{ old('ppn', $pembelian->ppn ?? 0) }}"
-                   class="w-full rounded-md border px-3 py-2 text-sm border-gray-200" min="0" max="100" step="0.01">
-            <p id="ppn_error" class="text-sm text-red-600 mt-1 hidden"></p>
+          <label for="ppn" class="block text-sm font-medium text-gray-700">PPN (%)</label>  <!-- Diubah: Hapus * karena tidak wajib -->
+          <input type="number" name="ppn" id="ppn"
+                value="{{ old('ppn', $pembelian->ppn ?? 0) }}"
+                class="w-full rounded-md border px-3 py-2 text-sm border-gray-200" min="0" max="100" step="0.01">
+          <p id="ppn_error" class="text-sm text-red-600 mt-1 hidden"></p>
         </div>
         <!-- Biaya Pengiriman -->
         <div>
-            <label for="biaya_pengiriman" class="block text-sm font-medium text-gray-700">Biaya Pengiriman <span
-                    class="text-rose-600">*</span></label>
+            <label for="biaya_pengiriman" class="block text-sm font-medium text-gray-700">Biaya Pengiriman</label>  <!-- Diubah: Hapus * karena tidak wajib -->
             <input type="number" name="biaya_pengiriman" id="biaya_pengiriman"
-                   value="{{ old('biaya_pengiriman', $pembelian->biaya_pengiriman ?? 0) }}"
-                   class="w-full rounded-md border px-3 py-2 text-sm border-gray-300" step="0.01" min="0"
-                   placeholder="0">
+                  value="{{ old('biaya_pengiriman', $pembelian->biaya_pengiriman ?? 0) }}"
+                  class="w-full rounded-md border px-3 py-2 text-sm border-gray-300" step="0.01" min="0"
+                  placeholder="0">
             <p id="biaya_pengiriman_error" class="text-sm text-red-600 mt-1 hidden"></p>
         </div>
         <!-- Total Bayar -->
@@ -326,11 +323,20 @@ document.addEventListener('DOMContentLoaded', function () {
   function showRowError(row, errorKey, message) {
     const errorEl = row.querySelector(`[data-error="${errorKey}"]`);
     if (errorEl) {
-      errorEl.textContent = message;
-      errorEl.classList.remove('hidden');
+      if (errorKey.startsWith('id_barang_')) {
+        // Diubah: Untuk id_barang, hanya warnai merah tanpa tampilkan pesan
+        const input = row.querySelector(`select[name*="[id_barang]"]`);
+        if (input) {
+          input.classList.add('border-red-500', 'bg-red-50');
+        }
+      } else {
+        // Untuk harga_beli dan kuantitas, tetap tampilkan pesan
+        errorEl.textContent = message;
+        errorEl.classList.remove('hidden');
+        const input = row.querySelector(`[name*="[${errorKey.split('_')[1] || errorKey.split('_')[0]}]"]`);
+        if (input) input.classList.add('border-red-500', 'bg-red-50');
+      }
     }
-    const input = row.querySelector(`[name*="[${errorKey.split('_')[1] || errorKey.split('_')[0]}]"]`);
-    if (input) input.classList.add('border-red-500', 'bg-red-50');
   }
 
   function resetAllErrors() {
@@ -532,7 +538,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       // Supplier
       if (!document.getElementById('id_supplier')?.value) {
-        showError('id_supplier', 'Supplier wajib dipilih.');
+        document.getElementById('id_supplier').classList.add('border-red-500', 'bg-red-50');
         hasError = true;
       }
 
@@ -571,15 +577,23 @@ document.addEventListener('DOMContentLoaded', function () {
       }
 
       rows.forEach((row, i) => {
-        const idBarang = row.querySelector('select[name$="[id_barang]"]');
-        const harga = row.querySelector('input[name$="[harga_beli]"]');
-        const qty = row.querySelector('input[name$="[kuantitas]"]');
+      const idBarang = row.querySelector('select[name$="[id_barang]"]');
+      const harga = row.querySelector('input[name$="[harga_beli]"]');
+      const qty = row.querySelector('input[name$="[kuantitas]"]');
 
-        if (!idBarang?.value) showRowError(row, `id_barang_${i}`, 'Pilih barang.');
-        if (!harga?.value || parseFloat(harga.value) <= 0) showRowError(row, `harga_beli_${i}`, 'Harga > 0.');
-        if (!qty?.value || parseInt(qty.value) <= 0) showRowError(row, `kuantitas_${i}`, 'Qty > 0.');
-        if (!idBarang?.value || !harga?.value || !qty?.value) hasError = true;
-      });
+      if (!idBarang?.value) {
+        idBarang.classList.add('border-red-500', 'bg-red-50');
+        hasError = true;
+      }
+      if (!harga?.value || parseFloat(harga.value) <= 0) {
+        harga.classList.add('border-red-500', 'bg-red-50');
+        hasError = true;
+      }
+      if (!qty?.value || parseInt(qty.value) <= 0) {
+        qty.classList.add('border-red-500', 'bg-red-50');
+        hasError = true;
+      }
+    });
 
       if (hasError) {
         alert('Periksa kembali isian Anda.');
