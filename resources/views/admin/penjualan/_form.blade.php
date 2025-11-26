@@ -74,7 +74,7 @@
               <option value="">-- Pilih Barang --</option>
               @foreach($barangs as $b)
                 <option value="{{ $b->id_barang }}" data-harga="{{ $b->retail }}" data-stok="{{ $b->stok }}" {{ $detail->id_barang == $b->id_barang ? 'selected' : '' }}>
-                  {{ $b->nama_barang }} (Stok: {{ $b->stok }})
+                  {{ $b->nama_barang }} (Tersedia: {{ $b->stok_tersedia ?? $b->stok }})
                 </option>
               @endforeach
             </select>
@@ -103,7 +103,7 @@
             <option value="">-- Pilih Barang --</option>
             @foreach($barangs as $b)
               <option value="{{ $b->id_barang }}" data-harga="{{ $b->retail }}" data-stok="{{ $b->stok }}">
-                {{ $b->nama_barang }} (Stok: {{ $b->stok }})
+                {{ $b->nama_barang }} (Tersedia: {{ $b->stok_tersedia ?? $b->stok }})
               </option>
             @endforeach
           </select>
@@ -278,7 +278,7 @@
         class="inline-flex items-center px-4 py-2 bg-blue-700 text-white text-sm rounded-md hover:bg-blue-800 
                {{ isset($penjualan) ? 'opacity-50 cursor-not-allowed' : '' }}"
         {{ isset($penjualan) ? 'disabled' : '' }}>
-      @if(isset($penjualan)) Update @else Simpan @endif
+    @if(isset($penjualan)) Update @else Simpan @endif
     </button>
     <a href="{{ route('admin.penjualan.index') }}" class="inline-flex items-center px-4 py-2 border rounded-md text-sm text-gray-700 hover:bg-gray-50">Batal</a>
   </div>
@@ -286,52 +286,164 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-  const ekspedisiCheckbox = document.getElementById('ekspedisi');
-  const ekspedisiForm = document.getElementById('ekspedisiForm');
-  const biayaPengirimanInput = document.getElementById('biaya_pengiriman');
-  const barangContainer = document.getElementById('barangContainer');
-  const diskonInput = document.getElementById('diskon_penjualan');
-  const jenisPembayaranSelect = document.getElementById('jenis_pembayaran');
-  const uangDiterimaInput = document.getElementById('uang_diterima');
-  const wajibTunaiSpan = document.getElementById('wajib_tunai');
-  const subTotalDisplay = document.getElementById('subTotalDisplay');
-  const totalBayarDisplay = document.getElementById('totalBayarDisplay');
-  const kembalianDisplay = document.getElementById('kembalianDisplay');
+  const form= document.getElementById('penjualanForm');
+  const submitButton= document.getElementById('submitButton');
+  const barangContainer= document.getElementById('barangContainer');
+  const ekspedisiCheckbox= document.getElementById('ekspedisi');
+  const ekspedisiForm= document.getElementById('ekspedisiForm');
+  const biayaPengirimanInput= document.getElementById('biaya_pengiriman');
+  const diskonInput= document.getElementById('diskon_penjualan');
+  const jenisPembayaranSelect= document.getElementById('jenis_pembayaran');
+  const uangDiterimaInput= document.getElementById('uang_diterima');
+  const wajibTunaiSpan= document.getElementById('wajib_tunai');
+  const subTotalDisplay= document.getElementById('subTotalDisplay');
+  const totalBayarDisplay= document.getElementById('totalBayarDisplay');
+  const kembalianDisplay= document.getElementById('kembalianDisplay');
+  const pelangganSelect= document.getElementById('id_pelanggan');
+  const anggotaSelect= document.getElementById('id_anggota');
 
+  const isEditMode = {{ isset($penjualan) ? 'true' : 'false' }};
+  if (!isEditMode) {
+    submitButton.disabled = false;
+    submitButton.classList.remove('opacity-50', 'cursor-not-allowed');
+  }
 
-  const pelangganSelect = document.getElementById('id_pelanggan');
-  const anggotaSelect = document.getElementById('id_anggota');
+  let initialState = null;
+  if (isEditMode) {
+    initialState = {
+      pelanggan:        pelangganSelect?.value || '',
+      anggota:          anggotaSelect?.value || '',
+      ekspedisi:        ekspedisiCheckbox?.checked || false,
+      agen:             document.getElementById('id_agen_ekspedisi')?.value || '',
+      nama_penerima:    document.getElementById('nama_penerima')?.value || '',
+      telepon_penerima: document.getElementById('telepon_penerima')?.value || '',
+      kode_pos:         document.getElementById('kode_pos')?.value || '',
+      alamat_penerima:  document.getElementById('alamat_penerima')?.value || '',
+      nomor_resi:       document.getElementById('nomor_resi')?.value || '',
+      biaya_pengiriman: biayaPengirimanInput?.value || '',
+      diskon:           diskonInput?.value || '0',
+      jenis_pembayaran: jenisPembayaranSelect?.value || '',
+      uang_diterima:    uangDiterimaInput?.value || '0',
+      catatan:          document.getElementById('catatan')?.value || '',
+      barang:           getCurrentBarang()
+    };
+  }
+
+  function getCurrentBarang() {
+    const items = [];
+    document.querySelectorAll('.barang-row').forEach(row => {
+      const id  = row.querySelector('select[name$="[id_barang]"]')?.value || '';
+      const qty = row.querySelector('input[name$="[kuantitas]"]')?.value || '';
+      items.push({id, qty});
+    });
+    return items;
+  }
+
+  function hasChanges() {
+    if (!isEditMode) return true;
+    const current = {
+      pelanggan:        pelangganSelect?.value || '',
+      anggota:          anggotaSelect?.value || '',
+      ekspedisi:        ekspedisiCheckbox?.checked || false,
+      agen:             document.getElementById('id_agen_ekspedisi')?.value || '',
+      nama_penerima:    document.getElementById('nama_penerima')?.value || '',
+      telepon_penerima: document.getElementById('telepon_penerima')?.value || '',
+      kode_pos:         document.getElementById('kode_pos')?.value || '',
+      alamat_penerima:  document.getElementById('alamat_penerima')?.value || '',
+      nomor_resi:       document.getElementById('nomor_resi')?.value || '',
+      biaya_pengiriman: biayaPengirimanInput?.value || '',
+      diskon:           diskonInput?.value || '0',
+      jenis_pembayaran: jenisPembayaranSelect?.value || '',
+      uang_diterima:    uangDiterimaInput?.value || '0',
+      catatan:          document.getElementById('catatan')?.value || '',
+      barang:           getCurrentBarang()
+    };
+
+    const mainChanged = 
+      current.pelanggan !== initialState.pelanggan ||
+      current.anggota   !== initialState.anggota ||
+      current.ekspedisi !== initialState.ekspedisi ||
+      current.diskon    !== initialState.diskon ||
+      current.jenis_pembayaran !== initialState.jenis_pembayaran ||
+      current.uang_diterima    !== initialState.uang_diterima ||
+      current.catatan          !== initialState.catatan;
+
+    const ekspedisiChanged = current.ekspedisi && (
+      current.agen          !== initialState.agen ||
+      current.nama_penerima !== initialState.nama_penerima ||
+      current.telepon_penerima !== initialState.telepon_penerima ||
+      current.kode_pos      !== initialState.kode_pos ||
+      current.alamat_penerima !== initialState.alamat_penerima ||
+      current.nomor_resi    !== initialState.nomor_resi ||
+      current.biaya_pengiriman !== initialState.biaya_pengiriman
+    );
+
+    const barangChanged = 
+      current.barang.length !== initialState.barang.length ||
+      current.barang.some((item, i) => {
+        const init = initialState.barang[i] || {id:'', qty:''};
+        return item.id !== init.id || item.qty !== init.qty;
+      });
+
+    return mainChanged || ekspedisiChanged || barangChanged;
+  }
+
+  function updateButtonState() {
+    const changed = hasChanges();
+    submitButton.disabled = !changed;
+    if (changed) {
+      submitButton.classList.remove('opacity-50', 'cursor-not-allowed');
+    } else {
+      submitButton.classList.add('opacity-50', 'cursor-not-allowed');
+    }
+  }
+
+  const watchIds = ['id_pelanggan','id_anggota','ekspedisi','id_agen_ekspedisi','nama_penerima','telepon_penerima','kode_pos','alamat_penerima','nomor_resi','biaya_pengiriman','diskon_penjualan','jenis_pembayaran','uang_diterima','catatan'];
+  watchIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('input', updateButtonState);
+      el.addEventListener('change', updateButtonState);
+    }
+  });
+
+  const observer = new MutationObserver(updateButtonState);
+  observer.observe(barangContainer, { childList: true, subtree: true });
+  barangContainer.addEventListener('input', updateButtonState);
+  barangContainer.addEventListener('change', updateButtonState);
+
+  let barangIndex = {{ $isEdit ?? false ? $penjualan->detailPenjualan->count() : 1 }};
 
   function togglePembeliLock() {
     const pVal = pelangganSelect.value;
     const aVal = anggotaSelect.value;
-
-    if (pVal) {
-      anggotaSelect.disabled = true;
-      anggotaSelect.classList.add('bg-gray-100', 'cursor-not-allowed');
-    } else {
-      anggotaSelect.disabled = false;
-      anggotaSelect.classList.remove('bg-gray-100', 'cursor-not-allowed');
-    }
-
-    if (aVal) {
-      pelangganSelect.disabled = true;
-      pelangganSelect.classList.add('bg-gray-100', 'cursor-not-allowed');
-    } else {
-      pelangganSelect.disabled = false;
-      pelangganSelect.classList.remove('bg-gray-100', 'cursor-not-allowed');
-    }
+    anggotaSelect.disabled = !!pVal;
+    pelangganSelect.disabled = !!aVal;
+    anggotaSelect.classList.toggle('bg-gray-100', !!pVal);
+    anggotaSelect.classList.toggle('cursor-not-allowed', !!pVal);
+    pelangganSelect.classList.toggle('bg-gray-100', !!aVal);
+    pelangganSelect.classList.toggle('cursor-not-allowed', !!aVal);
   }
-
   pelangganSelect.addEventListener('change', togglePembeliLock);
   anggotaSelect.addEventListener('change', togglePembeliLock);
   togglePembeliLock();
 
-  let barangIndex = {{ $isEdit ?? false ? $penjualan->detailPenjualan->count() : 1 }};
+  function toggleEkspedisi() {
+    const checked = ekspedisiCheckbox.checked;
+    ekspedisiForm.style.display = checked ? 'block' : 'none';
+    ekspedisiForm.querySelectorAll('input, select, textarea').forEach(el => {
+      el.disabled = !checked;
+      if (!checked) el.value = '';
+    });
+    hitungTotal();
+    updateButtonState();
+  }
+  ekspedisiCheckbox.addEventListener('change', toggleEkspedisi);
+  toggleEkspedisi();
 
   function toggleUangDiterima() {
     const isTunai = jenisPembayaranSelect.value === 'tunai';
-    
+
     if (isTunai) {
       uangDiterimaInput.removeAttribute('readonly');
       uangDiterimaInput.classList.remove('bg-gray-100', 'cursor-not-allowed');
@@ -339,62 +451,25 @@ document.addEventListener('DOMContentLoaded', function () {
     } else {
       uangDiterimaInput.setAttribute('readonly', 'readonly');
       uangDiterimaInput.classList.add('bg-gray-100', 'cursor-not-allowed');
-      uangDiterimaInput.value = '';
+      uangDiterimaInput.value = '0';  
       wajibTunaiSpan.classList.add('hidden');
+
       kembalianDisplay.value = 'Rp 0';
       kembalianDisplay.className = 'w-full rounded-md border bg-gray-100 px-3 py-2 text-sm font-bold text-gray-700 cursor-not-allowed';
     }
+
     hitungTotal();
+    updateButtonState();
   }
 
   jenisPembayaranSelect.addEventListener('change', toggleUangDiterima);
-
-  // EKSPEDISI
-  function toggleEkspedisi() {
-    const isChecked = ekspedisiCheckbox.checked;
-    ekspedisiForm.style.display = isChecked ? 'block' : 'none';
-    if (!isChecked) {
-      ekspedisiForm.querySelectorAll('input, select, textarea').forEach(f => {
-        f.disabled = true; f.value = '';
-      });
-    } else {
-      ekspedisiForm.querySelectorAll('input, select, textarea').forEach(f => f.disabled = false);
-    }
-    hitungTotal();
-  }
-  ekspedisiCheckbox.addEventListener('change', toggleEkspedisi);
-  toggleEkspedisi();
-
-  // BARANG DYNAMIC
-  function updateActionButtons() {
-    const rows = barangContainer.querySelectorAll('.barang-row');
-    rows.forEach((row, i) => {
-      const actionCell = row.querySelector('.col-span-1');
-      actionCell.innerHTML = '';
-      if (i === rows.length - 1) {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'add-barang-btn bg-blue-500 hover:bg-blue-600 text-white w-8 h-8 rounded-full text-xs font-bold flex items-center justify-center shadow-sm';
-        btn.innerHTML = '+';
-        btn.onclick = addNewRow;
-        actionCell.appendChild(btn);
-      } else {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'remove-barang-btn bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full text-xs font-bold flex items-center justify-center shadow-sm';
-        btn.innerHTML = '-';
-        btn.onclick = () => { row.remove(); updateActionButtons(); reindexBarangRows(); hitungTotal(); };
-        actionCell.appendChild(btn);
-      }
-    });
-  }
 
   function addNewRow() {
     const newRow = document.createElement('div');
     newRow.className = 'grid grid-cols-12 gap-2 mb-2 barang-row items-center';
     const options = @json($barangs).map(b => `
-      <option value="${b.id_barang}" data-harga="${b.retail}" data-stok="${b.stok}">
-        ${b.nama_barang} (Stok: ${b.stok})
+      <option value="${b.id_barang}" data-harga="${b.retail}" data-stok="${b.stok_tersedia ?? b.stok}">
+        ${b.nama_barang} (Tersedia: ${b.stok_tersedia ?? b.stok})
       </option>`).join('');
     newRow.innerHTML = `
       <div class="col-span-6">
@@ -415,6 +490,36 @@ document.addEventListener('DOMContentLoaded', function () {
     barangIndex++;
     updateActionButtons();
     attachBarangEvents(newRow);
+    hitungTotal();
+    updateButtonState();
+  }
+
+  function updateActionButtons() {
+    const rows = barangContainer.querySelectorAll('.barang-row');
+    rows.forEach((row, i) => {
+      const cell = row.querySelector('.col-span-1:nth-child(4)');
+      cell.innerHTML = '';
+      if (i === rows.length - 1) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'add-barang-btn bg-blue-500 hover:bg-blue-600 text-white w-8 h-8 rounded-full text-xs font-bold flex items-center justify-center shadow-sm';
+        btn.innerHTML = '+';
+        btn.onclick = addNewRow;
+        cell.appendChild(btn);
+      } else {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'remove-barang-btn bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full text-xs font-bold flex items-center justify-center shadow-sm';
+        btn.innerHTML = '-';
+        btn.onclick = () => {
+          row.remove();
+          reindexBarangRows();
+          hitungTotal();
+          updateButtonState();
+        };
+        cell.appendChild(btn);
+      }
+    });
   }
 
   function reindexBarangRows() {
@@ -427,76 +532,67 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function attachBarangEvents(row) {
-    const select = row.querySelector('select');
-    const input = row.querySelector('input[type="number"]');
-    const hargaInput = row.querySelector('.harga-retail');
+    const select    = row.querySelector('select');
+    const qtyInput  = row.querySelector('input[type="number"]');
+    const hargaInput= row.querySelector('.harga-retail');
 
     select.addEventListener('change', function () {
-      const option = this.selectedOptions[0];
-      const stok = option ? parseInt(option.dataset.stok) || 0 : 0;
-      const harga = option ? parseFloat(option.dataset.harga) || 0 : 0;
-
-      input.max = stok;
-      input.dataset.maxStok = stok;
+      const opt   = this.selectedOptions[0];
+      const stok  = opt ? parseInt(opt.dataset.stok) || 0 : 0;
+      const harga = opt ? parseFloat(opt.dataset.harga) || 0 : 0;
+      qtyInput.max = stok;
+      qtyInput.dataset.maxStok = stok;
       hargaInput.value = harga > 0 ? 'Rp ' + formatRupiah(harga) : '';
-
-      if (parseInt(input.value) > stok) {
-        input.value = stok > 0 ? stok : '';
-      }
+      if (parseInt(qtyInput.value) > stok) qtyInput.value = stok > 0 ? stok : '';
       hitungTotal();
+      updateButtonState();
     });
 
-    input.addEventListener('input', function () {
-      const maxStok = parseInt(this.dataset.maxStok) || 0;
-      const val = parseInt(this.value) || 0;
-      if (val > maxStok && maxStok > 0) this.value = maxStok;
+    qtyInput.addEventListener('input', function () {
+      const max = parseInt(this.dataset.maxStok) || 0;
+      let val   = parseInt(this.value) || 0;
+      if (val > max && max > 0) this.value = max;
       if (val < 1 && this.value !== '') this.value = 1;
       hitungTotal();
+      updateButtonState();
     });
 
-    // Init saat load
     if (select.value) {
-      const option = select.selectedOptions[0];
-      const stok = option ? parseInt(option.dataset.stok) || 0 : 0;
-      const harga = option ? parseFloat(option.dataset.harga) || 0 : 0;
-      input.max = stok;
-      input.dataset.maxStok = stok;
-      hargaInput.value = harga > 0 ? 'Rp ' + formatRupiah(harga) : '';
+      const opt = select.selectedOptions[0];
+      qtyInput.max = opt.dataset.stok;
+      qtyInput.dataset.maxStok = opt.dataset.stok;
+      hargaInput.value = 'Rp ' + formatRupiah(opt.dataset.harga);
     }
   }
 
   document.querySelectorAll('.barang-row').forEach(attachBarangEvents);
   updateActionButtons();
 
-  // HITUNG TOTAL
   function hitungTotal() {
     let subTotalBarang = 0;
     document.querySelectorAll('.barang-row').forEach(row => {
-      const select = row.querySelector('select');
-      const qty = parseFloat(row.querySelector('input[type="number"]').value) || 0;
-      const harga = parseFloat(select.selectedOptions[0]?.dataset.harga) || 0;
+      const harga = parseFloat(row.querySelector('select').selectedOptions[0]?.dataset.harga) || 0;
+      const qty   = parseFloat(row.querySelector('input[type="number"]').value) || 0;
       subTotalBarang += harga * qty;
     });
 
-    const biayaPengiriman = ekspedisiCheckbox.checked ? (parseFloat(biayaPengirimanInput.value) || 0) : 0;
-    const subTotal = subTotalBarang + biayaPengiriman;
-
+    const biayaKirim = ekspedisiCheckbox.checked ? (parseFloat(biayaPengirimanInput.value) || 0) : 0;
+    const subTotal   = subTotalBarang + biayaKirim;
     const diskonPersen = parseFloat(diskonInput.value) || 0;
-    const diskon = subTotal * (diskonPersen / 100);
-    const totalBayar = subTotal - diskon;
+    const diskonNilai  = subTotal * (diskonPersen / 100);
+    const totalBayar   = subTotal - diskonNilai;
 
-    subTotalDisplay.value = `Rp ${formatRupiah(subTotal)}`;
+    subTotalDisplay.value   = `Rp ${formatRupiah(subTotal)}`;
     totalBayarDisplay.value = `Rp ${formatRupiah(totalBayar)}`;
 
     if (jenisPembayaranSelect.value === 'tunai') {
-      const uangDiterima = parseFloat(uangDiterimaInput.value) || 0;
-      const kembalian = uangDiterima - totalBayar;
-
-      if (kembalian >= 0) {
-        kembalianDisplay.value = `Rp ${formatRupiah(kembalian)}`;
+      const dibayar = parseFloat(uangDiterimaInput.value) || 0;
+      const kembali = dibayar - totalBayar;
+      if (kembali >= 0) {
+        kembalianDisplay.value = `Rp ${formatRupiah(kembali)}`;
         kembalianDisplay.className = 'w-full rounded-md border bg-gray-100 px-3 py-2 text-sm font-bold text-green-700 cursor-not-allowed';
       } else {
-        kembalianDisplay.value = `- Rp ${formatRupiah(Math.abs(kembalian))}`;
+        kembalianDisplay.value = `- Rp ${formatRupiah(Math.abs(kembali))}`;
         kembalianDisplay.className = 'w-full rounded-md border bg-red-100 px-3 py-2 text-sm font-bold text-red-700 cursor-not-allowed';
       }
     } else {
@@ -506,95 +602,89 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function formatRupiah(angka) {
-    return new Intl.NumberFormat('id-ID').format(angka);
+    angka = Math.round(angka);
+    return angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   }
 
   diskonInput.addEventListener('input', hitungTotal);
-  uangDiterimaInput.addEventListener('input', hitungTotal);
   biayaPengirimanInput.addEventListener('input', hitungTotal);
+  uangDiterimaInput.addEventListener('input', hitungTotal);
 
-  toggleUangDiterima();
-  hitungTotal();
-
-  // VALIDASI SUBMIT
-  document.getElementById('penjualanForm').addEventListener('submit', function (e) {
+  form.addEventListener('submit', function (e) {
     e.preventDefault();
-    let error = false;
+    let hasError = false;
 
     document.querySelectorAll('.text-red-600:not(.hidden)').forEach(el => el.classList.add('hidden'));
-    document.querySelectorAll('input, select').forEach(el => el.classList.remove('border-red-500', 'bg-red-50'));
+    document.querySelectorAll('input, select, textarea').forEach(el => el.classList.remove('border-red-500', 'bg-red-50'));
 
     const p = pelangganSelect.value;
     const a = anggotaSelect.value;
-
     if (!p && !a) {
-      showError('#id_pelanggan_error', 'Pilih pelanggan atau anggota.', '#id_pelanggan');
-      showError('#id_anggota_error', 'Pilih pelanggan atau anggota.', '#id_anggota');
-      error = true;
+      document.getElementById('id_pelanggan_error').classList.remove('hidden');
+      document.getElementById('id_anggota_error').classList.remove('hidden');
+      document.getElementById('id_pelanggan_error').textContent = 'Pilih salah satu.';
+      hasError = true;
     } else if (p && a) {
-      showError('#id_pelanggan_error', 'Hanya boleh pilih satu.', '#id_pelanggan');
-      showError('#id_anggota_error', 'Hanya boleh pilih satu.', '#id_anggota');
-      error = true;
+      document.getElementById('id_pelanggan_error').classList.remove('hidden');
+      document.getElementById('id_pelanggan_error').textContent = 'Hanya boleh pilih salah satu.';
+      hasError = true;
     }
 
     const rows = document.querySelectorAll('.barang-row');
-    if (rows.length === 0) { showError('#barang_error', 'Minimal satu barang.'); error = true; }
-
-    rows.forEach(r => {
-      const select = r.querySelector('select');
-      const input = r.querySelector('input[type="number"]');
-      const qty = parseInt(input.value) || 0;
-      const stok = select.selectedOptions[0] ? parseInt(select.selectedOptions[0].dataset.stok) || 0 : 0;
-      const namaBarang = select.selectedOptions[0]?.text || 'barang';
-
-      if (!select.value) {
-        select.classList.add('border-red-500', 'bg-red-50');
-        error = true;
-      }
-      if (!input.value || qty < 1) {
-        input.classList.add('border-red-500', 'bg-red-50');
-        error = true;
-      }
-      if (qty > stok && stok > 0) {
-        showError('#barang_error', `Kuantitas ${namaBarang} melebihi stok (${stok})`, null);
-        input.classList.add('border-red-500', 'bg-red-50');
-        error = true;
-      }
+    if (rows.length === 0) {
+      document.getElementById('barang_error').classList.remove('hidden');
+      hasError = true;
+    }
+    rows.forEach(row => {
+      const sel = row.querySelector('select');
+      const qty = row.querySelector('input[type="number"]');
+      if (!sel.value) { sel.classList.add('border-red-500','bg-red-50'); hasError = true; }
+      if (!qty.value || qty.value < 1) { qty.classList.add('border-red-500','bg-red-50'); hasError = true; }
     });
 
     if (ekspedisiCheckbox.checked) {
-      ['id_agen_ekspedisi', 'nama_penerima', 'telepon_penerima', 'alamat_penerima', 'kode_pos'].forEach(id => {
+      ['id_agen_ekspedisi','nama_penerima','telepon_penerima','alamat_penerima','kode_pos'].forEach(id => {
         const el = document.getElementById(id);
-        if (!el.value) { showError(`#${id}_error`, 'Wajib diisi.', `#${id}`); error = true; }
+        if (!el.value.trim()) {
+          el.classList.add('border-red-500','bg-red-50');
+          document.getElementById(id+'_error').classList.remove('hidden');
+          document.getElementById(id+'_error').textContent = 'Wajib diisi.';
+          hasError = true;
+        }
       });
     }
 
-    if (diskonInput.value && (diskonInput.value < 0 || diskonInput.value > 100)) {
-      showError('#diskon_penjualan_error', 'Diskon maksimal 100%.', '#diskon_penjualan');
-      error = true;
-    }
     if (!jenisPembayaranSelect.value) {
-      showError('#jenis_pembayaran_error', 'Wajib dipilih.', '#jenis_pembayaran');
-      error = true;
+      document.getElementById('jenis_pembayaran_error').classList.remove('hidden');
+      jenisPembayaranSelect.classList.add('border-red-500', 'bg-red-50');
+      hasError = true;
+    } else {
+      jenisPembayaranSelect.classList.remove('border-red-500', 'bg-red-50');
     }
 
     if (jenisPembayaranSelect.value === 'tunai') {
-      if (!uangDiterimaInput.value || uangDiterimaInput.value < 0) {
-        showError('#uang_diterima_error', 'Wajib diisi saat pembayaran tunai.', '#uang_diterima');
-        error = true;
+      const total = parseFloat(totalBayarDisplay.value.replace(/[^\d.-]/g,'')) || 0;
+      const bayar = parseFloat(uangDiterimaInput.value) || 0;
+      if (bayar < total) {
+        uangDiterimaInput.classList.add('border-red-500','bg-red-50');
+        document.getElementById('uang_diterima_error').classList.remove('hidden');
+        document.getElementById('uang_diterima_error').textContent = 'Uang kurang.';
+        hasError = true;
       }
     }
 
-    if (!error && confirm('Simpan data penjualan?')) {
-      this.submit();
+    if (hasError) {
+      alert('Periksa kembali isian Anda.');
+      return;
+    }
+
+    if (confirm('Simpan perubahan penjualan?')) {
+      form.submit();
     }
   });
 
-  function showError(sel, msg, input = null) {
-    const el = document.querySelector(sel);
-    el.textContent = msg;
-    el.classList.remove('hidden');
-    if (input) document.querySelector(input).classList.add('border-red-500', 'bg-red-50');
-  }
+  toggleUangDiterima(); 
+  hitungTotal();
+  updateButtonState();
 });
 </script>

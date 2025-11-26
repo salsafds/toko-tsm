@@ -176,13 +176,11 @@ class BarangController extends Controller
 
     public function updateRetail($id_barang, $kuantitas_baru, $harga_beli_baru)
     {
-        $barang = Barang::find($id_barang);
-        if (!$barang) return;
+        $barang = Barang::findOrFail($id_barang);
 
         $stok_lama = $barang->stok ?? 0;
         $harga_beli_lama = $barang->harga_beli ?? 0;
 
-        
         $stok_total = $stok_lama + $kuantitas_baru;
 
         if ($stok_total <= 0) {
@@ -194,12 +192,12 @@ class BarangController extends Controller
             return;
         }
 
-        $harga_beli_rata = (
-            ($stok_lama * $harga_beli_lama) + ($kuantitas_baru * $harga_beli_baru)
-        ) / $stok_total;
-
-        $margin = ($barang->margin ?? 0) / 100; 
-        $harga_retail_baru = $harga_beli_rata * (1 + $margin);
+        $total_nilai_lama = $stok_lama * $harga_beli_lama;
+        $total_nilai_baru = $kuantitas_baru * $harga_beli_baru;
+        $harga_beli_rata = ($total_nilai_lama + $total_nilai_baru) / $stok_total;
+        
+        $margin = $barang->margin ?? 0;
+        $harga_retail_baru = $harga_beli_rata * (1 + ($margin / 100));
 
         $barang->update([
             'stok' => $stok_total,

@@ -47,7 +47,9 @@ class PenjualanController extends Controller
         $nextId = $this->generateNextId();
         $pelanggans = Pelanggan::orderBy('nama_pelanggan')->get();
         $anggotas = Anggota::orderBy('nama_anggota')->get();
-        $barangs = Barang::where('stok', '>', 0)->orderBy('nama_barang')->get();
+
+        $barangs = Barang::all();
+
         $agenEkspedisis = AgenEkspedisi::orderBy('nama_ekspedisi')->get();
 
         return view('admin.penjualan.create', compact('nextId', 'pelanggans', 'anggotas', 'barangs', 'agenEkspedisis'));
@@ -67,16 +69,6 @@ class PenjualanController extends Controller
             'catatan' => 'nullable|string|max:255',
         ];
 
-        $messages = [
-            'id_pelanggan.exists' => 'Pelanggan tidak valid.',
-            'id_anggota.exists' => 'Anggota tidak valid.',
-            'barang.required' => 'Minimal satu barang harus dipilih.',
-            'barang.*.id_barang.required' => 'Barang wajib dipilih.',
-            'barang.*.kuantitas.required' => 'Kuantitas wajib diisi.',
-            'diskon_penjualan.max' => 'Diskon maksimal 100%.',
-            'jenis_pembayaran.required' => 'Jenis pembayaran wajib dipilih.',
-        ];
-
         if ($request->has('ekspedisi') && $request->ekspedisi == '1') {
             $rules += [
                 'id_agen_ekspedisi' => 'required|exists:agen_ekspedisi,id_ekspedisi',
@@ -87,18 +79,9 @@ class PenjualanController extends Controller
                 'biaya_pengiriman' => 'nullable|numeric|min:0',
                 'nomor_resi' => 'nullable|string|max:255',
             ];
-
-            $messages += [
-                'id_agen_ekspedisi.required' => 'Agen ekspedisi wajib dipilih.',
-                'id_agen_ekspedisi.exists' => 'Agen ekspedisi tidak valid.',
-                'nama_penerima.required' => 'Nama penerima wajib diisi.',
-                'telepon_penerima.required' => 'Telepon penerima wajib diisi.',
-                'alamat_penerima.required' => 'Alamat penerima wajib diisi.',
-                'kode_pos.required' => 'Kode pos wajib diisi.',
-            ];
         }
 
-        $request->validate($rules, $messages);
+        $request->validate($rules);
 
         if (!$request->id_pelanggan && !$request->id_anggota) {
             return back()->withErrors(['id_pelanggan' => 'Pilih pelanggan atau anggota.'])->withInput();
@@ -109,14 +92,19 @@ class PenjualanController extends Controller
 
         DB::transaction(function () use ($request) {
             $subTotalBarang = 0;
+
             foreach ($request->barang as $item) {
                 $barang = Barang::findOrFail($item['id_barang']);
+
+                if ($barang->stok_tersedia < $item['kuantitas']) {
+                    throw new \Exception("Stok {$barang->nama_barang} tidak cukup! Tersedia: {$barang->stok_tersedia}, diminta: {$item['kuantitas']}");
+                }
+
                 $subTotalBarang += $barang->retail * $item['kuantitas'];
             }
 
             $biayaPengiriman = $request->has('ekspedisi') && $request->ekspedisi == '1' ? ($request->biaya_pengiriman ?? 0) : 0;
             $subTotal = $subTotalBarang + $biayaPengiriman;
-
             $diskon = $request->filled('diskon_penjualan') ? $request->diskon_penjualan : 0;
             $totalHarga = $subTotal - ($subTotal * $diskon / 100);
 
@@ -142,7 +130,6 @@ class PenjualanController extends Controller
                     'kuantitas' => $item['kuantitas'],
                     'sub_total' => $barang->retail * $item['kuantitas'],
                 ]);
-                // STOK TIDAK DIKURANGI DI SINI
             }
 
             if ($request->has('ekspedisi') && $request->ekspedisi == '1') {
@@ -173,7 +160,9 @@ class PenjualanController extends Controller
 
         $pelanggans = Pelanggan::orderBy('nama_pelanggan')->get();
         $anggotas = Anggota::orderBy('nama_anggota')->get();
-        $barangs = Barang::where('stok', '>', 0)->orderBy('nama_barang')->get();
+
+        $barangs = Barang::all();
+
         $agenEkspedisis = AgenEkspedisi::orderBy('nama_ekspedisi')->get();
 
         return view('admin.penjualan.edit', compact('penjualan', 'pelanggans', 'anggotas', 'barangs', 'agenEkspedisis'));
@@ -224,14 +213,20 @@ class PenjualanController extends Controller
             $penjualan->pengiriman()->delete();
 
             $subTotalBarang = 0;
+
+
             foreach ($request->barang as $item) {
                 $barang = Barang::findOrFail($item['id_barang']);
+
+                if ($barang->stok_tersedia < $item['kuantitas']) {
+                    throw new \Exception("Stok {$barang->nama_barang} tidak cukup! Tersedia: {$barang->stok_tersedia}, diminta: {$item['kuantitas']}");
+                }
+
                 $subTotalBarang += $barang->retail * $item['kuantitas'];
             }
 
             $biayaPengiriman = $request->has('ekspedisi') && $request->ekspedisi == '1' ? ($request->biaya_pengiriman ?? 0) : 0;
             $subTotal = $subTotalBarang + $biayaPengiriman;
-
             $diskon = $request->filled('diskon_penjualan') ? $request->diskon_penjualan : 0;
             $totalHarga = $subTotal - ($subTotal * $diskon / 100);
 
@@ -291,23 +286,30 @@ class PenjualanController extends Controller
     }
 
     public function selesai($id)
-    {
-        $penjualan = Penjualan::with('detailPenjualan.barang')->findOrFail($id);
-        if ($penjualan->tanggal_selesai) {
-            return back()->with('success', 'Transaksi sudah selesai sebelumnya.');
-        }
-
-        DB::transaction(function () use ($penjualan) {
-            foreach ($penjualan->detailPenjualan as $detail) {
-                $detail->barang->decrement('stok', $detail->kuantitas);
-            }
-            $penjualan->update(['tanggal_selesai' => now()]);
-        });
-
-        return redirect()->route('admin.penjualan.index')
-                         ->with('success', 'Penjualan ditandai selesai dan stok telah dikurangi.');
+{
+    $penjualan = Penjualan::with('detailPenjualan.barang')->findOrFail($id);
+    
+    if ($penjualan->tanggal_selesai) {
+        return back()->with('success', 'Transaksi sudah selesai sebelumnya.');
     }
 
+    DB::transaction(function () use ($penjualan) {
+        foreach ($penjualan->detailPenjualan as $detail) {
+            $barang = $detail->barang;
+            
+            app(BarangController::class)->updateRetail(
+                $barang->id_barang,
+                -$detail->kuantitas,
+                $barang->harga_beli  
+            );
+        }
+
+        $penjualan->update(['tanggal_selesai' => now()]);
+    });
+
+    return redirect()->route('admin.penjualan.index')
+        ->with('success', 'Penjualan selesai! Stok dan harga retail telah diperbarui.');
+}
     public function print($id)
     {
         $penjualan = Penjualan::with(['detailPenjualan.barang', 'pengiriman.agenEkspedisi', 'pelanggan', 'anggota', 'user'])->findOrFail($id);

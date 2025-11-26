@@ -1,101 +1,115 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Struk Penjualan - {{ $penjualan->id_penjualan }}</title>
+    <title>Struk - {{ $penjualan->id_penjualan }}</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; font-size: 12px; }
-        .header { text-align: center; margin-bottom: 20px; }
-        .details { margin-bottom: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 11px; }
-        th, td { border: 1px solid #ddd; padding: 5px; text-align: left; }
-        .total { font-weight: bold; }
-        .footer { text-align: center; margin-top: 20px; font-size: 10px; }
-        .right { text-align: right; }
+        body {
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            margin: 0;
+            padding: 10px;
+            width: 80mm;
+            margin: 0 auto;
+        }
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .bold { font-weight: bold; }
+        .mb-1 { margin-bottom: 4px; }
+        .mb-2 { margin-bottom: 8px; }
+        .mt-2 { margin-top: 8px; }
+        table { width: 100%; border-collapse: collapse; }
+        hr { border: none; border-top: 1px dashed #000; margin: 8px 0; }
+        @media print {
+            body { width: 80mm; margin: 0; padding: 5mm; }
+        }
     </style>
 </head>
-<body>
-    <div class="header">
-        <h1 style="font-size: 16px;">Struk Penjualan</h1>
-        <p><strong>ID Penjualan:</strong> {{ $penjualan->id_penjualan }}</p>
-        <p><strong>Tanggal Order:</strong> {{ $penjualan->tanggal_order->format('d-m-Y H:i') }}</p>
-        @if($penjualan->tanggal_selesai)
-            <p><strong>Tanggal Selesai:</strong> {{ $penjualan->tanggal_selesai->format('d-m-Y H:i') }}</p>
-        @endif
+<body onload="window.print()">
+
+<div class="text-center mb-2">
+    <h3 style="margin:0; font-size:14px;">Koperasi Tunas Sejahtera Mandiri</h3>
+    <div style="font-size:10px;">Jl. Karah Agung 45, Surabaya<br>Telp: 0812-3456-7890</div>
+    <div style="font-size:10px; border-bottom:1px dashed #000; padding-bottom:4px;">
+        {{ now()->format('d/m/Y H:i') }}
+    </div>
+</div>
+
+<div style="font-size:10px; line-height:1.4;">
+    <div>Kasir : {{ $penjualan->user->nama_lengkap ?? 'Admin' }}</div>
+    <div>No. Nota : {{ $penjualan->id_penjualan }}</div>
+    <div>Tanggal : {{ $penjualan->tanggal_order->format('d-m-Y H:i') }}</div>
+    @if($penjualan->pelanggan || $penjualan->anggota)
+    <div>Pembeli : {{ $penjualan->pelanggan?->nama_pelanggan ?? $penjualan->anggota?->nama_anggota ?? 'Umum' }}</div>
+    @endif
+</div>
+
+<hr>
+
+@foreach($penjualan->detailPenjualan as $detail)
+@php
+    // INI DIA TRIKNYA: Hitung harga satuan dari sub_total ÷ kuantitas
+    $harga_satuan_saat_transaksi = $detail->kuantitas > 0 ? $detail->sub_total / $detail->kuantitas : 0;
+@endphp
+<div style="font-size:11px;">
+    {{ $detail->barang->nama_barang }}
+</div>
+<div style="font-size:11px; display:flex; justify-content:space-between;">
+    <span>{{ $detail->kuantitas }} × {{ number_format($harga_satuan_saat_transaksi, 0, ',', '.') }}</span>
+    <span>Rp {{ number_format($detail->sub_total, 0, ',', '.') }}</span>
+</div>
+@endforeach
+
+<hr>
+
+<div style="font-size:12px;">
+    <div style="display:flex; justify-content:space-between;" class="bold">
+        <span>TOTAL BELANJA</span>
+        <span>Rp {{ number_format($penjualan->total_harga_penjualan, 0, ',', '.') }}</span>
     </div>
 
-    <div class="details">
-        <p><strong>Pelanggan/Anggota:</strong> {{ $penjualan->pelanggan ? $penjualan->pelanggan->nama_pelanggan : ($penjualan->anggota ? $penjualan->anggota->nama_anggota : 'N/A') }}</p>
-        <p><strong>Kasir:</strong> {{ $penjualan->user->nama_user }}</p>
-        <p><strong>Jenis Pembayaran:</strong> {{ ucfirst($penjualan->jenis_pembayaran) }}</p>
-        @if($penjualan->diskon_penjualan > 0)
-            <p><strong>Diskon:</strong> {{ $penjualan->diskon_penjualan }}%</p>
-        @endif
-        @if($penjualan->catatan)
-            <p><strong>Catatan:</strong> {{ $penjualan->catatan }}</p>
-        @endif
+    @if($penjualan->diskon_penjualan > 0)
+    <div style="display:flex; justify-content:space-between;">
+        <span>Diskon {{ $penjualan->diskon_penjualan }}%</span>
+        <span>- Rp {{ number_format($penjualan->total_harga_penjualan * $penjualan->diskon_penjualan / 100, 0, ',', '.') }}</span>
     </div>
-
-    <table>
-        <thead>
-            <tr>
-                <th>No</th>
-                <th>Nama Barang</th>
-                <th>Kuantitas</th>
-                <th>Harga Satuan</th>
-                <th class="right">Sub Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($penjualan->detailPenjualan as $index => $detail)
-                <tr>
-                    <td>{{ $index + 1 }}</td>
-                    <td>{{ $detail->barang->nama_barang }}</td>
-                    <td>{{ $detail->kuantitas }}</td>
-                    <td>Rp {{ number_format($detail->barang->retail, 0, ',', '.') }}</td>
-                    <td class="right">Rp {{ number_format($detail->sub_total, 0, ',', '.') }}</td>
-                </tr>
-            @endforeach
-        </tbody>
-        <tfoot>
-            <tr class="total">
-                <td colspan="4">Total Harga</td>
-                <td class="right">Rp {{ number_format($penjualan->total_harga_penjualan, 0, ',', '.') }}</td>
-            </tr>
-            @if($penjualan->pengiriman)
-                <tr>
-                    <td colspan="4">Biaya Pengiriman</td>
-                    <td class="right">Rp {{ number_format($penjualan->pengiriman->biaya_pengiriman, 0, ',', '.') }}</td>
-                </tr>
-                <tr class="total">
-                    <td colspan="4">Grand Total</td>
-                    <td class="right">Rp {{ number_format($penjualan->total_harga_penjualan + $penjualan->pengiriman->biaya_pengiriman, 0, ',', '.') }}</td>
-                </tr>
-            @endif
-        </tfoot>
-    </table>
-
-    @if($penjualan->pengiriman)
-        <div class="details">
-            <h3 style="font-size: 14px;">Detail Pengiriman</h3>
-            <p><strong>Agen Ekspedisi:</strong> {{ $penjualan->pengiriman->agenEkspedisi->nama_ekspedisi }}</p>
-            <p><strong>Nama Penerima:</strong> {{ $penjualan->pengiriman->nama_penerima }}</p>
-            <p><strong>Telepon Penerima:</strong> {{ $penjualan->pengiriman->telepon_penerima }}</p>
-            <p><strong>Alamat Penerima:</strong> {{ $penjualan->pengiriman->alamat_penerima }}</p>
-            <p><strong>Kode Pos:</strong> {{ $penjualan->pengiriman->kode_pos }}</p>
-        </div>
     @endif
 
-    <div class="footer">
-        <p>Terima Kasih atas Kunjungan Anda!</p>
-        <p>Dicetak pada: {{ now()->format('d-m-Y H:i:s') }}</p>
+    @if($penjualan->pengiriman && $penjualan->pengiriman->biaya_pengiriman > 0)
+    <div style="display:flex; justify-content:space-between;">
+        <span>Ongkir</span>
+        <span>Rp {{ number_format($penjualan->pengiriman->biaya_pengiriman, 0, ',', '.') }}</span>
     </div>
+    @endif
 
-    <script>
-        window.onload = function() {
-            window.print();
-        };
-    </script>
+    <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:bold; border-top:1px dashed #000; padding-top:4px; margin-top:4px;">
+        <span>GRAND TOTAL</span>
+        <span>Rp {{ number_format($penjualan->total_harga_penjualan + ($penjualan->pengiriman?->biaya_pengiriman ?? 0), 0, ',', '.') }}</span>
+    </div>
+</div>
+
+@if($penjualan->jenis_pembayaran === 'tunai')
+<div style="font-size:11px; margin-top:8px;">
+    <div style="display:flex; justify-content:space-between;">
+        <span>Dibayar</span>
+        <span>Rp {{ number_format($penjualan->uang_diterima ?? 0, 0, ',', '.') }}</span>
+    </div>
+    <div style="display:flex; justify-content:space-between;">
+        <span>Kembali</span>
+        <span>Rp {{ number_format(($penjualan->uang_diterima ?? 0) - ($penjualan->total_harga_penjualan + ($penjualan->pengiriman?->biaya_pengiriman ?? 0)), 0, ',', '.') }}</span>
+    </div>
+</div>
+@endif
+
+<hr>
+
+<div class="text-center" style="font-size:10px; margin-top:8px;">
+    *** TERIMA KASIH ***<br>
+    Barang yang sudah dibeli<br>
+    tidak dapat ditukar/dikembalikan<br>
+    {{ now()->format('d-m-Y H:i') }}
+</div>
+
 </body>
 </html>
