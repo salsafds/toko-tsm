@@ -53,12 +53,13 @@
                     <p class="text-sm text-red-600 mt-1 hidden" data-error="id_barang_{{ $barangIndex }}"></p>
                 </div>
                 <div class="col-span-3">
-                    <input type="number" name="details[{{ $barangIndex }}][harga_beli]"
-                           value="{{ old('details.' . $barangIndex . '.harga_beli', $detail->harga_beli) }}"
-                           class="w-full rounded-md border px-3 py-2 text-sm border-gray-200" step="0.01" min="0"
-                           placeholder="Harga Beli">
-                    <p class="text-sm text-red-600 mt-1 hidden" data-error="harga_beli_{{ $barangIndex }}"></p>
-                </div>
+  <input type="text" 
+       name="details[{{ $barangIndex }}][harga_beli]"
+       value="{{ old('details.' . $barangIndex . '.harga_beli', intval($detail->harga_beli)) }}"
+       class="w-full rounded-md border px-3 py-2 text-sm border-gray-200 harga-beli-input"
+       placeholder="Harga Beli">
+  <p class="text-sm text-red-600 mt-1 hidden" data-error="harga_beli_{{ $barangIndex }}"></p>
+</div>
                 <div class="col-span-3">
                     <input type="number" name="details[{{ $barangIndex }}][kuantitas]"
                            value="{{ old('details.' . $barangIndex . '.kuantitas', $detail->kuantitas) }}"
@@ -100,11 +101,11 @@
                 <p class="text-sm text-red-600 mt-1 hidden" data-error="id_barang_0"></p>
             </div>
             <div class="col-span-3">
-                <input type="number" name="details[0][harga_beli]"
-                       class="w-full rounded-md border px-3 py-2 text-sm border-gray-200" step="0.01" min="0"
-                       placeholder="Harga Beli">
-                <p class="text-sm text-red-600 mt-1 hidden" data-error="harga_beli_0"></p>
-            </div>
+  <input type="text" name="details[0][harga_beli]"
+         class="w-full rounded-md border px-3 py-2 text-sm border-gray-200 harga-beli-input"
+         placeholder="Harga Beli">
+  <p class="text-sm text-red-600 mt-1 hidden" data-error="harga_beli_0"></p>
+</div>
             <div class="col-span-3">
                 <input type="number" name="details[0][kuantitas]"
                        class="w-full rounded-md border px-3 py-2 text-sm border-gray-200" min="1"
@@ -141,30 +142,32 @@
                    value="Rp 0">
         </div>
         <!-- Diskon (%) -->
-        <div>
-        <label for="diskon" class="block text-sm font-medium text-gray-700">Diskon (%)</label>  <!-- Diubah: Hapus * karena tidak wajib -->
-        <input type="number" name="diskon" id="diskon"
-               value="{{ old('diskon', $pembelian->diskon ?? 0) }}"
-               class="w-full rounded-md border px-3 py-2 text-sm border-gray-200" min="0" max="100" step="0.01">
-        <p id="diskon_error" class="text-sm text-red-600 mt-1 hidden"></p>
-    </div>
+       <div>
+  <label for="diskon" class="block text-sm font-medium text-gray-700">Diskon (%)</label>
+  <input type="number" name="diskon" id="diskon"
+         value="{{ old('diskon', rtrim(rtrim(number_format($pembelian->diskon ?? 0, 2), '0'), '.')) }}"
+         class="w-full rounded-md border px-3 py-2 text-sm border-gray-200" min="0" max="100" step="0.01">
+  <p id="diskon_error" class="text-sm text-red-600 mt-1 hidden"></p>
+</div>
         <!-- PPN (%) -->
         <div>
-          <label for="ppn" class="block text-sm font-medium text-gray-700">PPN (%)</label>  <!-- Diubah: Hapus * karena tidak wajib -->
-          <input type="number" name="ppn" id="ppn"
-                value="{{ old('ppn', $pembelian->ppn ?? 0) }}"
-                class="w-full rounded-md border px-3 py-2 text-sm border-gray-200" min="0" max="100" step="0.01">
-          <p id="ppn_error" class="text-sm text-red-600 mt-1 hidden"></p>
-        </div>
+  <label for="ppn" class="block text-sm font-medium text-gray-700">PPN (%)</label>
+  <input type="number" name="ppn" id="ppn"
+         value="{{ old('ppn', rtrim(rtrim(number_format($pembelian->ppn ?? 0, 2), '0'), '.')) }}"
+         class="w-full rounded-md border px-3 py-2 text-sm border-gray-200" min="0" max="100" step="0.01">
+  <p id="ppn_error" class="text-sm text-red-600 mt-1 hidden"></p>
+</div>
         <!-- Biaya Pengiriman -->
         <div>
-            <label for="biaya_pengiriman" class="block text-sm font-medium text-gray-700">Biaya Pengiriman</label>  <!-- Diubah: Hapus * karena tidak wajib -->
-            <input type="number" name="biaya_pengiriman" id="biaya_pengiriman"
-                  value="{{ old('biaya_pengiriman', $pembelian->biaya_pengiriman ?? 0) }}"
-                  class="w-full rounded-md border px-3 py-2 text-sm border-gray-300" step="0.01" min="0"
-                  placeholder="0">
-            <p id="biaya_pengiriman_error" class="text-sm text-red-600 mt-1 hidden"></p>
-        </div>
+  <label for="biaya_pengiriman" class="block text-sm font-medium text-gray-700">Biaya Pengiriman</label>
+  <input type="text" 
+       name="biaya_pengiriman" 
+       id="biaya_pengiriman"
+       value="{{ old('biaya_pengiriman', $pembelian->biaya_pengiriman ?? 0) }}"
+       class="w-full rounded-md border px-3 py-2 text-sm border-gray-300 harga-beli-input"
+       placeholder="0">
+  <p id="biaya_pengiriman_error" class="text-sm text-red-600 mt-1 hidden"></p>
+</div>
         <!-- Total Bayar -->
         <div>
             <label class="block text-sm font-medium text-gray-700">Total Bayar</label>
@@ -201,11 +204,18 @@
   </div>
   {{-- Tombol Simpan / Update & Batal --}}
   <div class="flex items-center gap-3">
-    <button type="submit" id="submitButton" class="inline-flex items-center px-4 py-2 bg-blue-700 text-white text-sm rounded-md hover:bg-blue-800 {{ isset($pembelian) ? 'opacity-50' : '' }}" {{ isset($pembelian) ? 'disabled' : '' }}>
-      {{ isset($pembelian) ? 'Update' : 'Simpan' }}
+    <button type="submit" id="submitButton"
+        class="inline-flex items-center px-6 py-2.5 bg-blue-700 hover:bg-blue-800 text-white font-medium text-sm rounded-lg transition-all
+              {{ isset($pembelian) ? 'opacity-50 cursor-not-allowed' : '' }}"
+        {{ isset($pembelian) ? 'disabled' : '' }}>
+        {{ isset($pembelian) ? 'Update' : 'Simpan' }}
     </button>
-    <a href="{{ route('admin.pembelian.index') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 text-sm rounded-md hover:bg-gray-50">Batal</a>
-  </div>
+
+    <a href="{{ route('admin.pembelian.index') }}"
+       class="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 text-sm rounded-md hover:bg-gray-50">
+        Batal
+    </a>
+</div>
 </form>
 {{-- Form Tambah Barang Baru --}}
 <div class="border-t pt-6 mt-10">
@@ -291,147 +301,145 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+  const pembelianForm   = document.getElementById('pembelianForm');
+  const submitButton    = document.getElementById('submitButton');
+  const barangContainer = document.getElementById('barangContainer');
   const tambahBarangCheckbox = document.getElementById('tambah_barang');
   const formTambahBarang = document.getElementById('formTambahBarang');
   const simpanBarangBtn = document.getElementById('simpanBarangBtn');
-  const barangContainer = document.getElementById('barangContainer');
-  const pembelianForm = document.getElementById('pembelianForm');
+
+  const isEditMode = {{ isset($pembelian) ? 'true' : 'false' }};
   let barangIndex = {{ $isEdit ?? false ? $pembelian->detailPembelian->count() : 1 }};
+  let initialState = null;
 
-  function resetTambahBarangErrors() {
-    ['nama_barang', 'id_kategori_barang', 'id_supplier_barang', 'id_satuan', 'berat', 'margin'].forEach(id => {
-      const el = formTambahBarang?.querySelector(`[name="${id}"]`);
-      const errorEl = formTambahBarang?.querySelector(`[data-error="${id}"]`);
-      if (errorEl) {
-        errorEl.textContent = '';
-        errorEl.classList.add('hidden');
-      }
-      if (el) el.classList.remove('border-red-500', 'bg-red-50');
-    });
-  }
-
-  function showError(id, message) {
-    const errorEl = document.querySelector(`#${id}_error`);
-    const inputEl = document.getElementById(id);
-    if (errorEl) {
-      errorEl.textContent = message;
-      errorEl.classList.remove('hidden');
-    }
-    if (inputEl) inputEl.classList.add('border-red-500', 'bg-red-50');
-  }
-
-  function showRowError(row, errorKey, message) {
-    const errorEl = row.querySelector(`[data-error="${errorKey}"]`);
-    if (errorEl) {
-      if (errorKey.startsWith('id_barang_')) {
-        // Diubah: Untuk id_barang, hanya warnai merah tanpa tampilkan pesan
-        const input = row.querySelector(`select[name*="[id_barang]"]`);
-        if (input) {
-          input.classList.add('border-red-500', 'bg-red-50');
-        }
-      } else {
-        // Untuk harga_beli dan kuantitas, tetap tampilkan pesan
-        errorEl.textContent = message;
-        errorEl.classList.remove('hidden');
-        const input = row.querySelector(`[name*="[${errorKey.split('_')[1] || errorKey.split('_')[0]}]"]`);
-        if (input) input.classList.add('border-red-500', 'bg-red-50');
-      }
+  /* ==================== FORMAT RUPIAH ==================== */
+  function formatRupiah(angka) {
+    if (angka === '' || angka == null || isNaN(angka)) return '';
+    let number = parseFloat(angka);
+    if (isNaN(number)) return '';
+    if (number % 1 === 0) {
+      return number.toLocaleString('id-ID');
+    } else {
+      return number.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
   }
 
-  function resetAllErrors() {
-    document.querySelectorAll('[data-error], [id$="_error"]').forEach(el => {
-      el.textContent = '';
-      el.classList.add('hidden');
-    });
-    document.querySelectorAll('input, select').forEach(el => {
-      el.classList.remove('border-red-500', 'bg-red-50');
-    });
+  function unformatRupiah(value) {
+    if (!value) return '';
+    return value.replace(/\./g, '').replace(/[^0-9]/g, '');
   }
 
-  if (tambahBarangCheckbox && formTambahBarang) {
-    tambahBarangCheckbox.addEventListener('change', function () {
-      formTambahBarang.classList.toggle('hidden', !this.checked);
-      if (!this.checked) {
-        formTambahBarang.reset();
-        resetTambahBarangErrors();
+  /* ==================== FORMAT SEMUA HARGA BELI SAAT LOAD ==================== */
+  function formatAllHargaBeli() {
+    document.querySelectorAll('.harga-beli-input').forEach(input => {
+      if (input.value && input.value.trim() !== '' && input.value !== '0') {
+        let clean = unformatRupiah(input.value);
+        if (!isNaN(clean)) input.value = formatRupiah(clean);
       }
     });
   }
 
-  if (simpanBarangBtn) {
-    simpanBarangBtn.addEventListener('click', function (e) {
-      e.preventDefault();
-      resetTambahBarangErrors();
-      let hasError = false;
+  /* ==================== HITUNG TOTAL ==================== */
+  function calculateTotals() {
+    let subTotal = 0;
+    document.querySelectorAll('.barang-row').forEach(row => {
+      const harga = unformatRupiah(row.querySelector('input[name*="[harga_beli]"]')?.value) || 0;
+      const qty   = parseInt(row.querySelector('input[name*="[kuantitas]"]')?.value) || 0;
+      subTotal += parseFloat(harga) * qty;
+    });
 
-      const required = [
-        { name: 'nama_barang', msg: 'Nama barang wajib diisi.' },
-        { name: 'id_kategori_barang', msg: 'Kategori wajib dipilih.' },
-        { name: 'id_supplier_barang', msg: 'Supplier wajib dipilih.' },
-        { name: 'id_satuan', msg: 'Satuan wajib dipilih.' },
-      ];
+    const diskon = parseFloat(document.getElementById('diskon')?.value || 0);
+    const ppn    = parseFloat(document.getElementById('ppn')?.value || 0);
+    const biaya  = parseFloat(unformatRupiah(document.getElementById('biaya_pengiriman')?.value) || 0);
 
-      required.forEach(f => {
-        const el = formTambahBarang.querySelector(`[name="${f.name}"]`);
-        const err = formTambahBarang.querySelector(`[data-error="${f.name}"]`);
-        if (!el?.value.trim()) {
-          err.textContent = f.msg;
-          err.classList.remove('hidden');
-          el.classList.add('border-red-500', 'bg-red-50');
-          hasError = true;
-        }
+    const diskonNilai   = (diskon / 100) * subTotal;
+    setelahDiskon  = subTotal - diskonNilai;
+    ppnNilai       = (ppn / 100) * setelahDiskon;
+    totalBayar     = setelahDiskon + ppnNilai + biaya;
+
+    document.getElementById('subTotalDisplay').value   = 'Rp ' + formatRupiah(subTotal);
+    document.getElementById('totalBayarDisplay').value = 'Rp ' + formatRupiah(totalBayar);
+  }
+
+  /* ==================== DETEKSI PERUBAHAN (UNTUK TOMBOL UPDATE) ==================== */
+  function saveInitialState() {
+    if (!isEditMode) return;
+
+    initialState = {
+      supplier: document.getElementById('id_supplier')?.value || '',
+      diskon: document.getElementById('diskon')?.value || '0',
+      ppn: document.getElementById('ppn')?.value || '0',
+      biaya_pengiriman: document.getElementById('biaya_pengiriman')?.value || '0',
+      jenis_pembayaran: document.getElementById('jenis_pembayaran')?.value || '',
+      catatan: document.getElementById('catatan')?.value || '',
+      details: []
+    };
+
+    document.querySelectorAll('.barang-row').forEach(row => {
+      initialState.details.push({
+        id_barang: row.querySelector('select[name$="[id_barang]"]')?.value || '',
+        harga_beli: row.querySelector('input[name*="[harga_beli]"]')?.value || '',
+        kuantitas: row.querySelector('input[name*="[kuantitas]"]')?.value || ''
       });
-
-      const berat = parseFloat(formTambahBarang.querySelector('[name="berat"]')?.value);
-      if (isNaN(berat) || berat <= 0) {
-        const err = formTambahBarang.querySelector('[data-error="berat"]');
-        err.textContent = 'Berat harus lebih dari 0.';
-        err.classList.remove('hidden');
-        formTambahBarang.querySelector('[name="berat"]').classList.add('border-red-500', 'bg-red-50');
-        hasError = true;
-      }
-
-      const margin = parseFloat(formTambahBarang.querySelector('[name="margin"]')?.value);
-      if (margin && (isNaN(margin) || margin < 0 || margin > 100)) {
-        const err = formTambahBarang.querySelector('[data-error="margin"]');
-        err.textContent = 'Margin harus 0-100%.';
-        err.classList.remove('hidden');
-        formTambahBarang.querySelector('[name="margin"]').classList.add('border-red-500', 'bg-red-50');
-        hasError = true;
-      }
-
-      if (hasError) return;
-
-      if (!confirm('Yakin simpan barang baru?')) return;
-
-      fetch("{{ route('admin.pembelian.storeBarang') }}", {
-        method: "POST",
-        headers: {
-          "X-CSRF-TOKEN": "{{ csrf_token() }}",
-          "Accept": "application/json"
-        },
-        body: new FormData(formTambahBarang)
-      })
-      .then(r => r.json())
-      .then(data => {
-        if (data.success) {
-          window.location.reload();
-        } else {
-          alert(data.message || 'Gagal menyimpan barang.');
-        }
-      })
-      .catch(() => alert('Terjadi kesalahan jaringan.'));
     });
+
+    // Awalnya matikan tombol Update
+    submitButton.disabled = true;
+    submitButton.classList.add('opacity-50', 'cursor-not-allowed');
   }
 
-  function attachBarangEvents(row) {
-    row.querySelector('select')?.addEventListener('change', calculateTotals);
-    row.querySelectorAll('input').forEach(input => {
-      input.addEventListener('input', calculateTotals);
+  function hasChanges() {
+    if (!isEditMode || !initialState) return true;
+
+    const current = {
+      supplier: document.getElementById('id_supplier')?.value || '',
+      diskon: document.getElementById('diskon')?.value || '0',
+      ppn: document.getElementById('ppn')?.value || '0',
+      biaya_pengiriman: document.getElementById('biaya_pengiriman')?.value || '0',
+      jenis_pembayaran: document.getElementById('jenis_pembayaran')?.value || '',
+      catatan: document.getElementById('catatan')?.value || '',
+      details: []
+    };
+
+    document.querySelectorAll('.barang-row').forEach(row => {
+      current.details.push({
+        id_barang: row.querySelector('select[name$="[id_barang]"]')?.value || '',
+        harga_beli: row.querySelector('input[name*="[harga_beli]"]')?.value || '',
+        kuantitas: row.querySelector('input[name*="[kuantitas]"]')?.value || ''
+      });
     });
+
+    // Cek field utama
+    if (current.supplier !== initialState.supplier) return true;
+    if (current.diskon !== initialState.diskon) return true;
+    if (current.ppn !== initialState.ppn) return true;
+    if (current.biaya_pengiriman !== initialState.biaya_pengiriman) return true;
+    if (current.jenis_pembayaran !== initialState.jenis_pembayaran) return true;
+    if (current.catatan !== initialState.catatan) return true;
+
+    // Cek detail barang
+    if (current.details.length !== initialState.details.length) return true;
+    for (let i = 0; i < current.details.length; i++) {
+      if (current.details[i].id_barang  !== initialState.details[i].id_barang)  return true;
+      if (current.details[i].harga_beli !== initialState.details[i].harga_beli) return true;
+      if (current.details[i].kuantitas  !== initialState.details[i].kuantitas)  return true;
+    }
+
+    return false;
   }
 
+  function updateButtonState() {
+    if (!isEditMode) return;
+    const changed = hasChanges();
+    submitButton.disabled = !changed;
+    if (changed) {
+      submitButton.classList.remove('opacity-50', 'cursor-not-allowed');
+    } else {
+      submitButton.classList.add('opacity-50', 'cursor-not-allowed');
+    }
+  }
+
+  /* ==================== TAMBAH / HAPUS ROW BARANG ==================== */
   function updateActionButtons() {
     const rows = barangContainer.querySelectorAll('.barang-row');
     rows.forEach((row, i) => {
@@ -469,7 +477,7 @@ document.addEventListener('DOMContentLoaded', function () {
         <p class="text-sm text-red-600 mt-1 hidden" data-error="id_barang_${barangIndex}"></p>
       </div>
       <div class="col-span-3">
-        <input type="number" name="details[${barangIndex}][harga_beli]" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200" step="0.01" min="0" placeholder="Harga">
+        <input type="text" name="details[${barangIndex}][harga_beli]" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200 harga-beli-input" placeholder="Harga">
         <p class="text-sm text-red-600 mt-1 hidden" data-error="harga_beli_${barangIndex}"></p>
       </div>
       <div class="col-span-3">
@@ -481,18 +489,19 @@ document.addEventListener('DOMContentLoaded', function () {
     barangContainer.appendChild(row);
     barangIndex++;
     updateActionButtons();
-    attachBarangEvents(row);
     calculateTotals();
+    if (isEditMode) updateButtonState();
   }
 
   function removeRow(row) {
-    if (barangContainer.querySelectorAll('.barang-row').length > 1) {
-      row.remove();
-      updateActionButtons();
-      calculateTotals();
-    } else {
+    if (barangContainer.querySelectorAll('.barang-row').length <= 1) {
       alert('Minimal 1 barang.');
+      return;
     }
+    row.remove();
+    updateActionButtons();
+    calculateTotals();
+    if (isEditMode) updateButtonState();
   }
 
   document.addEventListener('click', e => {
@@ -500,112 +509,140 @@ document.addEventListener('DOMContentLoaded', function () {
     if (e.target.classList.contains('remove-barang-btn')) removeRow(e.target.closest('.barang-row'));
   });
 
-  document.querySelectorAll('.barang-row').forEach(attachBarangEvents);
-  updateActionButtons();
-
-  function calculateTotals() {
-    let subTotal = 0;
-    document.querySelectorAll('.barang-row').forEach(row => {
-      const harga = parseFloat(row.querySelector('input[name*="[harga_beli]"]')?.value) || 0;
-      const qty = parseInt(row.querySelector('input[name*="[kuantitas]"]')?.value) || 0;
-      subTotal += harga * qty;
+  /* ==================== TAMBAH BARANG BARU (CHECKBOX) ==================== */
+  if (tambahBarangCheckbox && formTambahBarang) {
+    tambahBarangCheckbox.addEventListener('change', function () {
+      formTambahBarang.classList.toggle('hidden', !this.checked);
+      if (!this.checked) {
+        formTambahBarang.reset();
+        formTambahBarang.querySelectorAll('[data-error]').forEach(el => {
+          el.textContent = ''; el.classList.add('hidden');
+        });
+      }
     });
-
-    const diskon = parseFloat(document.getElementById('diskon')?.value) || 0;
-    const ppn = parseFloat(document.getElementById('ppn')?.value) || 0;
-    const biaya = parseFloat(document.getElementById('biaya_pengiriman')?.value) || 0;
-
-    const diskonNilai = (diskon / 100) * subTotal;
-    const setelahDiskon = subTotal - diskonNilai;
-    const ppnNilai = (ppn / 100) * setelahDiskon;
-    const totalBayar = setelahDiskon + ppnNilai + biaya;
-
-    document.getElementById('subTotalDisplay').value = 'Rp ' + subTotal.toLocaleString('id-ID');
-    document.getElementById('totalBayarDisplay').value = 'Rp ' + totalBayar.toLocaleString('id-ID');
   }
 
-  ['diskon', 'ppn', 'biaya_pengiriman'].forEach(id => {
-    document.getElementById(id)?.addEventListener('input', calculateTotals);
-    document.getElementById(id)?.addEventListener('change', calculateTotals);
+  if (simpanBarangBtn) {
+    simpanBarangBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      let hasError = false;
+      const required = ['nama_barang','id_kategori_barang','id_supplier_barang','id_satuan'];
+      required.forEach(name => {
+        const el = formTambahBarang.querySelector(`[name="${name}"]`);
+        const err = formTambahBarang.querySelector(`[data-error="${name}"]`);
+        if (!el?.value.trim()) {
+          err.textContent = 'Wajib diisi.';
+          err.classList.remove('hidden');
+          el.classList.add('border-red-500','bg-red-50');
+          hasError = true;
+        } else {
+          err.classList.add('hidden');
+          el.classList.remove('border-red-500','bg-red-50');
+        }
+      });
+      if (hasError) return;
+      if (!confirm('Simpan barang baru?')) return;
+
+      fetch("{{ route('admin.pembelian.storeBarang') }}", {
+        method: "POST",
+        headers: { "X-CSRF-TOKEN": "{{ csrf_token() }}", "Accept": "application/json" },
+        body: new FormData(formTambahBarang)
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) location.reload();
+        else alert(data.message || 'Gagal.');
+      })
+      .catch(() => alert('Error jaringan.'));
+    });
+  }
+
+  /* ==================== FORMAT INPUT HARGA SAAT KETIK & BLUR ==================== */
+  document.addEventListener('input', function (e) {
+    if (e.target.classList.contains('harga-beli-input')) {
+      let val = e.target.value.replace(/\D/g, '');
+      e.target.value = val ? parseInt(val, 10).toLocaleString('id-ID') : '';
+    }
   });
 
+  document.addEventListener('blur', function (e) {
+    if (e.target.classList.contains('harga-beli-input')) {
+      let clean = unformatRupiah(e.target.value);
+      if (clean) e.target.value = formatRupiah(clean);
+    }
+  }, true);
 
-  if (pembelianForm) {
-    pembelianForm.addEventListener('submit', function (e) {
-      e.preventDefault();
-      resetAllErrors();
-      let hasError = false;
+  /* ==================== VALIDASI & SUBMIT ==================== */
+  pembelianForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    let hasError = false;
 
-      // Supplier
-      if (!document.getElementById('id_supplier')?.value) {
-        document.getElementById('id_supplier').classList.add('border-red-500', 'bg-red-50');
-        hasError = true;
-      }
-
-      // Jenis Pembayaran
-      if (!document.getElementById('jenis_pembayaran')?.value) {
-        showError('jenis_pembayaran', 'Jenis pembayaran wajib dipilih.');
-        hasError = true;
-      }
-
-      // Diskon
-      const diskon = parseFloat(document.getElementById('diskon')?.value) || 0;
-      if (diskon < 0 || diskon > 100) {
-        showError('diskon', 'Diskon harus 0-100%.');
-        hasError = true;
-      }
-
-      // PPN
-      const ppn = parseFloat(document.getElementById('ppn')?.value) || 0;
-      if (ppn < 0 || ppn > 100) {
-        showError('ppn', 'PPN harus 0-100%.');
-        hasError = true;
-      }
-
-      // Biaya Pengiriman
-      const biaya = parseFloat(document.getElementById('biaya_pengiriman')?.value) || 0;
-      if (biaya < 0) {
-        showError('biaya_pengiriman', 'Biaya tidak boleh negatif.');
-        hasError = true;
-      }
-
-      // Detail Barang
-      const rows = document.querySelectorAll('.barang-row');
-      if (rows.length === 0) {
-        document.querySelector('#details_error')?.classList.remove('hidden');
-        hasError = true;
-      }
-
-      rows.forEach((row, i) => {
-      const idBarang = row.querySelector('select[name$="[id_barang]"]');
-      const harga = row.querySelector('input[name$="[harga_beli]"]');
-      const qty = row.querySelector('input[name$="[kuantitas]"]');
-
-      if (!idBarang?.value) {
-        idBarang.classList.add('border-red-500', 'bg-red-50');
-        hasError = true;
-      }
-      if (!harga?.value || parseFloat(harga.value) <= 0) {
-        harga.classList.add('border-red-500', 'bg-red-50');
-        hasError = true;
-      }
-      if (!qty?.value || parseInt(qty.value) <= 0) {
-        qty.classList.add('border-red-500', 'bg-red-50');
-        hasError = true;
-      }
+    // Reset error
+    document.querySelectorAll('.border-red-500, .bg-red-50, [id$="_error"]:not(.hidden), [data-error]:not(.hidden)').forEach(el => {
+      el.classList.remove('border-red-500', 'bg-red-50');
+      if (el.tagName === 'P') el.classList.add('hidden');
     });
 
-      if (hasError) {
-        alert('Periksa kembali isian Anda.');
-        return;
-      }
+    // Validasi supplier & jenis pembayaran
+    if (!document.getElementById('id_supplier')?.value) {
+      document.getElementById('id_supplier').classList.add('border-red-500','bg-red-50'); hasError = true;
+    }
+    if (!document.getElementById('jenis_pembayaran')?.value) {
+      document.getElementById('jenis_pembayaran_error').classList.remove('hidden');
+      document.getElementById('jenis_pembayaran').classList.add('border-red-500','bg-red-50');
+      hasError = true;
+    }
 
-      if (!confirm('Simpan data pembelian?')) return;
-
-      this.submit();
+    // Validasi detail barang
+    document.querySelectorAll('.barang-row').forEach(row => {
+      const select = row.querySelector('select[name$="[id_barang]"]');
+      const harga  = row.querySelector('input[name*="[harga_beli]"]');
+      const qty    = row.querySelector('input[name*="[kuantitas]"]');
+      if (!select?.value) { select.classList.add('border-red-500','bg-red-50'); hasError = true; }
+      if (!harga?.value || parseFloat(unformatRupiah(harga.value)) <= 0) { harga.classList.add('border-red-500','bg-red-50'); hasError = true; }
+      if (!qty?.value || parseInt(qty.value) <= 0) { qty.classList.add('border-red-500','bg-red-50'); hasError = true; }
     });
-  }
 
+    if (hasError) {
+      alert('Periksa kembali data yang diinput!');
+      return;
+    }
+
+    if (!confirm('Yakin simpan data pembelian?')) return;
+
+    // Bersihkan format rupiah sebelum kirim
+    document.querySelectorAll('.harga-beli-input').forEach(input => {
+      let clean = unformatRupiah(input.value);
+      input.value = clean && !isNaN(clean) ? parseFloat(clean) : 0;
+    });
+
+    this.submit();
+  });
+
+  /* ==================== JALANKAN SEMUA SETELAH LOAD ==================== */
+  // 1. Format harga beli
+  formatAllHargaBeli();
+
+  // 2. Hitung subtotal pertama kali
   calculateTotals();
+
+  // 3. Simpan state awal & matikan tombol Update (hanya di edit)
+  saveInitialState();
+
+  // 4. Pasang semua listener
+  const triggers = '#diskon, #ppn, #biaya_pengiriman, #id_supplier, #jenis_pembayaran, #catatan, .barang-row input, .barang-row select';
+  document.querySelectorAll(triggers).forEach(el => {
+    el.addEventListener('input', () => { calculateTotals(); if(isEditMode) updateButtonState(); });
+    el.addEventListener('change', () => { calculateTotals(); if(isEditMode) updateButtonState(); });
+  });
+
+  // Observer untuk tambah/hapus row
+  new MutationObserver(() => {
+    calculateTotals();
+    if (isEditMode) updateButtonState();
+  }).observe(barangContainer, { childList: true, subtree: true });
+
+  // Update tombol + / - saat load
+  updateActionButtons();
 });
 </script>

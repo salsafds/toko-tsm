@@ -68,16 +68,16 @@
             <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ number_format($item->jumlah_bayar, 0, ',', '.') }}</td>
             <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->tanggal_pembelian->format('d/m/Y') }}</td>
             <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">
-              @if($item->tanggal_terima)
-                {{ $item->tanggal_terima->format('d/m/Y') }}
-              @else
-                <form action="{{ route('admin.pembelian.selesai', $item->id_pembelian) }}" method="POST" style="display:inline;">
-                  @csrf
-                  @method('PATCH')
-                  <button type="submit" class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 hover:bg-green-200">Selesai</button>
-                </form>
-              @endif
-            </td>
+  @if($item->tanggal_terima)
+    {{ $item->tanggal_terima->format('d/m/Y') }}
+  @else
+    <form action="{{ route('admin.pembelian.selesai', $item->id_pembelian) }}" method="POST" style="display:inline;">
+      @csrf
+      @method('PATCH')
+      <button type="submit" class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 hover:bg-green-200" onclick="return confirm('Apakah Anda yakin ingin menyelesaikan pembelian ini? Ini akan menambah stok barang.')">Selesai</button>
+    </form>
+  @endif
+</td>
             <td class="px-2 sm:px-4 py-2 text-center">
               <div class="flex justify-center items-center gap-2 sm:gap-3">
                 @if(!$item->tanggal_terima)
@@ -86,7 +86,7 @@
                   <span class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500">Edit</span>
                 @endif
                 @if(!$item->tanggal_terima)  
-                  <form action="{{ route('admin.pembelian.destroy', $item->id_pembelian) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data pembelian ini?');" style="display:inline;">
+                  <form action="{{ route('admin.pembelian.destroy', $item->id_pembelian) }}" method="POST" onsubmit="return confirm('Apakah anda yakin ingin menghapus data pembelian ini?');" style="display:inline;">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-rose-100 text-rose-700 hover:bg-rose-200">Delete</button>
