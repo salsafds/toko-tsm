@@ -97,13 +97,13 @@
             <div class="space-y-4">
                 <div class="flex justify-between items-center">
                     <span class="text-gray-600">Total Nota Pembelian (periode ini)</span>
-                    <span class="text font-bold text-gray-800">Rp {{ number_format($totalPembelian, 0, ',', '.') }}</span>
+                    <span class="font-bold text-gray-800">Rp {{ number_format($totalPembelian, 0, ',', '.') }}</span>
                 </div>
                 <div class="flex justify-between items-center pt-3 border-t border-gray-100">
                     <span class="text-gray-600 flex items-center">
                         Barang Masuk Stok (sudah diterima)
                     </span>
-                    <span class="text font-bold text-green-600">Rp {{ number_format($pembelianMasuk, 0, ',', '.') }}</span>
+                    <span class="font-bold text-green-600">Rp {{ number_format($pembelianMasuk, 0, ',', '.') }}</span>
                 </div>
             </div>
         </div>
@@ -113,42 +113,109 @@
             <div class="space-y-4">
                 <div class="flex justify-between items-center">
                     <span class="text-gray-600">HPP (Biaya Pokok Penjualan)</span>
-                    <span class="text-lg font-bold text-orange-600">Rp {{ number_format($hpp, 0, ',', '.') }}</span>
+                    <span class="font-bold text-orange-600">Rp {{ number_format($hpp, 0, ',', '.') }}</span>
                 </div>
                 <div class="flex justify-between items-center pt-4 border-t-2 border-green-100">
                     <span class="font-bold text-gray-800">Laba Kotor Bersih</span>
-                    <span class="text-lg font-bold text-green-600">Rp {{ number_format($labaKotor, 0, ',', '.') }}</span>
+                    <span class="font-bold text-green-600">Rp {{ number_format($labaKotor, 0, ',', '.') }}</span>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Daftar Stok Kritis -->
-    @if($stokKritis->count() > 0)
-    <div class="bg-white rounded-lg shadow-sm mb-6 border border-gray-200 overflow-x-auto">
-        <div class="px-5 py-4 border-b border-gray-200">
-            <h2 class="text-sm font-medium text-gray-700">Stok Kritis (Stok < 10)</h2>
-        </div>
-        <table class="min-w-full divide-y divide-gray-200 text-sm">
-            <thead class="bg-gray-50">
-                <tr class="text-xs text-gray-500 uppercase">
-                    <th class="px-5 py-3 text-center border-r border-gray-200">Kode</th>
-                    <th class="px-5 py-3 text-center border-r border-gray-200">Nama Barang</th>
-                    <th class="px-5 py-3 text-center">Stok</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-100">
-                @foreach($stokKritis as $b)
-                <tr class="hover:bg-red-50">
-                    <td class="px-5 py-4 font-mono text-sm border-r border-gray-100">{{ $b->id_barang }}</td>
-                    <td class="px-5 py-4 border-r border-gray-100">{{ $b->nama_barang }}</td>
-                    <td class="px-5 py-4 text-left font-bold text-red-600">{{ $b->stok }}</td>
-                </tr>
+@if($stokKritis->total() > 0)
+<div class="bg-white rounded-lg shadow-sm mb-6 border border-gray-200 overflow-x-auto">
+    <div class="px-5 py-4 border-b border-gray-200 flex items-center justify-between">
+        <h2 class="text-sm font-medium text-gray-700">
+            Stok Kritis (Stok < 10) 
+        </h2>
+        <div class="flex items-center gap-3 text-sm">
+            <span class="text-gray-600">Show</span>
+            <form method="GET">
+                @foreach(request()->query() as $key => $value)
+                    @if(!in_array($key, ['per_page_stok', 'page_stok']))
+                        <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                    @endif
                 @endforeach
-            </tbody>
-        </table>
+                <select name="per_page_stok" onchange="this.form.submit()"
+                        class="border border-gray-300 rounded-md px-2 py-1 text-sm bg-white focus:ring-indigo-500 focus:border-indigo-500">
+                    <option value="10"  {{ $perPageStok == 10  ? 'selected' : '' }}>10</option>
+                    <option value="15"  {{ $perPageStok == 15  ? 'selected' : '' }}>15</option>
+                    <option value="30"  {{ $perPageStok == 30  ? 'selected' : '' }}>30</option>
+                    <option value="50"  {{ $perPageStok == 50  ? 'selected' : '' }}>50</option>
+                </select>
+            </form>
+        </div>
     </div>
-    @endif
+
+    <table class="min-w-full divide-y divide-gray-200 text-sm">
+        <thead class="bg-gray-50">
+            <tr class="text-xs text-gray-500 uppercase">
+                <th class="px-5 py-3 text-center border-r border-gray-200">Kode</th>
+                <th class="px-5 py-3 text-center border-r border-gray-200">Nama Barang</th>
+                <th class="px-5 py-3 text-center">
+                    <div class="flex items-center justify-center space-x-2">
+                        <span>Stok</span>
+                        <div class="flex flex-col -space-y-1">
+                            <a href="{{ request()->fullUrlWithQuery(['sort_stok' => 'asc', 'page_stok' => null]) }}"
+                               class="leading-none {{ $sortStok === 'asc' ? 'text-indigo-600 font-bold' : 'text-gray-400 hover:text-gray-600' }}">
+                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M3 10l7-7 7 7z"/></svg>
+                            </a>
+                            <a href="{{ request()->fullUrlWithQuery(['sort_stok' => 'desc', 'page_stok' => null]) }}"
+                               class="leading-none {{ $sortStok === 'desc' ? 'text-indigo-600 font-bold' : 'text-gray-400 hover:text-gray-600' }}">
+                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M17 10l-7 7-7-7z"/></svg>
+                            </a>
+                        </div>
+                    </div>
+                </th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+            @foreach($stokKritis as $b)
+            <tr class="hover:bg-red-50">
+                <td class="px-5 py-4 font-mono text-sm border-r border-gray-100">{{ $b->id_barang }}</td>
+                <td class="px-5 py-4 border-r border-gray-100">{{ $b->nama_barang }}</td>
+                <td class="px-5 py-4 text-center font-bold text-red-600">{{ $b->stok }}</td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+
+    <!-- Pagination – SAMA PERSIS seperti Riwayat Transaksi -->
+    <div class="flex justify-end mt-4 mb-6 px-3">
+        <div class="flex items-center gap-4 select-none">
+            @if ($stokKritis->onFirstPage())
+                <span class="flex items-center justify-center w-8 h-8 rounded-md border border-gray-300 text-gray-300">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                </span>
+            @else
+                <a href="{{ $stokKritis->appends(request()->query())->previousPageUrl() }}"
+                   class="flex items-center justify-center w-8 h-8 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100 transition">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                </a>
+            @endif
+
+            <span class="text-gray-700 text-sm font-medium">
+                {{ $stokKritis->currentPage() }} of {{ $stokKritis->lastPage() }}
+            </span>
+
+            @if ($stokKritis->hasMorePages())
+                <a href="{{ $stokKritis->appends(request()->query())->nextPageUrl() }}"
+                   class="flex items-center justify-center w-8 h-8 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100 transition">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </a>
+            @else
+                <span class="flex items-center justify-center w-8 h-8 rounded-md border border-gray-300 text-gray-300">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </span>
+            @endif
+        </div>
+    </div>
+</div>
+@else
+<div class="bg-white rounded-lg shadow-sm p-6 mb-6 text-center text-gray-500">
+    Tidak ada barang dengan stok kritis saat ini.
+</div>
+@endif
 
     <!-- 10 Barang Terlaris + Bar Chart -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
@@ -259,92 +326,233 @@
         </table>
 
         <!-- Pagination -->
-        <div class="mt-4 flex flex-col sm:flex-row items-center justify-between gap-2 px-5 pb-4">
-            <div class="text-xs sm:text-sm text-gray-600">
-                @if($transaksi->total())
-                    Menampilkan {{ $transaksi->firstItem() }} sampai {{ $transaksi->lastItem() }} dari {{ $transaksi->total() }} data
-                @endif
+        <div class="flex items-center justify-between mt-4 mb-6 px-3">
+
+            <div class="flex items-center gap-2 text-sm text-gray-700">
+                <span>Show</span>
+
+                <form method="GET">
+                    <select name="per_page"
+                        onchange="this.form.submit()"
+                        class="border border-gray-300 rounded-md px-2 py-1 text-sm bg-white 
+                            focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="10" {{ request('per_page', 15) == 10 ? 'selected' : '' }}>10</option>
+                        <option value="15" {{ request('per_page', 15) == 15 ? 'selected' : '' }}>15</option>
+                        <option value="30" {{ request('per_page', 15) == 30 ? 'selected' : '' }}>30</option>
+                        <option value="50" {{ request('per_page', 15) == 50 ? 'selected' : '' }}>50</option>
+                    </select>
+                </form>
             </div>
-            <div>
-                @if($transaksi->hasPages())
-                    <div class="flex items-center space-x-1">
-                        @if($transaksi->onFirstPage())
-                            <span class="px-2 py-1 text-xs bg-gray-200 text-gray-500 rounded cursor-not-allowed">Previous</span>
-                        @else
-                            <a href="{{ $transaksi->previousPageUrl() }}" class="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600 transition">Previous</a>
-                        @endif
 
-                        @foreach($transaksi->getUrlRange(1, $transaksi->lastPage()) as $page => $url)
-                            @if($page == $transaksi->currentPage())
-                                <span class="px-2 py-1 text-xs bg-blue-500 text-white rounded">{{ $page }}</span>
-                            @else
-                                <a href="{{ $url }}" class="px-2 py-1 text-xs bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition">{{ $page }}</a>
-                            @endif
-                        @endforeach
+            {{-- RIGHT: Pagination --}}
+            <div class="flex items-center gap-4 select-none">
 
-                        @if($transaksi->hasMorePages())
-                            <a href="{{ $transaksi->nextPageUrl() }}" class="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600 transition">Next</a>
-                        @else
-                            <span class="px-2 py-1 text-xs bg-gray-200 text-gray-500 rounded cursor-not-allowed">Next</span>
-                        @endif
+                {{-- Previous --}}
+                @if ($transaksi->onFirstPage())
+                    <span class="flex items-center justify-center w-8 h-8 rounded-md
+                                border border-gray-300 text-gray-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </span>
+                @else
+                    <a href="{{ $transaksi->appends(request()->query())->previousPageUrl() }}"
+                    class="flex items-center justify-center w-8 h-8 rounded-md
+                            border border-gray-300 text-gray-600 hover:bg-gray-100 transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </a>
+                @endif
+
+                {{-- Page Number --}}
+                <span class="text-gray-700 text-sm font-medium">
+                    {{ $transaksi->currentPage() }} of {{ $transaksi->lastPage() }}
+                </span>
+
+                {{-- Next --}}
+                @if ($transaksi->hasMorePages())
+                    <a href="{{ $transaksi->appends(request()->query())->nextPageUrl() }}"
+                    class="flex items-center justify-center w-8 h-8 rounded-md
+                            border border-gray-300 text-gray-600 hover:bg-gray-100 transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </a>
+                @else
+                    <span class="flex items-center justify-center w-8 h-8 rounded-md
+                                border border-gray-300 text-gray-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </span>
+                @endif
+
+            </div>
+
+        </div>
+     </div>
+
+
+        {{-- Daftar Semua Barang – dengan pagination & export --}}
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-auto">
+            <div class="px-5 py-4 border-b border-gray-200 flex items-center justify-between">
+                <h2 class="text-sm font-medium text-gray-700">
+                    Daftar Barang Saat Ini ({{ $daftarBarang->total() }} barang)
+                </h2>
+
+                <div class="flex items-center gap-4">
+                    {{-- Show entries --}}
+                    <div class="flex items-center gap-2 text-sm text-gray-700">
+                        <span>Show</span>
+                        <form method="GET">
+                            @foreach(request()->query() as $key => $value)
+                                @if(!in_array($key, ['per_page_barang', 'page_barang']))
+                                    <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                                @endif
+                            @endforeach
+                            <select name="per_page_barang" onchange="this.form.submit()"
+                                    class="border border-gray-300 rounded-md px-2 py-1 text-sm bg-white">
+                                <option value="10"  {{ $perPageBarang == 10  ? 'selected' : '' }}>10</option>
+                                <option value="25"  {{ $perPageBarang == 25  ? 'selected' : '' }}>25</option>
+                                <option value="50"  {{ $perPageBarang == 50  ? 'selected' : '' }}>50</option>
+                                <option value="100" {{ $perPageBarang == 100 ? 'selected' : '' }}>100</option>
+                                <option value="200" {{ $perPageBarang == 200 ? 'selected' : '' }}>200</option>
+                            </select>
+                        </form>
                     </div>
-                @endif
+
+                    {{-- Export Buttons --}}
+                    <div class="flex gap-2">
+                        <a href="{{ route('master.laporan.bulanan', ['format' => 'pdf', 'section' => 'daftar_barang'] + request()->query()) }}"
+                        class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded text-xs font-medium transition">
+                            Print PDF
+                        </a>
+                        <a href="{{ route('master.laporan.bulanan', ['format' => 'excel', 'section' => 'daftar_barang'] + request()->query()) }}"
+                        class="bg-green-500 hover:bg-green-600 text-white px-3 py-1.5 rounded text-xs font-medium transition">
+                            Print Excel
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <table class="min-w-full divide-y divide-gray-200 text-sm">
+                <thead class="bg-gray-50 text-xs text-gray-500 uppercase">
+                    <tr>
+                        <th class="px-5 py-3 text-center border-r border-gray-200">Kode</th>
+                        <th class="px-5 py-3 text-center border-r border-gray-200">Nama Barang</th>
+                        <th class="px-5 py-3 text-center border-r border-gray-200">Margin</th>
+                        <th class="px-5 py-3 text-center border-r border-gray-200">Harga Beli</th>
+                        <th class="px-5 py-3 text-center border-r border-gray-200">Stok</th>
+                        <th class="px-5 py-3 text-center">Harga Jual</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    @forelse($daftarBarang as $b)
+                    <tr class="{{ $b->stok < 10 ? 'bg-red-50' : '' }}">
+                        <td class="px-5 py-4 font-mono text-sm border-r border-gray-100">{{ $b->id_barang }}</td>
+                        <td class="px-5 py-4 border-r border-gray-100">{{ $b->nama_barang }}</td>
+                        <td class="px-5 py-4 text-center text-purple-600 border-r border-gray-100">{{ $b->margin }}%</td>
+                        <td class="px-5 py-4 text-right border-r border-gray-100">
+                            Rp {{ number_format($b->harga_beli, 0, ',', '.') }}
+                        </td>
+                        <td class="px-5 py-4 text-center font-bold border-r border-gray-100 {{ $b->stok < 10 ? 'text-red-600' : '' }}">
+                            {{ $b->stok }}
+                        </td>
+                        <td class="px-5 py-4 text-right font-bold text-green-600">
+                            Rp {{ number_format($b->retail, 0, ',', '.') }}
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="6" class="text-center py-8 text-gray-400">Tidak ada data barang</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+
+            <!-- Pagination -->
+            <div class="flex justify-end mt-4 mb-6 px-3">
+                <div class="flex items-center gap-4 select-none">
+                    @if ($daftarBarang->onFirstPage())
+                        <span class="flex items-center justify-center w-8 h-8 rounded-md border border-gray-300 text-gray-300">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                        </span>
+                    @else
+                        <a href="{{ $daftarBarang->appends(request()->query())->previousPageUrl() }}"
+                        class="flex items-center justify-center w-8 h-8 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100 transition">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                        </a>
+                    @endif
+
+                    <span class="text-gray-700 text-sm font-medium">
+                        {{ $daftarBarang->currentPage() }} of {{ $daftarBarang->lastPage() }}
+                    </span>
+
+                    @if ($daftarBarang->hasMorePages())
+                        <a href="{{ $daftarBarang->appends(request()->query())->nextPageUrl() }}"
+                        class="flex items-center justify-center w-8 h-8 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100 transition">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </a>
+                    @else
+                        <span class="flex items-center justify-center w-8 h-8 rounded-md border border-gray-300 text-gray-300">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </span>
+                    @endif
+                </div>
             </div>
         </div>
-    </div>
-
-    <!-- Daftar Semua Barang -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-auto">
-        <div class="px-5 py-4 border-b border-gray-200">
-            <h2 class="text-sm font-medium text-gray-700">Daftar Barang Saat Ini</h2>
-        </div>
-        <table class="min-w-full divide-y divide-gray-200 text-sm">
-            <thead class="bg-gray-50 text-xs text-gray-500 uppercase">
-                <tr>
-                    <th class="px-5 py-3 text-center border-r border-gray-200">Kode</th>
-                    <th class="px-5 py-3 text-center border-r border-gray-200">Nama Barang</th>
-                    <th class="px-5 py-3 text-center border-r border-gray-200">Margin</th>
-                    <th class="px-5 py-3 text-center border-r border-gray-200">Harga Beli</th>
-                    <th class="px-5 py-3 text-center border-r border-gray-200">Stok</th>
-                    <th class="px-5 py-3 text-center">Harga Jual</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-100">
-                @foreach($daftarBarang as $b)
-                <tr>
-                    <td class="px-5 py-4 border-r border-gray-100">{{ $b->id_barang }}</td>
-                    <td class="px-5 py-4 border-r border-gray-100">{{ $b->nama_barang }}</td>
-                    <td class="px-5 py-4 text-left text-purple-600 border-r border-gray-100">{{ $b->margin }}%</td>
-                    <td class="px-5 py-4 text-left border-r border-gray-100">Rp {{ number_format($b->harga_beli, 0, ',', '.') }}</td>
-                    <td class="px-5 py-4 text-left border-r border-gray-100 {{ $b->stok < 10 ? 'text-red-600 font-bold' : '' }}">{{ $b->stok }}</td>
-                    <td class="px-5 py-4 text-left font-bold text-green-600">Rp {{ number_format($b->retail, 0, ',', '.') }}</td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-</div>
 
 @push('js')
-    <script src="{{ asset('js/chart.umd.min.js') }}"></script>
-    <script>
-        new Chart(document.getElementById('chartTerlaris'), {
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const ctx = document.getElementById('chartTerlaris');
+        if (!ctx) return;
+
+        // Batasi nama barang biar ga error
+        const rawLabels = @json($terlaris->pluck('nama_barang'));
+        const labels = rawLabels.map(name => 
+            name.length > 20 ? name.substring(0, 20) + '...' : name
+        );
+        const data = @json($terlaris->pluck('qty'));
+
+        if (data.length === 0) {
+            ctx.parentElement.innerHTML = `
+                <div class="h-80 flex items-center justify-center">
+                    <p class="text-gray-500 text-lg">Tidak ada data penjualan pada periode ini</p>
+                </div>`;
+            return;
+        }
+
+        new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: @json($terlaris->pluck('nama_barang')),
+                labels: labels,
                 datasets: [{
                     label: 'Terjual (Qty)',
-                    data: @json($terlaris->pluck('qty')),
+                    data: data,
                     backgroundColor: '#6366f1',
-                    borderRadius: 6
+                    borderRadius: 8,
+                    borderSkipped: false,
                 }]
             },
             options: {
                 responsive: true,
-                plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: true } }
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { beginAtZero: true, ticks: { stepSize: 1 } },
+                    x: { ticks: { maxRotation: 45, minRotation: 45 } }
+                }
             }
         });
-    </script>
+    });
+</script>
 @endpush
 @endsection

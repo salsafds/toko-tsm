@@ -78,12 +78,19 @@ class BulananController extends Controller
             ->sum('jumlah_bayar');
 
         $nilaiStokAkhir = DB::table('barang')->sum(DB::raw('stok * harga_beli'));
+        
+        $sortStok   = $request->get('sort_stok', 'asc'); 
+        $perPageStok = (int) $request->get('per_page_stok', 10);
+        $sortStokNext = $sortStok === 'asc' ? 'desc' : 'asc';
 
         $stokKritis = DB::table('barang')
-            ->where('stok', '>', 0)
-            ->where('stok', '<', 10)
-            ->orderBy('stok')
-            ->get(['id_barang', 'nama_barang', 'stok']);
+        ->where('stok', '>', 0)
+        ->where('stok', '<', 10)
+        ->orderBy('stok', $sortStok)
+        ->select('id_barang', 'nama_barang', 'stok')
+        ->paginate($perPageStok, ['*'], 'page_stok')
+        ->appends($request->query());
+
 
         $terlaris = DB::table('detail_penjualan as dp')
             ->join('penjualan as p', 'dp.id_penjualan', '=', 'p.id_penjualan')
@@ -149,16 +156,19 @@ class BulananController extends Controller
             ->appends($request->query());
 
         $transaksi->getCollection()->transform(fn($i) => tap($i, fn($i) => $i->tanggal = Carbon::parse($i->tanggal)));
+        $perPageBarang = (int) $request->get('per_page_barang', 25); // default 25
 
         $daftarBarang = DB::table('barang')
             ->select('id_barang', 'nama_barang', 'harga_beli', 'margin', 'retail', 'stok')
             ->orderBy('nama_barang')
-            ->get();
+            ->paginate($perPageBarang, ['*'], 'page_barang')
+            ->appends($request->query());
 
         return view('master.laporan.bulanan', compact(
             'periode', 'periodeTeks', 'omzet', 'hpp', 'labaKotor', 'marginPersen',
             'totalPembelian', 'pembelianMasuk', 'nilaiStokAkhir', 'stokKritis',
-            'terlaris', 'transaksi', 'daftarBarang', 'jenis', 'sortTanggal', 'perPage'
+            'terlaris', 'transaksi', 'daftarBarang', 'jenis', 'sortTanggal', 'perPage',
+            'stokKritis', 'sortStok', 'sortStokNext', 'perPageStok', 'perPageBarang'
         ));
     }
 }
