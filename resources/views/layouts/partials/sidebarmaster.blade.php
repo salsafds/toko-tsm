@@ -115,52 +115,89 @@
 
   <hr class="mx-4 my-2 border-gray-200" x-show="isOpen" x-cloak>
 
-  <!-- Quick links under header -->
-  <div class="p-4 space-y-2" :class="{ 'px-2': !isOpen }" x-show="isOpen || isDesktop">
-    @php
-      $dashboardMasterActive = request()->routeIs('dashboard-master');
-    @endphp
+<!-- Quick links under header -->
+<div class="p-4 space-y-2" :class="{ 'px-2': !isOpen }" x-show="isOpen || isDesktop">
+  @php
+    $dashboardMasterActive = request()->routeIs('dashboard-master');
+    $isLaporanActive = request()->is('laporan/stok*') || request()->is('laporan/bulanan*');
+  @endphp
 
-    <a 
-      href="{{ route('dashboard-master') ?? '#' }}" 
-      @click="saveScrollPosition()"
-      class="flex items-center gap-3 px-2 py-2 rounded-lg relative group transition-colors"
+  <!-- Dashboard -->
+  <a
+    href="{{ route('dashboard-master') ?? '#' }}"
+    @click="saveScrollPosition()"
+    class="flex items-center gap-3 px-2 py-2 rounded-lg relative group transition-colors"
+    :class="{
+      'justify-center': !isOpen && isDesktop,
+      'bg-blue-50 text-blue-700': {{ $dashboardMasterActive ? 'true' : 'false' }},
+      'hover:bg-blue-50 text-gray-700': {{ !$dashboardMasterActive ? 'true' : 'false' }}
+    }"
+  >
+    <img src="{{ asset('img/icon/iconHome.png') }}" alt="Icon Home" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
+    <span class="text-sm" x-show="isOpen" x-cloak>Dashboard</span>
+    <span x-show="!isOpen && isDesktop" x-cloak class="absolute left-full ml-2 bg-gray-800 text-white text-xs rounded-lg py-1 px-2 hidden group-hover:block z-10">Dashboard</span>
+  </a>
+
+  <!-- Laporan dengan Submenu (dropdown ke bawah, aman untuk scroll) -->
+  <div x-data="{ laporanOpen: {{ $isLaporanActive ? 'true' : 'false' }} }">
+    <a
+      href="javascript:void(0)"
+      @click="laporanOpen = !laporanOpen; saveScrollPosition()"
+      class="flex items-center gap-3 px-2 py-2 rounded-lg relative group transition-colors cursor-pointer"
       :class="{
         'justify-center': !isOpen && isDesktop,
-        'bg-blue-50 text-blue-700': {{ $dashboardMasterActive ? 'true' : 'false' }},
-        'hover:bg-blue-50 text-gray-700': {{ !$dashboardMasterActive ? 'true' : 'false' }}
-      }"
-    >
-      <img src="{{ asset('img/icon/iconHome.png') }}" alt="Icon Home" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-      <span class="text-sm" x-show="isOpen" x-cloak>Dashboard</span>
-      <span 
-        x-show="!isOpen && isDesktop" 
-        x-cloak
-        class="absolute left-full ml-2 bg-gray-800 text-white text-xs rounded-lg py-1 px-2 hidden group-hover:block z-10"
-      >Dashboard</span>
-    </a>
-
-    <a 
-      href="{{ route('dashboard-master') ?? '#' }}" 
-      @click="saveScrollPosition()"
-      class="flex items-center gap-3 px-2 py-2 rounded-lg relative group transition-colors"
-      :class="{
-        'justify-center': !isOpen && isDesktop,
-        'bg-blue-50 text-blue-700': {{ $dashboardMasterActive ? 'true' : 'false' }},
-        'hover:bg-blue-50 text-gray-700': {{ !$dashboardMasterActive ? 'true' : 'false' }}
+        'bg-blue-50 text-blue-700': laporanOpen || {{ $isLaporanActive ? 'true' : 'false' }},
+        'hover:bg-blue-50 text-gray-700': !(laporanOpen || {{ $isLaporanActive ? 'true' : 'false' }})
       }"
     >
       <img src="{{ asset('img/icon/iconLaporan.png') }}" alt="Icon Laporan" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
       <span class="text-sm" x-show="isOpen" x-cloak>Laporan</span>
-      <span 
-        x-show="!isOpen && isDesktop" 
-        x-cloak
-        class="absolute left-full ml-2 bg-gray-800 text-white text-xs rounded-lg py-1 px-2 hidden group-hover:block z-10"
-      >Laporan</span>
-    </a>
-  </div>
 
-  <hr class="mx-4 my-2 border-gray-200" x-show="isOpen" x-cloak>
+      <!-- Panah dropdown -->
+      <svg x-show="isOpen" x-cloak class="w-4 h-4 ml-auto transition-transform duration-200"
+           :class="{ 'rotate-90': laporanOpen }"
+           fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+      </svg>
+
+      <!-- Tooltip saat sidebar mini -->
+      <span x-show="!isOpen && isDesktop" x-cloak
+            class="absolute left-full ml-2 bg-gray-900 text-white text-xs rounded-lg py-1 px-3 whitespace-nowrap hidden group-hover:block z-10">
+        Laporan
+      </span>
+    </a>
+
+    <!-- Submenu - pakai x-collapse agar animasi smooth & tinggi nggak ganggu scroll -->
+    <div x-show="isOpen && (laporanOpen || {{ $isLaporanActive ? 'true' : 'false' }})"
+         x-collapse
+         class="mt-1 space-y-1 pl-8 border-l-2 border-gray-200">
+      
+      <!-- Laporan Bulanan -->
+      <a href="{{ route('master.laporan.bulanan') }}"
+         @click="saveScrollPosition()"
+         class="flex items-center px-3 py-2 rounded-lg text-sm transition-colors"
+         :class="{
+           'bg-blue-50 text-blue-700 font-medium': {{ request()->is('laporan/bulanan*') ? 'true' : 'false' }},
+           'hover:bg-blue-50 text-gray-600': {{ !request()->is('laporan/bulanan*') }}
+         }">
+        <span>Laporan Bulanan</span>
+      </a>
+
+      <!-- Laporan Stok (contoh submenu ke-2) -->
+      <a href="{{ route('dashboard-master') }}"
+         @click="saveScrollPosition()"
+         class="flex items-center px-3 py-2 rounded-lg text-sm transition-colors"
+         :class="{
+           'bg-blue-50 text-blue-700 font-medium': {{ request()->is('laporan/stok*') ? 'true' : 'false' }},
+           'hover:bg-blue-50 text-gray-600': {{ !request()->is('laporan/stok*') }}
+         }">
+        <span>Laporan Stok</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<hr class="mx-4 my-2 border-gray-200" x-show="isOpen" x-cloak>
 
   <!-- Sidebar Body (Dengan x-ref untuk scroll) -->
   <div 

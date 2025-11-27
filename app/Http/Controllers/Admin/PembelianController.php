@@ -54,9 +54,9 @@ class PembelianController extends Controller
             'id_pembelian' => 'required|string|unique:pembelian,id_pembelian',
             'id_supplier' => 'required|exists:supplier,id_supplier',
             'jenis_pembayaran' => 'required|in:Cash,Kredit',
-            'diskon' => 'nullable|numeric|min:0|max:100',  // Diubah: nullable
-            'ppn' => 'nullable|numeric|min:0|max:100',  // Diubah: nullable
-            'biaya_pengiriman' => 'nullable|numeric|min:0',  // Diubah: nullable
+            'diskon' => 'nullable|numeric|min:0|max:100', 
+            'ppn' => 'nullable|numeric|min:0|max:100', 
+            'biaya_pengiriman' => 'nullable|numeric|min:0',
             'catatan' => 'nullable|string',
             'details' => 'required|array|min:1',
             'details.*.id_barang' => 'required|exists:barang,id_barang',
@@ -133,7 +133,7 @@ class PembelianController extends Controller
             'jenis_pembayaran' => 'required|in:Cash,Kredit',
             'diskon' => 'nullable|numeric|min:0|max:100',  
             'ppn' => 'nullable|numeric|min:0|max:100', 
-            'biaya_pengiriman' => 'nullable|numeric|min:0',  // Diubah: nullable
+            'biaya_pengiriman' => 'nullable|numeric|min:0',
             'catatan' => 'nullable|string',
             'details' => 'required|array|min:1',
             'details.*.id_barang' => 'required|exists:barang,id_barang',

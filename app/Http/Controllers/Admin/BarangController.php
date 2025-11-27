@@ -173,45 +173,39 @@ class BarangController extends Controller
         $nextNumber = $maxNum + 1;
         return 'BRG' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
     }
+    
+    public function tambahStokDariPembelian($id_barang, $kuantitas, $hpp_per_unit)
+    {
+        $barang = Barang::findOrFail($id_barang);
 
-    // BarangController.php — GANTI SEMUA METHOD updateRetail JADI INI
+        $stok_lama = $barang->stok ?? 0;
+        $hpp_lama = $barang->harga_beli ?? 0; // ini adalah HPP rata-rata saat ini
 
-/**
- * Digunakan saat PEMBELIAN masuk barang
- * Menghitung HPP rata-rata tertimbang (moving average)
- */
-public function tambahStokDariPembelian($id_barang, $kuantitas, $hpp_per_unit)
-{
-    $barang = Barang::findOrFail($id_barang);
+        $nilai_lama = $stok_lama * $hpp_lama;
+        $nilai_baru = $kuantitas * $hpp_per_unit;
 
-    $stok_lama = $barang->stok ?? 0;
-    $hpp_lama = $barang->harga_beli ?? 0; // ini adalah HPP rata-rata saat ini
+        $stok_baru = $stok_lama + $kuantitas;
+        $hpp_baru = $stok_baru > 0 ? ($nilai_lama + $nilai_baru) / $stok_baru : 0;
 
-    $nilai_lama = $stok_lama * $hpp_lama;
-    $nilai_baru = $kuantitas * $hpp_per_unit;
+        $margin = $barang->margin ?? 0;
+        $retail_baru = $hpp_baru * (1 + ($margin / 100));
 
-    $stok_baru = $stok_lama + $kuantitas;
-    $hpp_baru = $stok_baru > 0 ? ($nilai_lama + $nilai_baru) / $stok_baru : 0;
-
-    $margin = $barang->margin ?? 0;
-    $retail_baru = $hpp_baru * (1 + ($margin / 100));
-
-    $barang->update([
-        'stok'       => $stok_baru,
-        'harga_beli' => round($hpp_baru, 2),
-        'retail'     => round($retail_baru, 2),
-    ]);
-}
-
-public function kurangiStokDariPenjualan($id_barang, $kuantitas)
-{
-    $barang = Barang::findOrFail($id_barang);
-
-    if ($barang->stok < $kuantitas) {
-        throw new \Exception("Stok {$barang->nama_barang} tidak mencukupi!");
+        $barang->update([
+            'stok'       => $stok_baru,
+            'harga_beli' => round($hpp_baru, 2),
+            'retail'     => round($retail_baru, 2),
+        ]);
     }
 
-    $barang->decrement('stok', $kuantitas);
+    public function kurangiStokDariPenjualan($id_barang, $kuantitas)
+    {
+        $barang = Barang::findOrFail($id_barang);
 
-}
-}
+        if ($barang->stok < $kuantitas) {
+            throw new \Exception("Stok {$barang->nama_barang} tidak mencukupi!");
+        }
+
+        $barang->decrement('stok', $kuantitas);
+
+    }
+    }

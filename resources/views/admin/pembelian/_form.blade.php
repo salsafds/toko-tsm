@@ -53,13 +53,13 @@
                     <p class="text-sm text-red-600 mt-1 hidden" data-error="id_barang_{{ $barangIndex }}"></p>
                 </div>
                 <div class="col-span-3">
-  <input type="text" 
-       name="details[{{ $barangIndex }}][harga_beli]"
-       value="{{ old('details.' . $barangIndex . '.harga_beli', intval($detail->harga_beli)) }}"
-       class="w-full rounded-md border px-3 py-2 text-sm border-gray-200 harga-beli-input"
-       placeholder="Harga Beli">
-  <p class="text-sm text-red-600 mt-1 hidden" data-error="harga_beli_{{ $barangIndex }}"></p>
-</div>
+                  <input type="text" 
+                      name="details[{{ $barangIndex }}][harga_beli]"
+                      value="{{ old('details.' . $barangIndex . '.harga_beli', intval($detail->harga_beli)) }}"
+                      class="w-full rounded-md border px-3 py-2 text-sm border-gray-200 harga-beli-input"
+                      placeholder="Harga Beli">
+                  <p class="text-sm text-red-600 mt-1 hidden" data-error="harga_beli_{{ $barangIndex }}"></p>
+                </div>
                 <div class="col-span-3">
                     <input type="number" name="details[{{ $barangIndex }}][kuantitas]"
                            value="{{ old('details.' . $barangIndex . '.kuantitas', $detail->kuantitas) }}"
@@ -101,11 +101,11 @@
                 <p class="text-sm text-red-600 mt-1 hidden" data-error="id_barang_0"></p>
             </div>
             <div class="col-span-3">
-  <input type="text" name="details[0][harga_beli]"
-         class="w-full rounded-md border px-3 py-2 text-sm border-gray-200 harga-beli-input"
-         placeholder="Harga Beli">
-  <p class="text-sm text-red-600 mt-1 hidden" data-error="harga_beli_0"></p>
-</div>
+              <input type="text" name="details[0][harga_beli]"
+                    class="w-full rounded-md border px-3 py-2 text-sm border-gray-200 harga-beli-input"
+                    placeholder="Harga Beli">
+              <p class="text-sm text-red-600 mt-1 hidden" data-error="harga_beli_0"></p>
+            </div>
             <div class="col-span-3">
                 <input type="number" name="details[0][kuantitas]"
                        class="w-full rounded-md border px-3 py-2 text-sm border-gray-200" min="1"
@@ -143,31 +143,31 @@
         </div>
         <!-- Diskon (%) -->
        <div>
-  <label for="diskon" class="block text-sm font-medium text-gray-700">Diskon (%)</label>
-  <input type="number" name="diskon" id="diskon"
-         value="{{ old('diskon', rtrim(rtrim(number_format($pembelian->diskon ?? 0, 2), '0'), '.')) }}"
-         class="w-full rounded-md border px-3 py-2 text-sm border-gray-200" min="0" max="100" step="0.01">
-  <p id="diskon_error" class="text-sm text-red-600 mt-1 hidden"></p>
-</div>
+          <label for="diskon" class="block text-sm font-medium text-gray-700">Diskon (%)</label>
+          <input type="number" name="diskon" id="diskon"
+                value="{{ old('diskon', rtrim(rtrim(number_format($pembelian->diskon ?? 0, 2), '0'), '.')) }}"
+                class="w-full rounded-md border px-3 py-2 text-sm border-gray-200" min="0" max="100" step="0.01">
+          <p id="diskon_error" class="text-sm text-red-600 mt-1 hidden"></p>
+        </div>
         <!-- PPN (%) -->
         <div>
-  <label for="ppn" class="block text-sm font-medium text-gray-700">PPN (%)</label>
-  <input type="number" name="ppn" id="ppn"
-         value="{{ old('ppn', rtrim(rtrim(number_format($pembelian->ppn ?? 0, 2), '0'), '.')) }}"
-         class="w-full rounded-md border px-3 py-2 text-sm border-gray-200" min="0" max="100" step="0.01">
-  <p id="ppn_error" class="text-sm text-red-600 mt-1 hidden"></p>
-</div>
+          <label for="ppn" class="block text-sm font-medium text-gray-700">PPN (%)</label>
+          <input type="number" name="ppn" id="ppn"
+                value="{{ old('ppn', rtrim(rtrim(number_format($pembelian->ppn ?? 0, 2), '0'), '.')) }}"
+                class="w-full rounded-md border px-3 py-2 text-sm border-gray-200" min="0" max="100" step="0.01">
+          <p id="ppn_error" class="text-sm text-red-600 mt-1 hidden"></p>
+        </div>
         <!-- Biaya Pengiriman -->
         <div>
-  <label for="biaya_pengiriman" class="block text-sm font-medium text-gray-700">Biaya Pengiriman</label>
-  <input type="text" 
-       name="biaya_pengiriman" 
-       id="biaya_pengiriman"
-       value="{{ old('biaya_pengiriman', $pembelian->biaya_pengiriman ?? 0) }}"
-       class="w-full rounded-md border px-3 py-2 text-sm border-gray-300 harga-beli-input"
-       placeholder="0">
-  <p id="biaya_pengiriman_error" class="text-sm text-red-600 mt-1 hidden"></p>
-</div>
+          <label for="biaya_pengiriman" class="block text-sm font-medium text-gray-700">Biaya Pengiriman</label>
+          <input type="text" 
+              name="biaya_pengiriman" 
+              id="biaya_pengiriman"
+              value="{{ old('biaya_pengiriman', $pembelian->biaya_pengiriman ?? 0) }}"
+              class="w-full rounded-md border px-3 py-2 text-sm border-gray-300 harga-beli-input"
+              placeholder="0">
+          <p id="biaya_pengiriman_error" class="text-sm text-red-600 mt-1 hidden"></p>
+        </div>
         <!-- Total Bayar -->
         <div>
             <label class="block text-sm font-medium text-gray-700">Total Bayar</label>
@@ -312,7 +312,6 @@ document.addEventListener('DOMContentLoaded', function () {
   let barangIndex = {{ $isEdit ?? false ? $pembelian->detailPembelian->count() : 1 }};
   let initialState = null;
 
-  /* ==================== FORMAT RUPIAH ==================== */
   function formatRupiah(angka) {
     if (angka === '' || angka == null || isNaN(angka)) return '';
     let number = parseFloat(angka);
@@ -329,7 +328,6 @@ document.addEventListener('DOMContentLoaded', function () {
     return value.replace(/\./g, '').replace(/[^0-9]/g, '');
   }
 
-  /* ==================== FORMAT SEMUA HARGA BELI SAAT LOAD ==================== */
   function formatAllHargaBeli() {
     document.querySelectorAll('.harga-beli-input').forEach(input => {
       if (input.value && input.value.trim() !== '' && input.value !== '0') {
@@ -339,7 +337,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  /* ==================== HITUNG TOTAL ==================== */
   function calculateTotals() {
     let subTotal = 0;
     document.querySelectorAll('.barang-row').forEach(row => {
@@ -361,7 +358,6 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('totalBayarDisplay').value = 'Rp ' + formatRupiah(totalBayar);
   }
 
-  /* ==================== DETEKSI PERUBAHAN (UNTUK TOMBOL UPDATE) ==================== */
   function saveInitialState() {
     if (!isEditMode) return;
 
@@ -383,7 +379,6 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     });
 
-    // Awalnya matikan tombol Update
     submitButton.disabled = true;
     submitButton.classList.add('opacity-50', 'cursor-not-allowed');
   }
@@ -409,7 +404,6 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     });
 
-    // Cek field utama
     if (current.supplier !== initialState.supplier) return true;
     if (current.diskon !== initialState.diskon) return true;
     if (current.ppn !== initialState.ppn) return true;
@@ -417,7 +411,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if (current.jenis_pembayaran !== initialState.jenis_pembayaran) return true;
     if (current.catatan !== initialState.catatan) return true;
 
-    // Cek detail barang
     if (current.details.length !== initialState.details.length) return true;
     for (let i = 0; i < current.details.length; i++) {
       if (current.details[i].id_barang  !== initialState.details[i].id_barang)  return true;
@@ -439,7 +432,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  /* ==================== TAMBAH / HAPUS ROW BARANG ==================== */
   function updateActionButtons() {
     const rows = barangContainer.querySelectorAll('.barang-row');
     rows.forEach((row, i) => {
@@ -509,7 +501,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if (e.target.classList.contains('remove-barang-btn')) removeRow(e.target.closest('.barang-row'));
   });
 
-  /* ==================== TAMBAH BARANG BARU (CHECKBOX) ==================== */
   if (tambahBarangCheckbox && formTambahBarang) {
     tambahBarangCheckbox.addEventListener('change', function () {
       formTambahBarang.classList.toggle('hidden', !this.checked);
@@ -557,7 +548,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  /* ==================== FORMAT INPUT HARGA SAAT KETIK & BLUR ==================== */
   document.addEventListener('input', function (e) {
     if (e.target.classList.contains('harga-beli-input')) {
       let val = e.target.value.replace(/\D/g, '');
@@ -572,12 +562,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }, true);
 
-  /* ==================== VALIDASI & SUBMIT ==================== */
   pembelianForm.addEventListener('submit', function (e) {
     e.preventDefault();
     let hasError = false;
 
-    // Reset error
     document.querySelectorAll('.border-red-500, .bg-red-50, [id$="_error"]:not(.hidden), [data-error]:not(.hidden)').forEach(el => {
       el.classList.remove('border-red-500', 'bg-red-50');
       if (el.tagName === 'P') el.classList.add('hidden');
@@ -610,7 +598,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (!confirm('Yakin simpan data pembelian?')) return;
 
-    // Bersihkan format rupiah sebelum kirim
     document.querySelectorAll('.harga-beli-input').forEach(input => {
       let clean = unformatRupiah(input.value);
       input.value = clean && !isNaN(clean) ? parseFloat(clean) : 0;
@@ -619,30 +606,20 @@ document.addEventListener('DOMContentLoaded', function () {
     this.submit();
   });
 
-  /* ==================== JALANKAN SEMUA SETELAH LOAD ==================== */
-  // 1. Format harga beli
   formatAllHargaBeli();
-
-  // 2. Hitung subtotal pertama kali
   calculateTotals();
-
-  // 3. Simpan state awal & matikan tombol Update (hanya di edit)
   saveInitialState();
-
-  // 4. Pasang semua listener
   const triggers = '#diskon, #ppn, #biaya_pengiriman, #id_supplier, #jenis_pembayaran, #catatan, .barang-row input, .barang-row select';
   document.querySelectorAll(triggers).forEach(el => {
     el.addEventListener('input', () => { calculateTotals(); if(isEditMode) updateButtonState(); });
     el.addEventListener('change', () => { calculateTotals(); if(isEditMode) updateButtonState(); });
   });
 
-  // Observer untuk tambah/hapus row
   new MutationObserver(() => {
     calculateTotals();
     if (isEditMode) updateButtonState();
   }).observe(barangContainer, { childList: true, subtree: true });
 
-  // Update tombol + / - saat load
   updateActionButtons();
 });
 </script>

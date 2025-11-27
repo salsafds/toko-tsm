@@ -1,4 +1,3 @@
-
 <?php
 
 use Illuminate\Support\Facades\Route;
@@ -8,6 +7,7 @@ use App\Http\Controllers\PrivacyPolicyController;
 use App\Http\Controllers\ProfileController;
 
 // Master Controllers
+use App\Http\Controllers\Master\BulananController;
 use App\Http\Controllers\Master\AgenEkspedisiController; 
 use App\Http\Controllers\Master\BahasaController;
 use App\Http\Controllers\Master\JabatanController;
@@ -58,6 +58,21 @@ Route::get('/dashboard-admin', function () {
 
 // ADMIN MASTER
 Route::middleware(['auth', 'role:R01'])->name('master.')->group(function () {
+
+    //laporan
+    Route::get('laporan/bulanan', [BulananController::class, 'index'])
+     ->name('laporan.bulanan');
+
+    Route::get('/bulanan/pdf', [BulananController::class, 'pdf'])
+        ->name('bulanan.pdf');
+
+    Route::get('/bulanan/excel', [BulananController::class, 'excel'])
+        ->name('bulanan.excel');
+
+    // Print daftar barang
+    Route::get('/stok/pdf', [BulananController::class, 'pdfStok'])
+        ->name('stok.pdf');
+
     //data user(karyawan)
     Route::resource('data-user', UserController::class);
     Route::post('data-user/check-username', [UserController::class, 'checkUsername'])
