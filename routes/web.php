@@ -8,6 +8,7 @@ use App\Http\Controllers\ProfileController;
 
 // Master Controllers
 use App\Http\Controllers\Master\BulananController;
+use App\Http\Controllers\Master\MutasiController;
 use App\Http\Controllers\Master\AgenEkspedisiController; 
 use App\Http\Controllers\Master\BahasaController;
 use App\Http\Controllers\Master\JabatanController;
@@ -62,6 +63,9 @@ Route::middleware(['auth', 'role:R01'])->name('master.')->group(function () {
     //laporan
     Route::get('laporan/bulanan', [BulananController::class, 'index'])
      ->name('laporan.bulanan');
+
+    Route::get('/mutasi-barang', [MutasiController::class, 'index'])
+     ->name('mutasi.index');
 
     Route::get('/bulanan/pdf', [BulananController::class, 'pdf'])
         ->name('bulanan.pdf');

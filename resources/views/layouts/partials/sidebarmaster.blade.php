@@ -183,6 +183,17 @@
         <span>Laporan Bulanan</span>
       </a>
 
+      <!-- Laporan Mutasi -->
+      <a href="{{ route('master.mutasi.index') }}"
+         @click="saveScrollPosition()"
+         class="flex items-center px-3 py-2 rounded-lg text-sm transition-colors"
+         :class="{
+           'bg-blue-50 text-blue-700 font-medium': {{ request()->is('laporan/bulanan*') ? 'true' : 'false' }},
+           'hover:bg-blue-50 text-gray-600': {{ !request()->is('laporan/bulanan*') }}
+         }">
+        <span>Laporan Mutasi</span>
+      </a>
+
       <!-- Laporan Stok (contoh submenu ke-2) -->
       <a href="{{ route('dashboard-master') }}"
          @click="saveScrollPosition()"
