@@ -60,12 +60,16 @@ Route::get('/dashboard-admin', function () {
 // ADMIN MASTER
 Route::middleware(['auth', 'role:R01'])->name('master.')->group(function () {
 
-    //laporan
+    //laporan bulanan
     Route::get('laporan/bulanan', [BulananController::class, 'index'])
      ->name('laporan.bulanan');
 
+    // Laporan Mutasi Barang
     Route::get('/mutasi-barang', [MutasiController::class, 'index'])
-     ->name('mutasi.index');
+        ->name('mutasi.index');
+
+    Route::get('/mutasi-barang/export', [MutasiController::class, 'export'])
+        ->name('mutasi.export');
 
     // Print daftar barang
     Route::get('/stok/pdf', [BulananController::class, 'pdfStok'])

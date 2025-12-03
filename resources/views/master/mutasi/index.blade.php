@@ -25,25 +25,25 @@
         </div>
 
         <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-            <!-- Tombol Print PDF – tampil cantik tapi klik ga ngapa-ngapain -->
-            <button type="button" onclick="event.preventDefault();"
-                    class="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-md text-sm hover:bg-red-700 transition cursor-pointer">
+            <!-- Print PDF -->
+            <a href="{{ route('master.mutasi.export', ['format' => 'pdf']) }}"
+               class="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-md text-sm font-medium hover:bg-red-700 transition shadow-sm">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
                 </svg>
                 Print PDF
-            </button>
+            </a>
 
-            <!-- Tombol Export Excel – tampil cantik tapi klik ga ngapa-ngapain -->
-            <button type="button" onclick="event.preventDefault();"
-                    class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md text-sm hover:bg-green-700 transition cursor-pointer">
+            <!-- Export Excel -->
+            <a href="{{ route('master.mutasi.export', ['format' => 'excel']) }}"
+               class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md text-sm font-medium hover:bg-green-700 transition shadow-sm">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M12 10v6m-4-6v6m8-6v6m-8-8h8a2 2 0 012 2v10a2 2 0 01-2 2H8a2 2 0 01-2-2V6a2 2 0 012-2z"/>
                 </svg>
                 Export Excel
-            </button>
+            </a>
         </div>
     </div>
 
@@ -70,14 +70,14 @@
                     <th class="px-4 py-3 text-center border-r text-green-600 font-bold">Masuk</th>
                     <th class="px-4 py-3 text-center border-r text-red-600 font-bold">Keluar</th>
                     <th class="px-4 py-3 text-center border-r font-bold">Saldo Akhir</th>
-                    <th class="px-4 py-3 text-right border-r font-bold">Total Amount</th>
+                    <th class="px-4 py-3 text-right border-r font-bold">Nilai Stok</th>
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-100 text-xs sm:text-sm">
                 @forelse($paginated as $row)
                     <tr class="hover:bg-gray-50 transition-colors">
                         <td class="px-4 py-3 border-r text-gray-700">
-                            {{ $row['tanggal']->format('d-m-Y H:i') }}
+                            {{ $row['tanggal']->format('d-m-Y') }}
                         </td>
                         <td class="px-4 py-3 border-r text-gray-800 font-medium">
                             {{ $row['nama_barang'] }}
@@ -110,7 +110,7 @@
                             {{ number_format($row['saldo_akhir']) }}
                         </td>
                         <td class="px-4 py-3 text-right border-r font-bold">
-                            Rp {{ number_format($row['total_amount'], 0, ',', '.') }}
+                            Rp {{ number_format($row['nilai_stok'], 0, ',', '.') }}
                         </td>
                     </tr>
                 @empty
@@ -129,6 +129,8 @@
         <div class="text-xs sm:text-sm text-gray-600">
             @if($paginated->total())
                 Menampilkan {{ $paginated->firstItem() }} sampai {{ $paginated->lastItem() }} dari {{ $paginated->total() }} transaksi
+            @else
+                Menampilkan 0 transaksi
             @endif
         </div>
         <div>

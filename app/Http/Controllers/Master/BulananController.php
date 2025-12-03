@@ -290,7 +290,7 @@ class BulananController extends Controller
                     protected $data, $periode;
                     public function __construct($d, $p) { $this->data = $d; $this->periode = $p; }
                     public function view(): \Illuminate\Contracts\View\View {
-                        return view('master.laporan.bulanan-daftar-barang', [
+                        return view('master.laporan.daftar-barang', [
                             'daftarBarang' => $this->data,
                             'periodeTeks'  => $this->periode
                         ]);
