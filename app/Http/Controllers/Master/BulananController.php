@@ -15,7 +15,6 @@ class BulananController extends Controller
     {
         $periode = $request->get('periode', 'bulanan');
 
-        // ==================== PERIODE LOGIC ====================
         switch ($periode) {
             case '7hari':
                 $start = now()->subDays(6)->startOfDay();
@@ -53,7 +52,6 @@ class BulananController extends Controller
                 $periodeTeks = now()->translatedFormat('F Y');
         }
 
-        // ==================== DATA UTAMA ====================
         $omzet = DB::table('penjualan')
             ->whereBetween('tanggal_selesai', [$start, $end])
             ->sum('total_harga_penjualan');
@@ -160,7 +158,7 @@ class BulananController extends Controller
 
     public function export(Request $request)
     {
-        // ==================== PERIODE (sama persis seperti index) ====================
+
         $periode = $request->get('periode', 'bulanan');
 
         switch ($periode) {
@@ -199,7 +197,6 @@ class BulananController extends Controller
                 $periodeTeks = now()->translatedFormat('F Y');
         }
 
-        // ==================== DATA UTAMA (tanpa pagination) ====================
         $omzet = DB::table('penjualan')
             ->whereBetween('tanggal_selesai', [$start, $end])
             ->sum('total_harga_penjualan');
@@ -236,7 +233,6 @@ class BulananController extends Controller
             ->groupBy('b.id_barang', 'b.nama_barang')
             ->orderByDesc('qty')->limit(10)->get();
 
-        // ==================== RIWAYAT TRANSAKSI (full, tanpa pagination) ====================
         $jenis = $request->get('jenis', 'all');
 
         $penjualanQuery = DB::table('penjualan as p')
@@ -273,11 +269,9 @@ class BulananController extends Controller
             ->get()
             ->map(fn($i) => tap($i, fn($i) => $i->tanggal = Carbon::parse($i->tanggal)));
 
-        // ==================== EKSPORT ====================
-        $format  = $request->get('format', 'pdf');   // pdf / excel
-        $section = $request->get('section');         // daftar_barang atau null
+        $format  = $request->get('format', 'pdf');  
+        $section = $request->get('section');
 
-        // ----- EXPORT DAFTAR BARANG SAJA -----
         if ($section === 'daftar_barang') {
             $daftarBarang = DB::table('barang')
                 ->select('id_barang','nama_barang','harga_beli','margin','retail','stok')
@@ -302,24 +296,38 @@ class BulananController extends Controller
                       ->setPaper('a4', 'landscape');
             return $pdf->download($namaFile . '.pdf');
         }
+ 
+        $namaFile = "Laporan_Bulanan_" . str_replace([' ', '/'], '_', $periodeTeks);
+$dataExport = compact('periodeTeks','omzet','hpp','labaKotor','marginPersen','totalPembelian',
+                      'pembelianMasuk','nilaiStokAkhir','stokKritis','terlaris','transaksi');
 
-        // ----- EXPORT SELURUH LAPORAN -----
-        $namaFile   = "Laporan_Bulanan_{$periodeTeks}";
-        $dataExport = compact('periodeTeks','omzet','hpp','labaKotor','marginPersen','totalPembelian',
-                              'pembelianMasuk','nilaiStokAkhir','stokKritis','terlaris','transaksi');
+if ($format === 'excel') {
+    return Excel::download(new class($dataExport) implements \Maatwebsite\Excel\Concerns\FromCollection {
+        protected $data;
+        public function __construct($data) { $this->data = $data; }
 
-        if ($format === 'excel') {
-            return Excel::download(new class($dataExport) implements \Maatwebsite\Excel\Concerns\FromView {
-                protected $data;
-                public function __construct($d) { $this->data = $d; }
-                public function view(): \Illuminate\Contracts\View\View {
-                    return view('master.laporan.bulanan-export', $this->data);
-                }
-            }, $namaFile . '.xlsx');
+        public function collection()
+        {
+            $rows = collect();
+            $rows->push(['TANGGAL', 'ID', 'JENIS', 'PIHAK', 'KASIR', 'TOTAL (Rp)', 'SUMBER']);
+
+            foreach ($this->data['transaksi'] as $t) {
+                $rows->push([
+                    $t->tanggal,
+                    $t->id,
+                    $t->jenis === 'penjualan' ? 'PENJUALAN' : 'PEMBELIAN',
+                    $t->nama_pihak,
+                    $t->kasir,
+                    number_format($t->total, 0, ',', '.'),
+                    strtoupper($t->sumber)
+                ]);
+            }
+            return $rows;
         }
-
-        // Default: PDF
-        $pdf = PDF::loadView('master.laporan.bulanan-export', $dataExport);
-        return $pdf->download($namaFile . '.pdf');
-    }
+    }, $namaFile . '.xlsx');
 }
+
+// PDF tetap cantik
+$pdf = PDF::loadView('master.laporan.bulanan-export', $dataExport);
+return $pdf->download($namaFile . '.pdf');
+}}

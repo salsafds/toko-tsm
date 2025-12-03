@@ -268,11 +268,11 @@
                     <input type="hidden" name="sort_tanggal" value="{{ $sortTanggal }}">
                     <input type="hidden" name="per_page" value="{{ $perPage }}">
                 </form>
-                <a href="{{ route('master.laporan.bulanan', array_merge(request()->query(), ['format' => 'pdf'])) }}"
+                <a href="{{ route('master.laporan.bulanan.export', array_merge(request()->query(), ['format' => 'pdf'])) }}"
                 class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded text-sm font-medium transition">
                     Print PDF
                 </a>
-                <a href="{{ route('master.laporan.bulanan', array_merge(request()->query(), ['format' => 'excel'])) }}"
+                <a href="{{ route('master.laporan.bulanan.export', array_merge(request()->query(), ['format' => 'excel'])) }}"
                 class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm font-medium transition">
                     Print Excel
                 </a>
@@ -405,7 +405,7 @@
 
 
         {{-- Daftar Semua Barang – dengan pagination & export --}}
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-auto">
+        <div class="bg-white rounded-lg shadow-lg border border-gray-200 overflow-x-auto">
             <div class="px-5 py-4 border-b border-gray-200 flex items-center justify-between">
                 <h2 class="text-sm font-medium text-gray-700">
                     Daftar Barang Saat Ini ({{ $daftarBarang->total() }} barang)
