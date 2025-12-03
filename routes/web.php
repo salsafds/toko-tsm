@@ -67,16 +67,14 @@ Route::middleware(['auth', 'role:R01'])->name('master.')->group(function () {
     Route::get('/mutasi-barang', [MutasiController::class, 'index'])
      ->name('mutasi.index');
 
-    Route::get('/bulanan/pdf', [BulananController::class, 'pdf'])
-        ->name('bulanan.pdf');
-
-    Route::get('/bulanan/excel', [BulananController::class, 'excel'])
-        ->name('bulanan.excel');
-
     // Print daftar barang
     Route::get('/stok/pdf', [BulananController::class, 'pdfStok'])
         ->name('stok.pdf');
 
+    //Print laporan bulanan    
+    Route::get('/laporan/bulanan/export', [BulananController::class, 'export'])
+    ->name('laporan.bulanan.export');
+    
     //data user(karyawan)
     Route::resource('data-user', UserController::class);
     Route::post('data-user/check-username', [UserController::class, 'checkUsername'])

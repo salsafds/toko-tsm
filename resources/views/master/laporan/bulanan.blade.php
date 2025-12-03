@@ -70,20 +70,20 @@
 
     <!-- 4 Kartu Utama -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div class="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
+        <div class="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
             <div class="text-sm font-medium text-gray-500">Omzet Penjualan</div>
             <div class="mt-2 text-xl font-bold text-gray-900">Rp {{ number_format($omzet, 0, ',', '.') }}</div>
         </div>
-        <div class="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
+        <div class="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
             <div class="text-sm font-medium text-gray-500">Laba Kotor</div>
             <div class="mt-2 text-xl font-bold text-green-600">Rp {{ number_format($labaKotor, 0, ',', '.') }}</div>
             <div class="text-xs text-gray-500 mt-1">Margin {{ $marginPersen }}%</div>
         </div>
-        <div class="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
+        <div class="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
             <div class="text-sm font-medium text-gray-500">Nilai Stok Akhir</div>
             <div class="mt-2 text-xl font-bold text-purple-600">Rp {{ number_format($nilaiStokAkhir, 0, ',', '.') }}</div>
         </div>
-        <div class="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
+        <div class="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
             <div class="text-sm font-medium text-gray-500">Stok Kritis</div>
             <div class="mt-2 text-xl font-bold text-red-600">{{ $stokKritis->count() }} barang</div>
         </div>
@@ -92,7 +92,7 @@
     <!-- Ringkasan Pembelian & HPP -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
         <!-- Ringkasan Pembelian -->
-        <div class="bg-white p-6 rounded-lg shadow-sm">
+        <div class="bg-white p-6 rounded-lg shadow-lg">
             <h2 class="text-sm font-semibold text-gray-700 mb-5">Ringkasan Pembelian</h2>
             <div class="space-y-4">
                 <div class="flex justify-between items-center">
@@ -108,7 +108,7 @@
             </div>
         </div>
         <!-- HPP & Laba Kotor -->
-        <div class="bg-white p-6 rounded-lg shadow-sm">
+        <div class="bg-white p-6 rounded-lg shadow-lg">
             <h2 class="text-sm font-semibold text-gray-700 mb-5">HPP & Laba Kotor</h2>
             <div class="space-y-4">
                 <div class="flex justify-between items-center">
@@ -123,7 +123,7 @@
         </div>
     </div>
 @if($stokKritis->total() > 0)
-<div class="bg-white rounded-lg shadow-sm mb-6 border border-gray-200 overflow-x-auto">
+<div class="bg-white rounded-lg shadow-lg mb-6 border border-gray-200 overflow-x-auto">
     <div class="px-5 py-4 border-b border-gray-200 flex items-center justify-between">
         <h2 class="text-sm font-medium text-gray-700">
             Stok Kritis (Stok < 10) 
@@ -219,11 +219,11 @@
 
     <!-- 10 Barang Terlaris + Bar Chart -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        <div class="bg-white p-5 rounded-lg shadow-sm">
+        <div class="bg-white p-5 rounded-lg shadow-lg">
             <h2 class="text-sm font-medium text-gray-700 mb-4">10 Barang Terlaris (Qty)</h2>
             <canvas id="chartTerlaris" class="h-80"></canvas>
         </div>
-        <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-200 overflow-x-auto">
+        <div class="bg-white p-5 rounded-lg shadow-lg border border-gray-200 overflow-x-auto">
             <h2 class="text-sm font-medium text-gray-700 mb-4">Detail Terlaris</h2>
             <table class="min-w-full divide-y divide-gray-200 text-sm">
                 <thead class="bg-gray-50 text-xs text-gray-500 uppercase">
@@ -251,7 +251,7 @@
     </div>
 
     <!-- Riwayat Transaksi -->
-    <div id="riwayat-transaksi" class="bg-white rounded-lg shadow-sm mb-6 border border-gray-200 overflow-x-auto">
+    <div id="riwayat-transaksi" class="bg-white rounded-lg shadow-lg mb-6 border border-gray-200 overflow-x-auto">
         <div class="px-5 py-4 border-b border-gray-200 flex items-center justify-between">
             <h2 class="text-sm font-medium text-gray-700">Riwayat Transaksi</h2>
             <div class="flex items-center gap-3">
@@ -268,8 +268,14 @@
                     <input type="hidden" name="sort_tanggal" value="{{ $sortTanggal }}">
                     <input type="hidden" name="per_page" value="{{ $perPage }}">
                 </form>
-                <a href="{{ route('master.laporan.bulanan', ['format' => 'pdf'] + request()->query()) }}" class="bg-red-500 text-white px-3 py-1 rounded text-sm">Print PDF</a>
-                <a href="{{ route('master.laporan.bulanan', ['format' => 'excel'] + request()->query()) }}" class="bg-green-500 text-white px-3 py-1 rounded text-sm">Print Excel</a>
+                <a href="{{ route('master.laporan.bulanan', array_merge(request()->query(), ['format' => 'pdf'])) }}"
+                class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded text-sm font-medium transition">
+                    Print PDF
+                </a>
+                <a href="{{ route('master.laporan.bulanan', array_merge(request()->query(), ['format' => 'excel'])) }}"
+                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm font-medium transition">
+                    Print Excel
+                </a>
             </div>
         </div>
         <table class="min-w-full divide-y divide-gray-200 text-sm">
@@ -428,11 +434,11 @@
 
                     {{-- Export Buttons --}}
                     <div class="flex gap-2">
-                        <a href="{{ route('master.laporan.bulanan', ['format' => 'pdf', 'section' => 'daftar_barang'] + request()->query()) }}"
+                        <a href="{{ route('master.laporan.bulanan.export', array_merge(request()->query(), ['format' => 'pdf', 'section' => 'daftar_barang'])) }}"
                         class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded text-xs font-medium transition">
                             Print PDF
                         </a>
-                        <a href="{{ route('master.laporan.bulanan', ['format' => 'excel', 'section' => 'daftar_barang'] + request()->query()) }}"
+                        <a href="{{ route('master.laporan.bulanan.export', array_merge(request()->query(), ['format' => 'excel', 'section' => 'daftar_barang'])) }}"
                         class="bg-green-500 hover:bg-green-600 text-white px-3 py-1.5 rounded text-xs font-medium transition">
                             Print Excel
                         </a>
