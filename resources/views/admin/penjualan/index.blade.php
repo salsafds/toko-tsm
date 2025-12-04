@@ -95,13 +95,26 @@
             </td>
             <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r text-center">{{ $item->tanggal_order->format('d-m-Y H:i') }}</td>
             <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r text-center">
-              @if($isSelesai)
-                <span class="text-green-600 font-medium">{{ $item->tanggal_selesai->format('d-m-Y H:i') }}</span>
+              @php
+                $dariMarketplace = $item->sumber_transaksi !== 'toko';
+                $bisaEditHapus   = !$isSelesai && !$dariMarketplace;
+                $tanggalSelesai  = $isSelesai 
+                    ? $item->tanggal_selesai 
+                    : ($dariMarketplace ? $item->tanggal_order : null);
+              @endphp
+
+              @if($tanggalSelesai)
+                <span class="text-green-600 font-medium">
+                  {{ $tanggalSelesai->format('d-m-Y H:i') }}
+                  @if($dariMarketplace)
+                  @endif
+                </span>
               @else
+                <!-- Hanya transaksi toko yang belum selesai yang bisa ditandai selesai -->
                 <form action="{{ route('admin.penjualan.selesai', $item->id_penjualan) }}" method="POST" class="inline">
                   @csrf
                   @method('PATCH')
-                  <button type="submit" 
+                  <button type="submit"
                           class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 hover:bg-green-200 transition-colors"
                           onclick="return confirm('Tandai transaksi ini selesai? Stok akan dikurangi.');">
                     Selesai
@@ -109,13 +122,23 @@
                 </form>
               @endif
             </td>
+
             <td class="px-2 sm:px-4 py-2 text-center">
               <div class="flex justify-center items-center gap-1 sm:gap-2">
-                @if(!$isSelesai)
+                {{-- Edit --}}
+                @if($bisaEditHapus)
                   <a href="{{ route('admin.penjualan.edit', $item->id_penjualan) }}"
                     class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 hover:bg-blue-200">
                     Edit
                   </a>
+                @else
+                  <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500 cursor-not-allowed" title="Tidak dapat diedit">
+                    Edit
+                  </span>
+                @endif
+
+                {{-- Delete --}}
+                @if($bisaEditHapus)
                   <form action="{{ route('admin.penjualan.destroy', $item->id_penjualan) }}" method="POST"
                         onsubmit="return confirm('Hapus transaksi ini?');" class="inline">
                     @csrf
@@ -126,13 +149,12 @@
                     </button>
                   </form>
                 @else
-                  <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
-                    Edit
-                  </span>
-                  <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
+                  <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500 cursor-not-allowed" title="Tidak dapat dihapus">
                     Delete
                   </span>
                 @endif
+
+                {{-- Print tetap selalu muncul --}}
                 <a href="{{ route('admin.penjualan.print', $item->id_penjualan) }}" target="_blank"
                   class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700 hover:bg-purple-200">
                   Print
