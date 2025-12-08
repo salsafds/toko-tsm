@@ -57,6 +57,7 @@
     <thead class="bg-gray-50">
       <tr class="text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
         <th class="w-24 sm:w-32 px-2 sm:px-4 py-2 sm:py-3 border-r border-gray-200">ID Barang</th>
+        <th class="w-24 sm:w-32 px-2 sm:px-4 py-2 sm:py-3 border-r border-gray-200">SKU</th>
         <th class="flex-1 px-2 sm:px-4 py-2 sm:py-3 border-r">Nama Barang</th>
         <th class="w-32 sm:w-40 px-2 sm:px-4 py-2 sm:py-3 border-r">Kategori</th>
         <th class="w-24 sm:w-32 px-2 sm:px-4 py-2 sm:py-3 border-r">Stok</th>
@@ -71,6 +72,7 @@
       @forelse($barang as $item)
         <tr class="hover:bg-gray-50 transition-colors">
           <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r border-gray-100">{{ $item->id_barang }}</td>
+          <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->sku }}</td>
           <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->nama_barang }}</td>
           <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->kategoriBarang->nama_kategori }}</td>
           <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->stok }}</td>

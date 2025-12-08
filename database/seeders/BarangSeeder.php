@@ -13,6 +13,7 @@ class BarangSeeder extends Seeder
             // Barang 1 - lengkap
             [
                 'id_barang' => 'BRG0001',
+                'sku' => 'RKK-MM-M-001', //rokok-marlboro merah-marlboro-urutan
                 'id_kategori_barang' => 'KB001', // Rokok
                 'id_supplier' => 'SP001',        // PT Sumber Makmur
                 'nama_barang' => 'Marlboro Merah',
@@ -29,6 +30,7 @@ class BarangSeeder extends Seeder
             // Barang 2 - kolom stok, harga beli, retail dikosongkan
             [
                 'id_barang' => 'BRG0002',
+                'sku' => 'PBS-AE7-S-001', 
                 'id_kategori_barang' => 'KB002', // Alat tulis
                 'id_supplier' => 'SP002',        // CV Berkah Abadi
                 'nama_barang' => 'Pulpen Biru Standard AE7',

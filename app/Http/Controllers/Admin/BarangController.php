@@ -55,6 +55,7 @@ class BarangController extends Controller
         
         $request->validate([
             'nama_barang' => 'required|string|max:100',
+            'sku' => 'required|string|max:15',
             'id_kategori_barang' => 'required|exists:kategori_barang,id_kategori_barang',
             'id_supplier' => 'required|exists:supplier,id_supplier',
             'id_satuan' => 'required|exists:satuan,id_satuan',
@@ -68,6 +69,7 @@ class BarangController extends Controller
     Barang::create([
         'id_barang' => $nextId,
         'nama_barang' => $request->nama_barang,
+        'sku' => $request->sku,
         'id_kategori_barang' => $request->id_kategori_barang,
         'id_supplier' => $request->id_supplier,
         'id_satuan' => $request->id_satuan,
@@ -99,6 +101,7 @@ class BarangController extends Controller
     
     $request->validate([
         'nama_barang' => 'required|string|max:100',
+        'sku' => 'required|string|max:15',
         'id_kategori_barang' => 'required|exists:kategori_barang,id_kategori_barang',
         'id_supplier' => 'required|exists:supplier,id_supplier',
         'id_satuan' => 'required|exists:satuan,id_satuan',
@@ -110,6 +113,8 @@ class BarangController extends Controller
         'nama_barang.required' => 'Nama barang wajib diisi.',
         'nama_barang.string' => 'Nama barang harus berupa teks.',
         'nama_barang.max' => 'Nama barang tidak boleh lebih dari 100 karakter.',
+        'sku.required' => 'Kode SKU wajib diisi.',
+        'sku.max' => 'Kode SKU tidak boleh lebih dari 15 karakter.',
         'id_kategori_barang.required' => 'Kategori barang wajib dipilih.',
         'id_kategori_barang.exists' => 'Kategori barang tidak valid.',
         'id_supplier.required' => 'Supplier wajib dipilih.',
@@ -134,6 +139,7 @@ class BarangController extends Controller
 
     $barang->update([
         'nama_barang' => $request->nama_barang,
+        'sku' => $request->sku,
         'id_kategori_barang' => $request->id_kategori_barang,
         'id_supplier' => $request->id_supplier,
         'id_satuan' => $request->id_satuan,

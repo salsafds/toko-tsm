@@ -40,6 +40,27 @@
       @endif
     </div>
 
+    {{-- Kode SKU --}}
+    <div>
+      <label for="sku" class="block text-sm font-medium text-gray-700">
+        Kode SKU <span class="text-rose-600">*</span>
+      </label>
+      <input
+        id="sku"
+        name="sku"
+        value="{{ old('sku', $barang->sku ?? '') }}"
+        class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('sku') ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-blue-500 focus:ring-blue-100' }}"
+        placeholder="Masukkan kode SKU"
+        aria-invalid="{{ $errors->has('sku') ? 'true' : 'false' }}"
+      >
+      @if ($errors->has('sku'))
+        <p class="text-sm text-red-600 mt-1">{{ $errors->first('sku') }}</p>
+      @else
+        <p id="sku_error" class="text-sm text-red-600 mt-1 hidden"></p>
+        <p class="text-xs text-gray-500">Contoh: TS-BL-M-001</p>
+      @endif
+    </div>
+
     {{-- Kategori Barang --}}
     <div>
       <label for="id_kategori_barang" class="block text-sm font-medium text-gray-700">
