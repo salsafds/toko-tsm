@@ -13,7 +13,8 @@
 </head>
 <body>
     <h2>LAPORAN MUTASI BARANG</h2>
-    <p>Dicetak pada: {{ \Carbon\Carbon::now()->translatedFormat('d F Y H:i') }}</p>
+    <p>Periode: {{ $periodText ?? 'Semua Periode' }}</p>
+    <p>Dicetak pada: {{ $nowWIB->translatedFormat('d F Y H:i') }} WIB</p>
 
     <table>
         <thead>

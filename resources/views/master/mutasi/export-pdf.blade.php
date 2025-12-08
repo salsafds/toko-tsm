@@ -15,7 +15,8 @@
 </head>
 <body>
     <h2>LAPORAN MUTASI BARANG</h2>
-    <p style="text-align:center;">Dicetak pada: {{ $generatedAt }}</p>
+    <p style="text-align:center;">Periode: {{ $periodText ?? 'Semua Periode' }}</p>
+    <p style="text-align:center;">Dicetak pada: {{ $generatedAt }} WIB</p>
 
     <table>
         <thead>

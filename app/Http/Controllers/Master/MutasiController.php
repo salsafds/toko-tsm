@@ -18,61 +18,95 @@ class MutasiController extends Controller
     {
         $data = $this->getMutasiData($request);
 
-        // Untuk tampilan (dengan pagination)
+        // Pastikan $period selalu ada
+        $period = $request->query('period', 'all');
+
         return view('master.mutasi.index', [
             'paginated' => $data['paginated'],
             'perPage'   => $data['perPage'],
-            'totalRows' => $data['allRows']->count()
+            'totalRows' => $data['allRows']->count(),
+            'period'    => $period
         ]);
     }
 
     public function export(Request $request)
     {
-        $data = $this->getMutasiData($request, true); // true = ambil semua data tanpa paginasi
+        $data = $this->getMutasiData($request, true);
 
-        $format = $request->get('format', 'pdf');
-        $namaFile = 'Laporan_Mutasi_Barang_' . Carbon::now()->format('d-m-Y_H-i');
+        $format     = $request->get('format', 'pdf');
+        $period     = $request->get('period', 'all');
+        $periodText = $this->getPeriodText($period);
+
+        // PAKSA WAKTU WIB SEKARANG
+        $nowWIB = Carbon::now('Asia/Jakarta');
+
+        $namaFile = 'Laporan_Mutasi_Barang_' . $periodText . '_' . $nowWIB->format('d-m-Y_H-i');
 
         if ($format === 'excel') {
-            return Excel::download(new class($data['allRows']) implements \Maatwebsite\Excel\Concerns\FromView {
+            return Excel::download(new class($data['allRows'], $periodText, $nowWIB) implements \Maatwebsite\Excel\Concerns\FromView {
                 protected $rows;
+                protected $periodText;
+                protected $nowWIB;
 
-                public function __construct($rows)
+                public function __construct($rows, $periodText, $nowWIB)
                 {
                     $this->rows = $rows;
+                    $this->periodText = $periodText;
+                    $this->nowWIB = $nowWIB;
                 }
 
                 public function view(): \Illuminate\Contracts\View\View
                 {
                     return view('master.mutasi.export-excel', [
-                        'rows' => $this->rows
+                        'rows'       => $this->rows,
+                        'periodText' => $this->periodText,
+                        'nowWIB'     => $this->nowWIB
                     ]);
                 }
             }, $namaFile . '.xlsx');
         }
 
-        // Default: PDF
         $pdf = PDF::loadView('master.mutasi.export-pdf', [
-            'rows'       => $data['allRows'],
-            'generatedAt'=> Carbon::now()->translatedFormat('d F Y H:i')
+            'rows'        => $data['allRows'],
+            'generatedAt' => $nowWIB->translatedFormat('d F Y H:i'), // pasti WIB
+            'periodText'  => $periodText
         ])->setPaper('a4', 'landscape');
 
         return $pdf->download($namaFile . '.pdf');
     }
 
-    // ===================================================================
-    // FUNGSI UTAMA UNTUK MENGHASILKAN DATA MUTASI (dipakai index & export)
-    // ===================================================================
+    private function getPeriodText($period)
+    {
+        return match ($period) {
+            '1w' => '1_Minggu_Terakhir',
+            '1m' => '1_Bulan_Terakhir',
+            '3m' => '3_Bulan_Terakhir',
+            '1y' => '1_Tahun_Terakhir',
+            default => 'Semua_Periode',
+        };
+    }
+
     private function getMutasiData(Request $request, $allData = false)
     {
         $perPage = $allData ? 999999 : $request->get('per_page', 25);
+        $period  = $request->get('period', 'all');
 
-        // 1. Ambil semua pembelian yang sudah diterima
+        // Tentukan batas tanggal
+        $dateFrom = null;
+        if ($period !== 'all') {
+            $dateFrom = match ($period) {
+                '1w' => Carbon::now()->subWeek(),
+                '1m' => Carbon::now()->subMonth(),
+                '3m' => Carbon::now()->subMonths(3),
+                '1y' => Carbon::now()->subYear(),
+                default => null,
+            };
+        }
+
         $pembelians = Pembelian::with('detailPembelian.barang')
             ->whereNotNull('tanggal_terima')
             ->get();
 
-        // 2. Ambil semua penjualan yang sudah selesai
         $penjualans = Penjualan::with('detailPenjualan.barang')
             ->whereNotNull('tanggal_selesai')
             ->get();
@@ -97,12 +131,12 @@ class MutasiController extends Controller
                 $hargaAkhir         = $hargaSetelahPpn + $biayaPerUnit;
 
                 $transaksiPerBarang[$detail->id_barang][] = [
-                    'tanggal'   => $pembelian->tanggal_terima,
-                    'type'      => 'masuk',
-                    'qty'       => $detail->kuantitas,
-                    'harga'     => $hargaAkhir,
-                    'total'     => $hargaAkhir * $detail->kuantitas,
-                    'margin'    => $detail->barang->margin ?? 0,
+                    'tanggal' => $pembelian->tanggal_terima,
+                    'type'    => 'masuk',
+                    'qty'     => $detail->kuantitas,
+                    'harga'   => $hargaAkhir,
+                    'total'   => $hargaAkhir * $detail->kuantitas,
+                    'margin'  => $detail->barang->margin ?? 0,
                 ];
             }
         }
@@ -111,12 +145,12 @@ class MutasiController extends Controller
         foreach ($penjualans as $penjualan) {
             foreach ($penjualan->detailPenjualan as $detail) {
                 $transaksiPerBarang[$detail->id_barang][] = [
-                    'tanggal'   => $penjualan->tanggal_selesai,
-                    'type'      => 'keluar',
-                    'qty'       => $detail->kuantitas,
-                    'harga'     => 0,
-                    'total'     => 0,
-                    'margin'    => $detail->barang->margin ?? 0,
+                    'tanggal' => $penjualan->tanggal_selesai,
+                    'type'    => 'keluar',
+                    'qty'     => $detail->kuantitas,
+                    'harga'   => 0,
+                    'total'   => 0,
+                    'margin'  => $detail->barang->margin ?? 0,
                 ];
             }
         }
@@ -132,12 +166,10 @@ class MutasiController extends Controller
             $stokRunning = 0;
             $nilaiRunning = 0;
 
-            // Hitung stok akhir dari transaksi saja
             $calculatedMasuk = collect($transaksis)->where('type', 'masuk')->sum('qty');
             $calculatedKeluar = collect($transaksis)->where('type', 'keluar')->sum('qty');
             $calculatedStokAkhir = $calculatedMasuk - $calculatedKeluar;
 
-            // Stok awal (initial)
             $stokAwalInitial = (int) $barang->stok - $calculatedStokAkhir;
             if ($stokAwalInitial > 0) {
                 $hargaInitial = $barang->harga_beli ?? 0;
@@ -153,8 +185,18 @@ class MutasiController extends Controller
                 ]);
             }
 
-            // Proses running balance
             foreach ($transaksis as $t) {
+                // Stok awal (initial) tetap dimasukkan walaupun tanggalnya di luar periode
+                // karena hanya sebagai titik awal perhitungan running balance
+                if ($dateFrom && $t['tanggal']->lt($dateFrom) && $t['type'] !== 'initial') {
+                    continue;
+                }
+
+                // kalau initial tapi tanggalnya di luar periode → kita paksa masuk juga
+                // tapi tidak ditampilkan sebagai baris transaksi (hanya untuk hitung running)
+                $isInitialOutsidePeriod = ($t['type'] === 'initial' && $dateFrom && $t['tanggal']->lt($dateFrom));
+
+                // Hitung running balance dulu (selalu)
                 $stokSebelum = $stokRunning;
                 $averageSebelum = $stokRunning > 0 ? $nilaiRunning / $stokRunning : 0;
 
@@ -175,21 +217,24 @@ class MutasiController extends Controller
 
                 $averageSekarang = $stokRunning > 0 ? $nilaiRunning / $stokRunning : 0;
 
-                $rows[] = [
-                    'tanggal'        => $t['tanggal'],
-                    'nama_barang'    => $barang->nama_barang,
-                    'keterangan'     => $t['type'] === 'initial' ? 'Stok Awal' : ($t['type'] === 'masuk' ? 'Pembelian' : 'Penjualan'),
-                    'kuantitas'      => $t['qty'],
-                    'harga_beli'     => round($t['type'] === 'keluar' ? $averageSebelum : $t['harga'], 2),
-                    'total_harga'    => round($t['total'], 2),
-                    'margin'         => $t['margin'],
-                    'average_price'  => round($averageSekarang, 2),
-                    'stok_awal'      => $stokSebelum,
-                    'masuk'          => $masuk ?? 0,
-                    'keluar'         => $keluar ?? 0,
-                    'saldo_akhir'    => $stokRunning,
-                    'nilai_stok'     => round($stokRunning * $averageSekarang, 2),
-                ];
+                // Hanya tampilkan baris kalau bukan initial yang di luar periode
+                if (!$isInitialOutsidePeriod) {
+                    $rows[] = [
+                        'tanggal'        => $t['tanggal'],
+                        'nama_barang'    => $barang->nama_barang,
+                        'keterangan'     => $t['type'] === 'initial' ? 'Stok Awal' : ($t['type'] === 'masuk' ? 'Pembelian' : 'Penjualan'),
+                        'kuantitas'      => $t['qty'],
+                        'harga_beli'     => round($t['type'] === 'keluar' ? $averageSebelum : $t['harga'], 2),
+                        'total_harga'    => round($t['total'], 2),
+                        'margin'         => $t['margin'],
+                        'average_price'  => round($averageSekarang, 2),
+                        'stok_awal'      => $stokSebelum,
+                        'masuk'          => $masuk ?? 0,
+                        'keluar'         => $keluar ?? 0,
+                        'saldo_akhir'    => $stokRunning,
+                        'nilai_stok'     => round($stokRunning * $averageSekarang, 2),
+                    ];
+                }
             }
         }
 
@@ -202,16 +247,14 @@ class MutasiController extends Controller
 
         $collection = collect($rows);
 
-        // Jika export, kembalikan semua data
         if ($allData) {
             return ['allRows' => $collection];
         }
 
-        // Jika tampil di web (pagination)
         $currentPage  = LengthAwarePaginator::resolveCurrentPage();
         $perPageItems = $collection->slice(($currentPage - 1) * $perPage, $perPage)->values();
         $paginated    = new LengthAwarePaginator($perPageItems, $collection->count(), $perPage);
-        $paginated->setPath($request->url());
+        $paginated->setPath($request->url())->appends($request->query());
 
         return [
             'paginated' => $paginated,
