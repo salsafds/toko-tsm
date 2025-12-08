@@ -18,7 +18,6 @@ class MutasiController extends Controller
     {
         $data = $this->getMutasiData($request);
 
-        // Pastikan $period selalu ada
         $period = $request->query('period', 'all');
 
         return view('master.mutasi.index', [
@@ -37,7 +36,6 @@ class MutasiController extends Controller
         $period     = $request->get('period', 'all');
         $periodText = $this->getPeriodText($period);
 
-        // PAKSA WAKTU WIB SEKARANG
         $nowWIB = Carbon::now('Asia/Jakarta');
 
         $namaFile = 'Laporan_Mutasi_Barang_' . $periodText . '_' . $nowWIB->format('d-m-Y_H-i');
@@ -68,7 +66,7 @@ class MutasiController extends Controller
 
         $pdf = PDF::loadView('master.mutasi.export-pdf', [
             'rows'        => $data['allRows'],
-            'generatedAt' => $nowWIB->translatedFormat('d F Y H:i'), // pasti WIB
+            'generatedAt' => $nowWIB->translatedFormat('d F Y H:i'),
             'periodText'  => $periodText
         ])->setPaper('a4', 'landscape');
 
@@ -113,7 +111,7 @@ class MutasiController extends Controller
 
         $transaksiPerBarang = [];
 
-        // PEMBELIAN (MASUK)
+        // PEMBELIAN (MASUK) — sama persis seperti sebelumnya
         foreach ($pembelians as $pembelian) {
             $totalSubTotal   = $pembelian->detailPembelian->sum('sub_total');
             $nilaiDiskon     = ($pembelian->diskon / 100) * $totalSubTotal;
@@ -186,17 +184,12 @@ class MutasiController extends Controller
             }
 
             foreach ($transaksis as $t) {
-                // Stok awal (initial) tetap dimasukkan walaupun tanggalnya di luar periode
-                // karena hanya sebagai titik awal perhitungan running balance
                 if ($dateFrom && $t['tanggal']->lt($dateFrom) && $t['type'] !== 'initial') {
                     continue;
                 }
 
-                // kalau initial tapi tanggalnya di luar periode → kita paksa masuk juga
-                // tapi tidak ditampilkan sebagai baris transaksi (hanya untuk hitung running)
                 $isInitialOutsidePeriod = ($t['type'] === 'initial' && $dateFrom && $t['tanggal']->lt($dateFrom));
 
-                // Hitung running balance dulu (selalu)
                 $stokSebelum = $stokRunning;
                 $averageSebelum = $stokRunning > 0 ? $nilaiRunning / $stokRunning : 0;
 
@@ -217,7 +210,6 @@ class MutasiController extends Controller
 
                 $averageSekarang = $stokRunning > 0 ? $nilaiRunning / $stokRunning : 0;
 
-                // Hanya tampilkan baris kalau bukan initial yang di luar periode
                 if (!$isInitialOutsidePeriod) {
                     $rows[] = [
                         'tanggal'        => $t['tanggal'],
@@ -238,28 +230,39 @@ class MutasiController extends Controller
             }
         }
 
-        // Urutkan: nama barang → tanggal
-        usort($rows, fn($a, $b) =>
-            $a['nama_barang'] === $b['nama_barang']
-                ? $a['tanggal'] <=> $b['tanggal']
-                : $a['nama_barang'] <=> $b['nama_barang']
-        );
+        // ================== INI YANG DIUBAH: SORTING DULU, BARU PAGINATION ==================
+        $sortColumn    = $request->get('sort', 'tanggal');
+        $sortDirection = $request->get('direction', 'asc');
 
-        $collection = collect($rows);
+        // Sort collection (dengan secondary sort supaya tetap rapi)
+        $collection = collect($rows)->sortBy([
+            [$sortColumn, $sortDirection],
+            ['nama_barang', 'asc'],
+            ['tanggal', 'asc']
+        ])->values();
 
+        // Kalau export, langsung return semua data yang sudah terurut
         if ($allData) {
             return ['allRows' => $collection];
         }
 
+        // Pagination setelah sorting
         $currentPage  = LengthAwarePaginator::resolveCurrentPage();
         $perPageItems = $collection->slice(($currentPage - 1) * $perPage, $perPage)->values();
-        $paginated    = new LengthAwarePaginator($perPageItems, $collection->count(), $perPage);
-        $paginated->setPath($request->url())->appends($request->query());
+
+        $paginated = new LengthAwarePaginator(
+            $perPageItems,
+            $collection->count(),
+            $perPage,
+            $currentPage,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
 
         return [
             'paginated' => $paginated,
             'perPage'   => $perPage,
             'allRows'   => $collection
         ];
+        // ================================================================================
     }
 }
