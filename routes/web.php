@@ -64,6 +64,14 @@ Route::middleware(['auth', 'role:R01'])->name('master.')->group(function () {
     Route::get('laporan/bulanan', [BulananController::class, 'index'])
      ->name('laporan.bulanan');
 
+    // Barang Terlaris - Halaman lengkap (semua barang terlaris)
+    Route::get('laporan/terlaris', [BulananController::class, 'terlaris'])
+        ->name('laporan.terlaris');
+
+    // Export Barang Terlaris (PDF & Excel)
+    Route::get('laporan/terlaris/export', [BulananController::class, 'exportTerlaris'])
+        ->name('laporan.terlaris.export');
+
     // Laporan Mutasi Barang
     Route::get('/mutasi-barang', [MutasiController::class, 'index'])
         ->name('mutasi.index');

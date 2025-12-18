@@ -156,9 +156,169 @@ class BulananController extends Controller
         ));
     }
 
+    // ====================== BARU: Halaman lengkap barang terlaris ======================
+    public function terlaris(Request $request)
+    {
+        $periode = $request->get('periode', 'bulanan');
+
+        // Logika periode sama persis seperti di index()
+        switch ($periode) {
+            case '7hari':
+                $start = now()->subDays(6)->startOfDay();
+                $end   = now()->endOfDay();
+                $periodeTeks = $start->format('j') . ' – ' . $end->format('j F Y');
+                break;
+            case '1bulan_terakhir':
+                $start = now()->subDays(29)->startOfDay();
+                $end   = now()->endOfDay();
+                $periodeTeks = $start->format('j M') . ' – ' . $end->format('j M Y');
+                break;
+            case '3bulan':
+                $start = now()->subMonths(2)->startOfMonth();
+                $end   = now()->endOfMonth();
+                $periodeTeks = $start->translatedFormat('F') . ' – ' . $end->translatedFormat('F Y');
+                break;
+            case 'bulanan':
+                $bulan = $request->filled('bulan')
+                    ? Carbon::createFromFormat('Y-m', $request->bulan)
+                    : now();
+                $start = $bulan->copy()->startOfMonth()->startOfDay();
+                $end   = $bulan->copy()->endOfMonth()->endOfDay();
+                $periodeTeks = $bulan->translatedFormat('F Y');
+                break;
+            case 'tahunan':
+                $tahun = (int) $request->get('tahun', now()->year);
+                $start = Carbon::create($tahun)->startOfYear();
+                $end   = Carbon::create($tahun)->endOfYear();
+                $periodeTeks = $tahun;
+                break;
+            default:
+                $periode = 'bulanan';
+                $start = now()->startOfMonth()->startOfDay();
+                $end   = now()->endOfMonth()->endOfDay();
+                $periodeTeks = now()->translatedFormat('F Y');
+        }
+
+        $perPage = (int) $request->get('per_page', 25);
+
+        $terlarisAll = DB::table('detail_penjualan as dp')
+            ->join('penjualan as p', 'dp.id_penjualan', '=', 'p.id_penjualan')
+            ->join('barang as b', 'dp.id_barang', '=', 'b.id_barang')
+            ->whereBetween('p.tanggal_selesai', [$start, $end])
+            ->select(
+                'b.id_barang',
+                'b.nama_barang',
+                DB::raw('SUM(dp.kuantitas) as qty'),
+                DB::raw('SUM(dp.sub_total) as omzet')
+            )
+            ->groupBy('b.id_barang', 'b.nama_barang')
+            ->orderByDesc('qty')
+            ->paginate($perPage)
+            ->appends($request->query());
+
+        return view('master.laporan.terlaris', compact('terlarisAll', 'periodeTeks', 'periode'));
+    }
+
+    // ====================== BARU: Export barang terlaris (PDF & Excel) ======================
+    public function exportTerlaris(Request $request)
+    {
+        $periode = $request->get('periode', 'bulanan');
+
+        switch ($periode) {
+            case '7hari':
+                $start = now()->subDays(6)->startOfDay();
+                $end   = now()->endOfDay();
+                $periodeTeks = $start->format('j') . ' – ' . $end->format('j F Y');
+                break;
+            case '1bulan_terakhir':
+                $start = now()->subDays(29)->startOfDay();
+                $end   = now()->endOfDay();
+                $periodeTeks = $start->format('j M') . ' – ' . $end->format('j M Y');
+                break;
+            case '3bulan':
+                $start = now()->subMonths(2)->startOfMonth();
+                $end   = now()->endOfMonth();
+                $periodeTeks = $start->translatedFormat('F') . ' – ' . $end->translatedFormat('F Y');
+                break;
+            case 'bulanan':
+                $bulan = $request->filled('bulan')
+                    ? Carbon::createFromFormat('Y-m', $request->bulan)
+                    : now();
+                $start = $bulan->copy()->startOfMonth()->startOfDay();
+                $end   = $bulan->copy()->endOfMonth()->endOfDay();
+                $periodeTeks = $bulan->translatedFormat('F Y');
+                break;
+            case 'tahunan':
+                $tahun = (int) $request->get('tahun', now()->year);
+                $start = Carbon::create($tahun)->startOfYear();
+                $end   = Carbon::create($tahun)->endOfYear();
+                $periodeTeks = $tahun;
+                break;
+            default:
+                $start = now()->startOfMonth()->startOfDay();
+                $end   = now()->endOfMonth()->endOfDay();
+                $periodeTeks = now()->translatedFormat('F Y');
+        }
+
+        $terlarisAll = DB::table('detail_penjualan as dp')
+            ->join('penjualan as p', 'dp.id_penjualan', '=', 'p.id_penjualan')
+            ->join('barang as b', 'dp.id_barang', '=', 'b.id_barang')
+            ->whereBetween('p.tanggal_selesai', [$start, $end])
+            ->select(
+                'b.id_barang',
+                'b.nama_barang',
+                DB::raw('SUM(dp.kuantitas) as qty'),
+                DB::raw('SUM(dp.sub_total) as omzet')
+            )
+            ->groupBy('b.id_barang', 'b.nama_barang')
+            ->orderByDesc('qty')
+            ->get();
+
+        $format = $request->get('format', 'pdf');
+        $namaFile = "Barang_Terlaris_" . str_replace([' ', '/'], '_', $periodeTeks);
+
+        if ($format === 'excel') {
+            return Excel::download(new class($terlarisAll, $periodeTeks) implements \Maatwebsite\Excel\Concerns\FromCollection {
+                protected $data;
+                protected $periode;
+
+                public function __construct($data, $periode)
+                {
+                    $this->data = $data;
+                    $this->periode = $periode;
+                }
+
+                public function collection()
+                {
+                    $rows = collect();
+                    $rows->push(['Rank', 'Kode Barang', 'Nama Barang', 'Terjual (Qty)', 'Omzet (Rp)']);
+
+                    foreach ($this->data as $i => $item) {
+                        $rows->push([
+                            $i + 1,
+                            $item->id_barang,
+                            $item->nama_barang,
+                            $item->qty,
+                            number_format($item->omzet, 0, ',', '.')
+                        ]);
+                    }
+                    return $rows;
+                }
+
+                public function title(): string
+                {
+                    return 'Barang Terlaris ' . $this->periode;
+                }
+            }, $namaFile . '.xlsx');
+        }
+
+        // PDF
+        $pdf = PDF::loadView('master.laporan.terlaris-export', compact('terlarisAll', 'periodeTeks'));
+        return $pdf->download($namaFile . '.pdf');
+    }
+
     public function export(Request $request)
     {
-
         $periode = $request->get('periode', 'bulanan');
 
         switch ($periode) {
@@ -298,36 +458,37 @@ class BulananController extends Controller
         }
  
         $namaFile = "Laporan_Bulanan_" . str_replace([' ', '/'], '_', $periodeTeks);
-$dataExport = compact('periodeTeks','omzet','hpp','labaKotor','marginPersen','totalPembelian',
-                      'pembelianMasuk','nilaiStokAkhir','stokKritis','terlaris','transaksi');
+        $dataExport = compact('periodeTeks','omzet','hpp','labaKotor','marginPersen','totalPembelian',
+                              'pembelianMasuk','nilaiStokAkhir','stokKritis','terlaris','transaksi');
 
-if ($format === 'excel') {
-    return Excel::download(new class($dataExport) implements \Maatwebsite\Excel\Concerns\FromCollection {
-        protected $data;
-        public function __construct($data) { $this->data = $data; }
+        if ($format === 'excel') {
+            return Excel::download(new class($dataExport) implements \Maatwebsite\Excel\Concerns\FromCollection {
+                protected $data;
+                public function __construct($data) { $this->data = $data; }
 
-        public function collection()
-        {
-            $rows = collect();
-            $rows->push(['TANGGAL', 'ID', 'JENIS', 'PIHAK', 'KASIR', 'TOTAL (Rp)', 'SUMBER']);
+                public function collection()
+                {
+                    $rows = collect();
+                    $rows->push(['TANGGAL', 'ID', 'JENIS', 'PIHAK', 'KASIR', 'TOTAL (Rp)', 'SUMBER']);
 
-            foreach ($this->data['transaksi'] as $t) {
-                $rows->push([
-                    $t->tanggal,
-                    $t->id,
-                    $t->jenis === 'penjualan' ? 'PENJUALAN' : 'PEMBELIAN',
-                    $t->nama_pihak,
-                    $t->kasir,
-                    number_format($t->total, 0, ',', '.'),
-                    strtoupper($t->sumber)
-                ]);
-            }
-            return $rows;
+                    foreach ($this->data['transaksi'] as $t) {
+                        $rows->push([
+                            $t->tanggal,
+                            $t->id,
+                            $t->jenis === 'penjualan' ? 'PENJUALAN' : 'PEMBELIAN',
+                            $t->nama_pihak,
+                            $t->kasir,
+                            number_format($t->total, 0, ',', '.'),
+                            strtoupper($t->sumber)
+                        ]);
+                    }
+                    return $rows;
+                }
+            }, $namaFile . '.xlsx');
         }
-    }, $namaFile . '.xlsx');
-}
 
-// PDF tetap cantik
-$pdf = PDF::loadView('master.laporan.bulanan-export', $dataExport);
-return $pdf->download($namaFile . '.pdf');
-}}
+        // PDF tetap cantik
+        $pdf = PDF::loadView('master.laporan.bulanan-export', $dataExport);
+        return $pdf->download($namaFile . '.pdf');
+    }
+}

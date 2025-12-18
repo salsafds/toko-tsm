@@ -217,15 +217,24 @@
 </div>
 @endif
 
-    <!-- 10 Barang Terlaris + Bar Chart -->
+<!-- 10 Barang Terlaris + Bar Chart -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <!-- CHART -->
         <div class="bg-white p-5 rounded-lg shadow-lg">
-            <h2 class="text-sm font-medium text-gray-700 mb-4">10 Barang Terlaris (Qty)</h2>
-            <canvas id="chartTerlaris" class="h-80"></canvas>
+            <h2 class="text-sm font-medium text-gray-700 mb-4 text-center font-semibold">10 Barang Terlaris (Qty)</h2>
+            <div class="relative h-80 w-full pb-12"> <!-- pb-12 = padding bawah biar label multi-line muat -->
+                <canvas id="chartTerlaris"></canvas>
+            </div>
         </div>
+
+        <!-- Detail Terlaris (tetap sama) -->
         <div class="bg-white p-5 rounded-lg shadow-lg border border-gray-200 overflow-x-auto">
-            <h2 class="text-sm font-medium text-gray-700 mb-4">Detail Terlaris</h2>
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-sm font-medium text-gray-700">Detail Terlaris</h2>
+                <a href="{{ route('master.laporan.terlaris') . '?' . http_build_query(request()->query()) }}" class="text-xs text-indigo-600 hover:underline">Lihat selengkapnya</a>
+            </div>
             <table class="min-w-full divide-y divide-gray-200 text-sm">
+                <!-- tabel tetap sama seperti sebelumnya -->
                 <thead class="bg-gray-50 text-xs text-gray-500 uppercase">
                     <tr>
                         <th class="px-4 py-2 text-left border-r border-gray-200">Rank</th>
@@ -514,47 +523,118 @@
         </div>
 
 @push('js')
+<script src="{{ Vite::asset('resources/js/app.js') }}"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const ctx = document.getElementById('chartTerlaris');
-        if (!ctx) return;
+    document.addEventListener('DOMContentLoaded', function () {
+        const canvas = document.getElementById('chartTerlaris');
+        if (!canvas) return;
 
-        // Batasi nama barang biar ga error
-        const rawLabels = @json($terlaris->pluck('nama_barang'));
-        const labels = rawLabels.map(name => 
-            name.length > 20 ? name.substring(0, 20) + '...' : name
-        );
-        const data = @json($terlaris->pluck('qty'));
+        const terlaris = @json($terlaris);
 
-        if (data.length === 0) {
-            ctx.parentElement.innerHTML = `
-                <div class="h-80 flex items-center justify-center">
+        if (!terlaris || terlaris.length === 0) {
+            canvas.parentElement.innerHTML = `
+                <div class="flex items-center justify-center h-full">
                     <p class="text-gray-500 text-lg">Tidak ada data penjualan pada periode ini</p>
                 </div>`;
             return;
         }
 
-        new Chart(ctx, {
+        const qtyData = terlaris.map(item => parseInt(item.qty) || 0);
+        const maxQty = Math.max(...qtyData, 10);
+
+        // Auto stepSize
+        let stepSize = 10;
+        if (maxQty > 500) stepSize = 100;
+        else if (maxQty > 200) stepSize = 50;
+        else if (maxQty > 100) stepSize = 20;
+        else if (maxQty > 50) stepSize = 10;
+        else if (maxQty > 20) stepSize = 5;
+
+        const maxY = Math.ceil(maxQty / stepSize) * stepSize + stepSize;
+
+        // Label X: max 20 char per baris, wrap otomatis
+        const labels = terlaris.map(item => {
+            let name = item.nama_barang || 'Unknown';
+            // Potong jadi max 20 char per baris
+            const words = name.split(' ');
+            let lines = [];
+            let currentLine = '';
+            words.forEach(word => {
+                if ((currentLine + word).length > 20) {
+                    lines.push(currentLine.trim());
+                    currentLine = word + ' ';
+                } else {
+                    currentLine += word + ' ';
+                }
+            });
+            if (currentLine.trim()) lines.push(currentLine.trim());
+            return lines.join('\n');
+        });
+
+        // Destroy chart lama
+        if (window.terlarisChart instanceof Chart) {
+            window.terlarisChart.destroy();
+        }
+
+        window.terlarisChart = new Chart(canvas.getContext('2d'), {
             type: 'bar',
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Terjual (Qty)',
-                    data: data,
-                    backgroundColor: '#6366f1',
-                    borderRadius: 8,
+                    label: 'Terjual (unit)',
+                    data: qtyData,
+                    backgroundColor: '#3b82f6',     // biru solid
+                    borderColor: '#2563eb',
+                    borderWidth: 1,
+                    borderRadius: 6,
                     borderSkipped: false,
+                    barThickness: 'flex',           // otomatis menyesuaikan lebar canvas
+                    maxBarThickness: 60,            // maksimal tebal biar tidak terlalu gepeng
+                    hoverBackgroundColor: '#1d4ed8'
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { display: false }
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        titleFont: { size: 13 },
+                        bodyFont: { size: 14 },
+                        padding: 12,
+                        cornerRadius: 8,
+                        callbacks: {
+                            label: context => `Terjual: ${context.parsed.y} unit`
+                        }
+                    }
                 },
                 scales: {
-                    y: { beginAtZero: true, ticks: { stepSize: 1 } },
-                    x: { ticks: { maxRotation: 45, minRotation: 45 } }
+                    y: {
+                        beginAtZero: true,
+                        max: maxY,
+                        ticks: {
+                            stepSize: stepSize,
+                            padding: 10,
+                            font: { size: 12 },
+                            callback: value => value + ' unit'
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.1)',
+                            drawBorder: false
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            maxRotation: 0,          // <--- NO ROTATION (lurus)
+                            minRotation: 0,
+                            align: 'center',
+                            autoSkip: false,         // tampilkan semua label
+                            font: { size: 11, lineHeight: 1.4 }, // lineHeight untuk multi-line
+                            padding: 10
+                        },
+                        grid: { display: false }
+                    }
                 }
             }
         });
