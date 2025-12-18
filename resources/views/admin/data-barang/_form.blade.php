@@ -204,7 +204,32 @@
       @endif
     </div>
   </div>
-
+    {{-- Kena PPN --}}
+    <div>
+      <label class="block text-sm font-medium text-gray-700">
+        Kena PPN? <span class="text-rose-600">*</span>
+      </label>
+      <div class="mt-2 space-x-6">
+        <label class="inline-flex items-center">
+          <input type="radio" name="kena_ppn" value="Ya"
+                 {{ old('kena_ppn', $barang->kena_ppn ?? '') === 'Ya' ? 'checked' : '' }}
+                 class="form-radio text-blue-600 focus:ring-blue-500">
+          <span class="ml-2 text-sm text-gray-700">Ya</span>
+        </label>
+        <label class="inline-flex items-center">
+          <input type="radio" name="kena_ppn" value="Tidak"
+                 {{ old('kena_ppn', $barang->kena_ppn ?? '') === 'Tidak' ? 'checked' : '' }}
+                 class="form-radio text-blue-600 focus:ring-blue-500">
+          <span class="ml-2 text-sm text-gray-700">Tidak</span>
+        </label>
+      </div>
+      @if ($errors->has('kena_ppn'))
+        <p class="text-sm text-red-600 mt-1">{{ $errors->first('kena_ppn') }}</p>
+      @else
+        <p id="kena_ppn_error" class="text-sm text-red-600 mt-1 hidden"></p>
+        <p class="text-xs text-gray-500">Pilih apakah barang ini kena PPN 12% atau tidak (misal: beras, telur = Tidak).</p>
+      @endif
+    </div>
   {{-- Tombol --}}
   <div class="flex items-center gap-3">
     <button 

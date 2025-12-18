@@ -86,6 +86,21 @@ document.addEventListener('DOMContentLoaded', function () {
       console.log('Submitting form');
       form.submit();
     }
+        const kenaPpnRadios = document.querySelectorAll('input[name="kena_ppn"]');
+    const kenaPpnError = document.createElement('p');
+    kenaPpnError.id = 'kena_ppn_error';
+    kenaPpnError.className = 'text-sm text-red-600 mt-1 hidden';
+    document.querySelector('input[name="kena_ppn"]').closest('div').appendChild(kenaPpnError);
+
+    let kenaPpnValue = document.querySelector('input[name="kena_ppn"]:checked')?.value;
+
+    if (!kenaPpnValue) {
+      kenaPpnError.textContent = 'Harap pilih apakah barang kena PPN atau tidak.';
+      kenaPpnError.classList.remove('hidden');
+      hasError = true;
+    } else {
+      kenaPpnError.classList.add('hidden');
+    }
   });
 });
 @endsection

@@ -28,6 +28,7 @@ class Barang extends Model
         'stok',
         'retail',
         'margin',
+        'kena_ppn',
     ];
 
     public function kategoriBarang() { return $this->belongsTo(KategoriBarang::class, 'id_kategori_barang'); }

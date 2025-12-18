@@ -24,6 +24,7 @@ return new class extends Migration
         $table->decimal('margin', 5, 2)->default(0.00);
         $table->integer('stok')->default(0);
         $table->decimal('retail', 10, 2)->default(0);
+        $table->string('kena_ppn', 10)->nullable();
         $table->timestamps();
 
         $table->foreign('id_kategori_barang')->references('id_kategori_barang')->on('kategori_barang')->onDelete('cascade');

@@ -61,6 +61,7 @@ class BarangController extends Controller
             'id_satuan' => 'required|exists:satuan,id_satuan',
             'berat' => 'required|numeric|min:0.01',
             'margin' => 'nullable|numeric|min:0|max:100', 
+            'kena_ppn' => 'required|in:Ya,Tidak',
         ]);
 
   
@@ -79,6 +80,7 @@ class BarangController extends Controller
         'stok' => 0,
         'retail' => 0,
         'margin' => $request->margin ?? 0,
+        'kena_ppn' => $request->kena_ppn,
     ]);
     
     return redirect()->route('admin.data-barang.index')
@@ -108,6 +110,7 @@ class BarangController extends Controller
         'merk_barang' => 'nullable|string|max:100',
         'berat' => 'required|numeric|min:0.01',
         'margin' => 'nullable|numeric|min:0|max:100',
+        'kena_ppn' => 'required|in:Ya,Tidak',
     ], [
 
         'nama_barang.required' => 'Nama barang wajib diisi.',
@@ -129,6 +132,7 @@ class BarangController extends Controller
         'margin.numeric' => 'Margin harus berupa angka.',
         'margin.min' => 'Margin minimal 0.',
         'margin.max' => 'Margin maksimal 100.',
+        'kena_ppn.required' => 'Kena PPN wajib dipilih.',
     ]);
 
     $barang = Barang::findOrFail($id_barang);
@@ -146,6 +150,7 @@ class BarangController extends Controller
         'merk_barang' => $request->merk_barang ?: '',
         'berat' => $request->berat,
         'margin' => $request->margin ?? 0,
+        'kena_ppn' => $request->kena_ppn,
     ]);
 
     
@@ -185,7 +190,7 @@ class BarangController extends Controller
         $barang = Barang::findOrFail($id_barang);
 
         $stok_lama = $barang->stok ?? 0;
-        $hpp_lama = $barang->harga_beli ?? 0; // ini adalah HPP rata-rata saat ini
+        $hpp_lama = $barang->harga_beli ?? 0; 
 
         $nilai_lama = $stok_lama * $hpp_lama;
         $nilai_baru = $kuantitas * $hpp_per_unit;

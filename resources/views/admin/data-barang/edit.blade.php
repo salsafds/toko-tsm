@@ -40,16 +40,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
   if (!form) return;
 
-  // Deteksi apakah mode edit (berdasarkan input _method PUT)
   const isEdit = form.querySelector('input[name="_method"]')?.value === 'PUT';
 
-  // Fungsi untuk normalisasi nilai margin (ke number, default 0)
   function normalizeMargin(value) {
     const num = parseFloat(value || 0);
     return isNaN(num) ? 0 : num;
   }
 
-  // Simpan nilai awal (dengan normalisasi untuk margin)
   const initial = {
     nama: namaInput?.value.trim() || '',
     kategori: kategoriSelect?.value || '',
@@ -57,10 +54,10 @@ document.addEventListener('DOMContentLoaded', function () {
     satuan: satuanSelect?.value || '',
     merk: merkInput?.value.trim() || '',
     berat: beratInput?.value.trim() || '',
-    margin: normalizeMargin(marginInput?.value) // Normalisasi ke number
+    margin: normalizeMargin(marginInput?.value) 
   };
 
-  // Set tombol disabled default untuk mode edit
+
   if (isEdit) {
     submitButton.disabled = true;
     submitButton.classList.add('opacity-50');
@@ -74,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function () {
       satuan: satuanSelect?.value || '',
       merk: merkInput?.value.trim() || '',
       berat: beratInput?.value.trim() || '',
-      margin: normalizeMargin(marginInput?.value) // Normalisasi ke number
+      margin: normalizeMargin(marginInput?.value) 
     };
 
     const same = Object.keys(initial).every(k => initial[k] === current[k]);
@@ -87,20 +84,19 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  // Event listener untuk mendeteksi perubahan (tambahkan 'blur' untuk input number)
   [namaInput, kategoriSelect, supplierSelect, satuanSelect, merkInput, beratInput, marginInput].forEach(el => {
     if (!el) return;
     el.addEventListener('input', checkChanges);
     el.addEventListener('change', checkChanges);
     if (el.type === 'number') {
-      el.addEventListener('blur', checkChanges); // Pastikan perubahan terdeteksi saat blur
+      el.addEventListener('blur', checkChanges);
     }
   });
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
 
-    // Reset error
+
     [namaError, kategoriError, supplierError, satuanError, merkError, beratError, marginError].forEach(el => {
       if (el) { el.textContent = ''; el.classList.add('hidden'); }
     });
@@ -118,19 +114,34 @@ document.addEventListener('DOMContentLoaded', function () {
     const berat = beratInput?.value.trim() || '';
     const margin = marginInput?.value.trim() || '';
 
-    // Validasi lainnya tetap sama...
-
-    // Validasi margin
     if (margin && (parseFloat(margin) < 0 || parseFloat(margin) > 100)) {
       marginError.textContent = 'Margin harus antara 0 dan 100.';
       marginError.classList.remove('hidden');
       marginInput.classList.add('border-red-500', 'bg-red-50');
       hasError = true;
     }
+    const kenaPpnRadios = document.querySelectorAll('input[name="kena_ppn"]');
+    const kenaPpnError = document.querySelector('#kena_ppn_error') || document.createElement('p');
+    if (!document.querySelector('#kena_ppn_error')) {
+      kenaPpnError.id = 'kena_ppn_error';
+      kenaPpnError.className = 'text-sm text-red-600 mt-1 hidden';
+      document.querySelector('div.space-x-6').parentNode.appendChild(kenaPpnError);
+    }
+    const kenaPpnValue = document.querySelector('input[name="kena_ppn"]:checked')?.value;
+
+    if (!kenaPpnValue) {
+      kenaPpnError.textContent = 'Harap pilih apakah barang kena PPN atau tidak.';
+      kenaPpnError.classList.remove('hidden');
+      hasError = true;
+    } else {
+      kenaPpnError.classList.add('hidden');
+    }
+
+    kenaPpnRadios.forEach(radio => {
+      radio.addEventListener('change', checkChanges);
+    });
 
     if (hasError) return;
-
-    // Konfirmasi
     const message = isEdit ? 'Apakah Anda yakin ingin mengedit data barang ini?' : 'Apakah Anda yakin ingin menyimpan data barang ini?';
     if (confirm(message)) {
       form.submit();
