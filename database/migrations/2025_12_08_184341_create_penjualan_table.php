@@ -17,25 +17,26 @@ return new class extends Migration
             $table->timestamp('tanggal_order')->useCurrent();
             $table->timestamp('tanggal_selesai')->nullable();
             $table->integer('diskon_penjualan')->default(0);
+            $table->decimal('tarif_ppn', 5, 2)->nullable();
+            $table->integer('total_dpp')->default(0);
+            $table->integer('total_ppn')->default(0);
+            $table->integer('total_non_ppn')->default(0);
             $table->integer('total_harga_penjualan');
             $table->enum('jenis_pembayaran', ['tunai', 'kredit']);
             $table->string('catatan')->nullable();
             $table->integer('uang_diterima')->nullable();
             $table->timestamps();
 
-            // FK pelanggan
             $table->foreign('id_pelanggan')
                   ->references('id_pelanggan')
                   ->on('pelanggan')
                   ->onDelete('cascade');
 
-            // FK anggota 
             $table->foreign('id_anggota')
                   ->references('id_anggota')
                   ->on('anggota')
                   ->onDelete('cascade');
 
-            // FK user
             $table->foreign('id_user')
                   ->references('id_user')
                   ->on('users')

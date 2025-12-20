@@ -65,6 +65,7 @@ class PenjualanController extends Controller
             'barang.*.id_barang' => 'required|exists:barang,id_barang',
             'barang.*.kuantitas' => 'required|integer|min:1',
             'diskon_penjualan' => 'nullable|numeric|min:0|max:100',
+            'tarif_ppn' => 'required|numeric|min:0|max:100',
             'jenis_pembayaran' => 'required|in:tunai,kredit',
             'uang_diterima' => 'nullable|numeric|min:0',
             'catatan' => 'nullable|string|max:255',
@@ -93,21 +94,38 @@ class PenjualanController extends Controller
 
         DB::transaction(function () use ($request) {
             $subTotalBarang = 0;
+$total_dpp = 0;
+$total_non_ppn = 0;
 
-            foreach ($request->barang as $item) {
-                $barang = Barang::findOrFail($item['id_barang']);
+foreach ($request->barang as $item) {
+    $barang = Barang::findOrFail($item['id_barang']);
 
-                if ($barang->stok_tersedia < $item['kuantitas']) {
-                    throw new \Exception("Stok {$barang->nama_barang} tidak cukup! Tersedia: {$barang->stok_tersedia}, diminta: {$item['kuantitas']}");
-                }
+    if ($barang->stok_tersedia < $item['kuantitas']) {
+        throw new \Exception("Stok {$barang->nama_barang} tidak cukup! Tersedia: {$barang->stok_tersedia}, diminta: {$item['kuantitas']}");
+    }
 
-                $subTotalBarang += $barang->retail * $item['kuantitas'];
-            }
+    $sub_total_item = $barang->retail * $item['kuantitas'];
 
-            $biayaPengiriman = $request->has('ekspedisi') && $request->ekspedisi == '1' ? ($request->biaya_pengiriman ?? 0) : 0;
-            $subTotal = $subTotalBarang + $biayaPengiriman;
-            $diskon = $request->filled('diskon_penjualan') ? $request->diskon_penjualan : 0;
-            $totalHarga = $subTotal - ($subTotal * $diskon / 100);
+    if ($barang->kena_ppn === 'ya' || strtolower($barang->kena_ppn) === 'ya') {
+        $total_dpp += $sub_total_item;
+    } else {
+        $total_non_ppn += $sub_total_item;
+    }
+}
+
+$biayaPengiriman = $request->has('ekspedisi') && $request->ekspedisi == '1' ? ($request->biaya_pengiriman ?? 0) : 0;
+
+$subTotalBarangDanOngkir = $total_dpp + $total_non_ppn + $biayaPengiriman;
+
+$diskonPersen = $request->filled('diskon_penjualan') ? $request->diskon_penjualan : 0;
+$diskonNilai = $subTotalBarangDanOngkir * ($diskonPersen / 100);
+
+$dppSetelahDiskon = $total_dpp - ($total_dpp * $diskonPersen / 100);
+
+$tarif_ppn = $request->tarif_ppn;
+$total_ppn = round($dppSetelahDiskon * $tarif_ppn / 100);
+
+$totalHarga = $subTotalBarangDanOngkir - $diskonNilai + $total_ppn;
 
             $penjualan = Penjualan::create([
                 'id_penjualan' => $this->generateNextId(),
@@ -115,13 +133,16 @@ class PenjualanController extends Controller
                 'id_anggota' => $request->id_anggota,
                 'id_user' => Auth::id(),
                 'sumber_transaksi' => 'toko',
-                'diskon_penjualan' => $diskon,
+                'diskon_penjualan' => $diskonPersen,
+                'tarif_ppn' => $tarif_ppn,
+                'total_dpp' => round($dppSetelahDiskon),
+                'total_ppn' => $total_ppn,
+                'total_non_ppn' => $total_non_ppn + $biayaPengiriman,
                 'total_harga_penjualan' => $totalHarga,
                 'jenis_pembayaran' => $request->jenis_pembayaran,
                 'uang_diterima' => $request->uang_diterima ?? 0,
                 'catatan' => $request->catatan,
             ]);
-
             foreach ($request->barang as $item) {
                 $barang = Barang::findOrFail($item['id_barang']);
                 DetailPenjualan::create([
@@ -173,12 +194,12 @@ class PenjualanController extends Controller
     }
 
     public function update(Request $request, $id)
-    {
-        $penjualan = Penjualan::findOrFail($id);
-        if ($penjualan->tanggal_selesai) {
-            return back()->withErrors(['error' => 'Transaksi sudah selesai dan tidak bisa diubah.']);
-        }
+{
+    $penjualan = Penjualan::findOrFail($id);
 
+    if ($penjualan->tanggal_selesai) {
+        return back()->withErrors(['error' => 'Transaksi sudah selesai dan tidak bisa diubah.']);
+    }
         $rules = [
             'id_pelanggan' => 'nullable|exists:pelanggan,id_pelanggan',
             'id_anggota' => 'nullable|exists:anggota,id_anggota',
@@ -186,6 +207,7 @@ class PenjualanController extends Controller
             'barang.*.id_barang' => 'required|exists:barang,id_barang',
             'barang.*.kuantitas' => 'required|integer|min:1',
             'diskon_penjualan' => 'nullable|numeric|min:0|max:100',
+            'tarif_ppn' => 'required|numeric|min:0|max:100',
             'jenis_pembayaran' => 'required|in:tunai,kredit',
             'uang_diterima' => 'nullable|numeric|min:0',
             'catatan' => 'nullable|string|max:255',
@@ -213,67 +235,90 @@ class PenjualanController extends Controller
         }
 
         DB::transaction(function () use ($request, $penjualan) {
-            $penjualan->detailPenjualan()->delete();
-            $penjualan->pengiriman()->delete();
 
-            $subTotalBarang = 0;
+        $penjualan->detailPenjualan()->delete();
+        $penjualan->pengiriman()->delete();
 
+        $total_dpp = 0;
+        $total_non_ppn = 0;
 
-            foreach ($request->barang as $item) {
-                $barang = Barang::findOrFail($item['id_barang']);
+        foreach ($request->barang as $item) {
+            $barang = Barang::findOrFail($item['id_barang']);
 
-                if ($barang->stok_tersedia < $item['kuantitas']) {
-                    throw new \Exception("Stok {$barang->nama_barang} tidak cukup! Tersedia: {$barang->stok_tersedia}, diminta: {$item['kuantitas']}");
-                }
-
-                $subTotalBarang += $barang->retail * $item['kuantitas'];
+            if ($barang->stok_tersedia < $item['kuantitas']) {
+                throw new \Exception("Stok {$barang->nama_barang} tidak cukup!");
             }
 
-            $biayaPengiriman = $request->has('ekspedisi') && $request->ekspedisi == '1' ? ($request->biaya_pengiriman ?? 0) : 0;
-            $subTotal = $subTotalBarang + $biayaPengiriman;
-            $diskon = $request->filled('diskon_penjualan') ? $request->diskon_penjualan : 0;
-            $totalHarga = $subTotal - ($subTotal * $diskon / 100);
+            $sub_total_item = $barang->retail * $item['kuantitas'];
 
-            $penjualan->update([
-                'id_pelanggan' => $request->id_pelanggan,
-                'id_anggota' => $request->id_anggota,
-                'diskon_penjualan' => $diskon,
-                'total_harga_penjualan' => $totalHarga,
-                'jenis_pembayaran' => $request->jenis_pembayaran,
-                'uang_diterima' => $request->uang_diterima ?? 0,
-                'catatan' => $request->catatan,
+            if ($barang->kena_ppn === 'ya' || strtolower($barang->kena_ppn) === 'ya') {
+                $total_dpp += $sub_total_item;
+            } else {
+                $total_non_ppn += $sub_total_item;
+            }
+        }
+
+        $biayaPengiriman = $request->has('ekspedisi') && $request->ekspedisi == '1' 
+            ? ($request->biaya_pengiriman ?? 0) 
+            : 0;
+
+        $subTotalBarangDanOngkir = $total_dpp + $total_non_ppn + $biayaPengiriman;
+
+        $diskonPersen = $request->filled('diskon_penjualan') ? $request->diskon_penjualan : 0;
+        $diskonNilai = $subTotalBarangDanOngkir * ($diskonPersen / 100);
+
+        $dppSetelahDiskon = $total_dpp - ($total_dpp * $diskonPersen / 100);
+
+        $tarif_ppn = $request->tarif_ppn;
+        $total_ppn = round($dppSetelahDiskon * $tarif_ppn / 100);
+
+        $totalHarga = $subTotalBarangDanOngkir - $diskonNilai + $total_ppn;
+
+        $penjualan->update([
+            'id_pelanggan' => $request->id_pelanggan,
+            'id_anggota' => $request->id_anggota,
+            'id_user' => Auth::id(),
+            'sumber_transaksi' => 'toko',
+            'diskon_penjualan' => $diskonPersen,
+            'tarif_ppn' => $tarif_ppn,
+            'total_dpp' => round($dppSetelahDiskon),
+            'total_ppn' => $total_ppn,
+            'total_non_ppn' => $total_non_ppn + $biayaPengiriman,
+            'total_harga_penjualan' => $totalHarga,
+            'jenis_pembayaran' => $request->jenis_pembayaran,
+            'uang_diterima' => $request->uang_diterima ?? 0,
+            'catatan' => $request->catatan,
+        ]);
+
+        foreach ($request->barang as $item) {
+            $barang = Barang::findOrFail($item['id_barang']);
+            DetailPenjualan::create([
+                'id_detail_penjualan' => $this->generateDetailId(),
+                'id_penjualan' => $penjualan->id_penjualan,
+                'id_barang' => $item['id_barang'],
+                'kuantitas' => $item['kuantitas'],
+                'sub_total' => $barang->retail * $item['kuantitas'],
             ]);
+        }
 
-            foreach ($request->barang as $item) {
-                $barang = Barang::findOrFail($item['id_barang']);
-                DetailPenjualan::create([
-                    'id_detail_penjualan' => $this->generateDetailId(),
-                    'id_penjualan' => $penjualan->id_penjualan,
-                    'id_barang' => $item['id_barang'],
-                    'kuantitas' => $item['kuantitas'],
-                    'sub_total' => $barang->retail * $item['kuantitas'],
-                ]);
-            }
+        if ($request->has('ekspedisi') && $request->ekspedisi == '1') {
+            Pengiriman::create([
+                'id_pengiriman' => $this->generatePengirimanId(),
+                'id_agen_ekspedisi' => $request->id_agen_ekspedisi,
+                'id_penjualan' => $penjualan->id_penjualan,
+                'nomor_resi' => $request->nomor_resi,
+                'biaya_pengiriman' => $biayaPengiriman,
+                'nama_penerima' => $request->nama_penerima,
+                'telepon_penerima' => $request->telepon_penerima,
+                'alamat_penerima' => $request->alamat_penerima,
+                'kode_pos' => $request->kode_pos,
+            ]);
+        }
+    });
 
-            if ($request->has('ekspedisi') && $request->ekspedisi == '1') {
-                Pengiriman::create([
-                    'id_pengiriman' => $this->generatePengirimanId(),
-                    'id_agen_ekspedisi' => $request->id_agen_ekspedisi,
-                    'id_penjualan' => $penjualan->id_penjualan,
-                    'biaya_pengiriman' => $biayaPengiriman,
-                    'nama_penerima' => $request->nama_penerima,
-                    'telepon_penerima' => $request->telepon_penerima,
-                    'alamat_penerima' => $request->alamat_penerima,
-                    'kode_pos' => $request->kode_pos,
-                    'nomor_resi' => $request->nomor_resi,
-                ]);
-            }
-        });
-
-        return redirect()->route('admin.penjualan.index')
-                         ->with('success', 'Data penjualan berhasil diperbarui.');
-    }
-
+    return redirect()->route('admin.penjualan.index')
+                     ->with('success', 'Data penjualan berhasil diperbarui.');
+}
     public function destroy($id)
     {
         $penjualan = Penjualan::findOrFail($id);

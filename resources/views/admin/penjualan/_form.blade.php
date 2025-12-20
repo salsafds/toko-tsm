@@ -73,17 +73,24 @@
             <select name="barang[{{ $barangIndex }}][id_barang]" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200">
               <option value="">-- Pilih Barang --</option>
               @foreach($barangs as $b)
-                <option value="{{ $b->id_barang }}" data-harga="{{ $b->retail }}" data-stok="{{ $b->stok }}" {{ $detail->id_barang == $b->id_barang ? 'selected' : '' }}>
+                <option value="{{ $b->id_barang }}"
+                        data-harga="{{ $b->retail }}"
+                        data-stok="{{ $b->stok_tersedia ?? $b->stok }}"
+                        data-kenappn="{{ strtolower($b->kena_ppn) }}"
+                        {{ $detail->id_barang == $b->id_barang ? 'selected' : '' }}>
                   {{ $b->nama_barang }} (Tersedia: {{ $b->stok_tersedia ?? $b->stok }})
                 </option>
               @endforeach
             </select>
           </div>
           <div class="col-span-2">
-            <input type="text" readonly class="harga-retail w-full rounded-md border bg-gray-100 px-3 py-2 text-sm text-gray-700 cursor-not-allowed text-right" value="Rp {{ number_format($detail->barang->retail, 0, ',', '.') }}">
+            <input type="text" readonly class="harga-retail w-full rounded-md border bg-gray-100 px-3 py-2 text-sm text-gray-700 cursor-not-allowed text-right"
+                  value="Rp {{ number_format($detail->barang->retail, 0, ',', '.') }}">
           </div>
           <div class="col-span-2">
-            <input type="number" name="barang[{{ $barangIndex }}][kuantitas]" value="{{ old('barang.' . $barangIndex . '.kuantitas', $detail->kuantitas) }}" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200" min="1" placeholder="Qty">
+            <input type="number" name="barang[{{ $barangIndex }}][kuantitas]"
+                  value="{{ old('barang.' . $barangIndex . '.kuantitas', $detail->kuantitas) }}"
+                  class="w-full rounded-md border px-3 py-2 text-sm border-gray-200" min="1" placeholder="Qty">
           </div>
           <div class="col-span-1 flex justify-center">
             @if($loop->last)
@@ -102,7 +109,10 @@
           <select name="barang[0][id_barang]" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200">
             <option value="">-- Pilih Barang --</option>
             @foreach($barangs as $b)
-              <option value="{{ $b->id_barang }}" data-harga="{{ $b->retail }}" data-stok="{{ $b->stok }}">
+              <option value="{{ $b->id_barang }}"
+                      data-harga="{{ $b->retail }}"
+                      data-stok="{{ $b->stok_tersedia ?? $b->stok }}"
+                      data-kenappn="{{ strtolower($b->kena_ppn) }}">
                 {{ $b->nama_barang }} (Tersedia: {{ $b->stok_tersedia ?? $b->stok }})
               </option>
             @endforeach
@@ -127,7 +137,6 @@
       <p id="barang_error" class="text-sm text-red-600 mt-1 hidden"></p>
     @endif
   </div>
-
   {{-- Ekspedisi --}}
   <div class="mt-6">
     <label class="flex items-center space-x-2 cursor-pointer select-none">
@@ -217,48 +226,72 @@
                class="w-full rounded-md border px-3 py-2 text-sm border-gray-200" min="0" max="100" step="0.01">
         <p id="diskon_penjualan_error" class="text-sm text-red-600 mt-1 hidden"></p>
       </div>
-
       <div>
-        <label class="block text-sm font-medium text-gray-700">Total Bayar</label>
-        <input type="text" id="totalBayarDisplay" readonly class="w-full rounded-md border bg-gray-100 px-3 py-2 text-sm font-bold text-blue-700 cursor-not-allowed" value="Rp 0">
-      </div>
+      <label for="tarif_ppn" class="block text-sm font-medium text-gray-700">
+        Tarif PPN (%) <span class="text-rose-600">*</span>
+      </label>
+      <input 
+        type="number"
+        name="tarif_ppn"
+        id="tarif_ppn"
+        value="{{ old('tarif_ppn', $penjualan->tarif_ppn ?? '0') }}"
+        class="w-full rounded-md border-2 px-3 py-2 text-sm transition-colors focus:outline-none
+               {{ $errors->has('tarif_ppn') 
+                   ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-4 focus:ring-red-500/20' 
+                   : 'border-gray-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20' }}"
+        min="0"
+        max="100"
+        step="0.01"
+        required
+      >
+      @error('tarif_ppn')
+        <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+      @enderror
+    </div>
 
-      <div>
-        <label for="jenis_pembayaran" class="block text-sm font-medium text-gray-700">Jenis Pembayaran <span class="text-rose-600">*</span></label>
-        <select name="jenis_pembayaran" id="jenis_pembayaran" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200">
-          <option value="">-- Pilih Pembayaran --</option>
-          <option value="tunai" {{ old('jenis_pembayaran', $penjualan->jenis_pembayaran ?? '') == 'tunai' ? 'selected' : '' }}>Tunai</option>
-          <option value="kredit" {{ old('jenis_pembayaran', $penjualan->jenis_pembayaran ?? '') == 'kredit' ? 'selected' : '' }}>Kredit</option>
-        </select>
-        <p id="jenis_pembayaran_error" class="text-sm text-red-600 mt-1 hidden"></p>
-      </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-700">Total Bayar</label>
+      <input type="text" id="totalBayarDisplay" readonly class="w-full rounded-md border bg-gray-100 px-3 py-2 text-sm font-bold text-blue-700 cursor-not-allowed" value="Rp 0">
+    </div>
 
-      <div>
-        <label for="uang_diterima" class="block text-sm font-medium text-gray-700">
-          Jumlah Uang Dibayarkan 
-          <span id="wajib_tunai" class="text-rose-600 hidden">*</span>
-        </label>
-        <input 
-          type="number" 
-          name="uang_diterima" 
-          id="uang_diterima" 
-          value="{{ old('uang_diterima', $penjualan->uang_diterima ?? '') }}" 
-          class="w-full rounded-md border px-3 py-2 text-sm border-gray-200 bg-gray-100 cursor-not-allowed" 
-          step="0.01" 
-          min="0"
-          readonly
-        >
-        <p id="uang_diterima_error" class="text-sm text-red-600 mt-1 hidden"></p>
-      </div>
+    {{-- Jenis Pembayaran --}}
+    <div class="md:col-span-2">
+      <label for="jenis_pembayaran" class="block text-sm font-medium text-gray-700">Jenis Pembayaran <span class="text-rose-600">*</span></label>
+      <select name="jenis_pembayaran" id="jenis_pembayaran" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200">
+        <option value="">-- Pilih Pembayaran --</option>
+        <option value="tunai" {{ old('jenis_pembayaran', $penjualan->jenis_pembayaran ?? '') == 'tunai' ? 'selected' : '' }}>Tunai</option>
+        <option value="kredit" {{ old('jenis_pembayaran', $penjualan->jenis_pembayaran ?? '') == 'kredit' ? 'selected' : '' }}>Kredit</option>
+      </select>
+      <p id="jenis_pembayaran_error" class="text-sm text-red-600 mt-1 hidden"></p>
+    </div>
+    
+    {{-- Uang Diterima dan Kembalian --}}
+    <div>
+      <label for="uang_diterima" class="block text-sm font-medium text-gray-700">
+        Jumlah Uang Dibayarkan 
+        <span id="wajib_tunai" class="text-rose-600 hidden">*</span>
+      </label>
+      <input 
+        type="number" 
+        name="uang_diterima" 
+        id="uang_diterima" 
+        value="{{ old('uang_diterima', $penjualan->uang_diterima ?? '') }}" 
+        class="w-full rounded-md border px-3 py-2 text-sm border-gray-200 bg-gray-100 cursor-not-allowed" 
+        step="0.01" 
+        min="0"
+        readonly
+      >
+      <p id="uang_diterima_error" class="text-sm text-red-600 mt-1 hidden"></p>
+    </div>
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Uang Kembalian</label>
-        <input type="text" id="kembalianDisplay" readonly 
-               class="w-full rounded-md border bg-gray-100 px-3 py-2 text-sm font-bold text-gray-700 cursor-not-allowed" 
-               value="Rp 0">
-      </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-700">Uang Kembalian</label>
+      <input type="text" id="kembalianDisplay" readonly 
+             class="w-full rounded-md border bg-gray-100 px-3 py-2 text-sm font-bold text-gray-700 cursor-not-allowed" 
+             value="Rp 0">
     </div>
   </div>
+</div>
 
   {{-- Catatan --}}
   <div class="mt-6">
@@ -322,6 +355,7 @@ document.addEventListener('DOMContentLoaded', function () {
       nomor_resi:       document.getElementById('nomor_resi')?.value || '',
       biaya_pengiriman: biayaPengirimanInput?.value || '',
       diskon:           diskonInput?.value || '0',
+      tarif_ppn:        document.getElementById('tarif_ppn')?.value || '0',
       jenis_pembayaran: jenisPembayaranSelect?.value || '',
       uang_diterima:    uangDiterimaInput?.value || '0',
       catatan:          document.getElementById('catatan')?.value || '',
@@ -353,6 +387,7 @@ document.addEventListener('DOMContentLoaded', function () {
       nomor_resi:       document.getElementById('nomor_resi')?.value || '',
       biaya_pengiriman: biayaPengirimanInput?.value || '',
       diskon:           diskonInput?.value || '0',
+      tarif_ppn:        document.getElementById('tarif_ppn')?.value || '0',
       jenis_pembayaran: jenisPembayaranSelect?.value || '',
       uang_diterima:    uangDiterimaInput?.value || '0',
       catatan:          document.getElementById('catatan')?.value || '',
@@ -364,6 +399,7 @@ document.addEventListener('DOMContentLoaded', function () {
       current.anggota   !== initialState.anggota ||
       current.ekspedisi !== initialState.ekspedisi ||
       current.diskon    !== initialState.diskon ||
+      current.tarif_ppn !== initialState.tarif_ppn || 
       current.jenis_pembayaran !== initialState.jenis_pembayaran ||
       current.uang_diterima    !== initialState.uang_diterima ||
       current.catatan          !== initialState.catatan;
@@ -398,7 +434,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  const watchIds = ['id_pelanggan','id_anggota','ekspedisi','id_agen_ekspedisi','nama_penerima','telepon_penerima','kode_pos','alamat_penerima','nomor_resi','biaya_pengiriman','diskon_penjualan','jenis_pembayaran','uang_diterima','catatan'];
+  const watchIds = ['id_pelanggan','id_anggota','ekspedisi','id_agen_ekspedisi','nama_penerima','telepon_penerima','kode_pos','alamat_penerima','nomor_resi','biaya_pengiriman','diskon_penjualan','tarif_ppn','jenis_pembayaran','uang_diterima','catatan'];
   watchIds.forEach(id => {
     const el = document.getElementById(id);
     if (el) {
@@ -468,9 +504,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const newRow = document.createElement('div');
     newRow.className = 'grid grid-cols-12 gap-2 mb-2 barang-row items-center';
     const options = @json($barangs).map(b => `
-      <option value="${b.id_barang}" data-harga="${b.retail}" data-stok="${b.stok_tersedia ?? b.stok}">
-        ${b.nama_barang} (Tersedia: ${b.stok_tersedia ?? b.stok})
-      </option>`).join('');
+  <option value="${b.id_barang}" 
+          data-harga="${b.retail}" 
+          data-stok="${b.stok_tersedia ?? b.stok}"
+          data-kenappn="${b.kena_ppn ? b.kena_ppn.toLowerCase() : 'tidak'}">
+    ${b.nama_barang} (Tersedia: ${b.stok_tersedia ?? b.stok})
+  </option>`).join('');
     newRow.innerHTML = `
       <div class="col-span-6">
         <select name="barang[${barangIndex}][id_barang]" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200">
@@ -568,44 +607,76 @@ document.addEventListener('DOMContentLoaded', function () {
   document.querySelectorAll('.barang-row').forEach(attachBarangEvents);
   updateActionButtons();
 
-  function hitungTotal() {
+function hitungTotal() {
+    let totalDpp = 0;           
+    let totalNonPpn = 0;        
     let subTotalBarang = 0;
+
     document.querySelectorAll('.barang-row').forEach(row => {
-      const harga = parseFloat(row.querySelector('select').selectedOptions[0]?.dataset.harga) || 0;
-      const qty   = parseFloat(row.querySelector('input[type="number"]').value) || 0;
-      subTotalBarang += harga * qty;
+        const select = row.querySelector('select');
+        const qtyInput = row.querySelector('input[type="number"]');
+        if (!select || !qtyInput) return;
+
+        const option = select.selectedOptions[0];
+        if (!option || !option.value) return;
+
+        const harga = parseFloat(option.dataset.harga) || 0;
+        const qty = parseFloat(qtyInput.value) || 0;
+        const subTotalItem = harga * qty;
+
+        subTotalBarang += subTotalItem;
+        const kenaPpn = option.dataset.kenappn === 'ya';
+        
+        if (kenaPpn) {
+            totalDpp += subTotalItem;
+        } else {
+            totalNonPpn += subTotalItem;
+        }
     });
 
     const biayaKirim = ekspedisiCheckbox.checked ? (parseFloat(biayaPengirimanInput.value) || 0) : 0;
-    const subTotal   = subTotalBarang + biayaKirim;
-    const diskonPersen = parseFloat(diskonInput.value) || 0;
-    const diskonNilai  = subTotal * (diskonPersen / 100);
-    const totalBayar   = subTotal - diskonNilai;
+    const subTotalKeseluruhan = subTotalBarang + biayaKirim;
 
-    subTotalDisplay.value   = `Rp ${formatRupiah(subTotal)}`;
-    totalBayarDisplay.value = `Rp ${formatRupiah(totalBayar)}`;
+    const diskonPersen = parseFloat(diskonInput.value) || 0;
+    const diskonNilai = subTotalKeseluruhan * (diskonPersen / 100);
+
+    const dppSetelahDiskon = totalDpp - (totalDpp * (diskonPersen / 100));
+
+    const tarifPPN = parseFloat(document.getElementById('tarif_ppn').value) || 0;
+    const nilaiPPN = Math.round(dppSetelahDiskon * (tarifPPN / 100));
+
+    const totalBayar = subTotalKeseluruhan - diskonNilai + nilaiPPN;
+
+    subTotalDisplay.value = `Rp ${formatRupiah(Math.round(subTotalKeseluruhan))}`;
+    totalBayarDisplay.value = `Rp ${formatRupiah(Math.round(totalBayar))}`;
 
     if (jenisPembayaranSelect.value === 'tunai') {
-      const dibayar = parseFloat(uangDiterimaInput.value) || 0;
-      const kembali = dibayar - totalBayar;
-      if (kembali >= 0) {
-        kembalianDisplay.value = `Rp ${formatRupiah(kembali)}`;
-        kembalianDisplay.className = 'w-full rounded-md border bg-gray-100 px-3 py-2 text-sm font-bold text-green-700 cursor-not-allowed';
-      } else {
-        kembalianDisplay.value = `- Rp ${formatRupiah(Math.abs(kembali))}`;
-        kembalianDisplay.className = 'w-full rounded-md border bg-red-100 px-3 py-2 text-sm font-bold text-red-700 cursor-not-allowed';
-      }
+        const dibayar = parseFloat(uangDiterimaInput.value) || 0;
+        const kembali = dibayar - totalBayar;
+        if (kembali >= 0) {
+            kembalianDisplay.value = `Rp ${formatRupiah(Math.round(kembali))}`;
+            kembalianDisplay.className = 'w-full rounded-md border bg-gray-100 px-3 py-2 text-sm font-bold text-green-700 cursor-not-allowed';
+        } else {
+            kembalianDisplay.value = `- Rp ${formatRupiah(Math.round(Math.abs(kembali)))}`;
+            kembalianDisplay.className = 'w-full rounded-md border bg-red-100 px-3 py-2 text-sm font-bold text-red-700 cursor-not-allowed';
+        }
     } else {
-      kembalianDisplay.value = 'Rp 0';
-      kembalianDisplay.className = 'w-full rounded-md border bg-gray-100 px-3 py-2 text-sm font-bold text-gray-700 cursor-not-allowed';
+        kembalianDisplay.value = 'Rp 0';
+        kembalianDisplay.className = 'w-full rounded-md border bg-gray-100 px-3 py-2 text-sm font-bold text-gray-700 cursor-not-allowed';
     }
-  }
+}
+
 
   function formatRupiah(angka) {
     angka = Math.round(angka);
     return angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   }
-
+  
+  const tarifPPNInput = document.getElementById('tarif_ppn');
+if (tarifPPNInput) {
+    tarifPPNInput.addEventListener('input', hitungTotal);
+    tarifPPNInput.addEventListener('change', hitungTotal);
+}
   diskonInput.addEventListener('input', hitungTotal);
   biayaPengirimanInput.addEventListener('input', hitungTotal);
   uangDiterimaInput.addEventListener('input', hitungTotal);
