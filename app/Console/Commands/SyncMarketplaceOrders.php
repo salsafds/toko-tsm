@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Models\Penjualan;
 use App\Models\DetailPenjualan;
 use App\Models\Barang;
@@ -22,7 +23,7 @@ class SyncMarketplaceOrders extends Command
     {
         parent::__construct();
 
-        $this->apiUrl    = env('MARKETPLACE_API_URL', 'http://127.0.0.1:8001/api/pending-orders');
+        $this->apiUrl    = env('MARKETPLACE_API_URL', 'http://127.0.0.1:8001/api/complete-orders');
         $this->updateUrl = env('MARKETPLACE_UPDATE_URL', 'http://127.0.0.1:8001/api/update-sync');
     }
 
@@ -46,87 +47,135 @@ class SyncMarketplaceOrders extends Command
 
         foreach ($orders as $orderData) {
             // Skip kalau sudah pernah di-sync
-            $exists = Penjualan::where('catatan', 'like', '%' . $orderData['marketplace_order_id'] . '%')->exists();
+            $exists = Penjualan::where('catatan', 'like', '%' . $orderData['id_penjualan'] . '%')->exists();
             if ($exists) {
-                $this->warn("Order {$orderData['marketplace_order_id']} sudah pernah di-sync. Skip.");
+                $this->line("Order {$orderData['id_penjualan']} sudah pernah di-sync, dilewati.");
                 continue;
             }
 
             DB::beginTransaction();
             try {
-                // Generate ID Penjualan sendiri di sini
                 $idPenjualan = $this->generatePenjualanId();
 
-                // Buat Penjualan
-                $penjualan = Penjualan::create([
-                    'id_penjualan'         => $idPenjualan,
-                    'id_pelanggan'         => $orderData['id_pelanggan'] ?? null,
-                    'id_anggota'           => $orderData['id_anggota'] ?? null,
-                    'id_user'              => null, // dari marketplace
-                    'sumber_transaksi'     => 'marketplace',
-                    'tanggal_order'        => $orderData['tanggal_order'],
-                    'tanggal_selesai'      => now(), // langsung selesai
-                    'diskon_penjualan'     => $orderData['diskon_penjualan'] ?? 0,
-                    'total_harga_penjualan'=> $orderData['total_harga_penjualan'],
-                    'jenis_pembayaran'     => 'kredit', // sesuai permintaanmu
-                    'uang_diterima'        => $orderData['uang_diterima'] ?? $orderData['total_harga_penjualan'],
-                    'catatan'              => 'Sync otomatis dari Marketplace - Order ID: ' . $orderData['marketplace_order_id'],
-                ]);
+                // Hitung total seperti di PenjualanController@store
+                $total_dpp = 0;
+                $total_non_ppn = 0;
+                $itemsProcessed = [];
 
-                // Proses Detail + Kurangi Stok
                 foreach ($orderData['details'] as $detail) {
                     $barang = Barang::where('sku', $detail['sku'])->first();
-
                     if (!$barang) {
                         throw new \Exception("SKU {$detail['sku']} tidak ditemukan di sistem toko.");
                     }
-
                     if ($barang->stok < $detail['kuantitas']) {
                         throw new \Exception("Stok {$barang->nama_barang} tidak cukup. Tersedia: {$barang->stok}, diminta: {$detail['kuantitas']}");
                     }
 
-                    $subTotal = $barang->retail * $detail['kuantitas'];
+                    $sub_total_item = $barang->retail * $detail['kuantitas'];
 
+                    if (strtolower($barang->kena_ppn ?? '') === 'ya') {
+                        $total_dpp += $sub_total_item;
+                    } else {
+                        $total_non_ppn += $sub_total_item;
+                    }
+
+                    $itemsProcessed[] = [
+                        'barang' => $barang,
+                        'kuantitas' => $detail['kuantitas'],
+                        'sub_total' => $sub_total_item,
+                    ];
+                }
+
+                // Asumsi: tidak ada ongkir, diskon = 0, PPN sesuai setting default toko
+                $diskonPersen = 0;
+                $tarif_ppn = 11;
+                $biayaPengiriman = 0;
+
+                $subTotalBarangDanOngkir = $total_dpp + $total_non_ppn + $biayaPengiriman;
+                $diskonNilai = $subTotalBarangDanOngkir * ($diskonPersen / 100);
+                $dppSetelahDiskon = $total_dpp - ($total_dpp * $diskonPersen / 100);
+                $total_ppn = round($dppSetelahDiskon * $tarif_ppn / 100);
+                $totalHarga = $subTotalBarangDanOngkir - $diskonNilai + $total_ppn;
+
+                // Buat Penjualan
+                $penjualan = Penjualan::create([
+                    'id_penjualan' => $idPenjualan,
+                    'id_pelanggan' => null,
+                    'id_anggota' => null,
+                    'id_user' => null,
+                    'sumber_transaksi' => 'marketplace',
+                    'tanggal_order' => $orderData['waktu_transaksi'],
+                    'tanggal_selesai' => now(),
+                    'diskon_penjualan' => $diskonPersen,
+                    'tarif_ppn' => $tarif_ppn,
+                    'total_dpp' => round($dppSetelahDiskon),
+                    'total_ppn' => $total_ppn,
+                    'total_non_ppn' => $total_non_ppn + $biayaPengiriman,
+                    'total_harga_penjualan' => $totalHarga,
+                    'jenis_pembayaran' => 'kredit',
+                    'uang_diterima' => $totalHarga,
+                    'catatan' => 'Sync otomatis dari Marketplace - Order ID: ' . $orderData['id_penjualan'],
+                ]);
+
+                // Buat detail + kurangi stok
+                foreach ($itemsProcessed as $item) {
                     DetailPenjualan::create([
                         'id_detail_penjualan' => $this->generateDetailId(),
-                        'id_penjualan'        => $penjualan->id_penjualan,
-                        'id_barang'           => $barang->id_barang,
-                        'kuantitas'           => $detail['kuantitas'],
-                        'sub_total'           => $subTotal,
+                        'id_penjualan' => $penjualan->id_penjualan,
+                        'id_barang' => $item['barang']->id_barang,
+                        'kuantitas' => $item['kuantitas'],
+                        'sub_total' => $item['sub_total'],
                     ]);
 
-                    // Kurangi stok
                     app(BarangController::class)->kurangiStokDariPenjualan(
-                        $barang->id_barang,
-                        $detail['kuantitas']
+                        $item['barang']->id_barang,
+                        $item['kuantitas']
                     );
                 }
 
-                // Update status di marketplace
-                $updateResponse = Http::post($this->updateUrl, [
-                    'id'     => $orderData['id_penjualan_marketplace'],
-                    'status' => 'synced'
-                ]);
+                // Commit sync lokal dulu (sebelum update ke marketplace)
+                DB::commit();
 
-                if ($updateResponse->failed()) {
-                    throw new \Exception('Gagal update status synced di marketplace.');
+                $this->info("Berhasil sync order lokal: {$orderData['id_penjualan']}");
+
+                // Sekarang coba update status ke marketplace (di luar transaction)
+                try {
+                    $updateResponse = Http::post($this->updateUrl, [
+                        'id' => $orderData['id_penjualan'],
+                        'status' => 'synced'
+                    ]);
+
+                    if ($updateResponse->failed()) {
+                        $this->warn("Gagal update status synced di marketplace untuk order {$orderData['id_penjualan']}: HTTP {$updateResponse->status()} - {$updateResponse->body()}");
+                        Log::warning('Marketplace sync status failed', [
+                            'order_id' => $orderData['id_penjualan'],
+                            'response' => $updateResponse->body(),
+                            'status_code' => $updateResponse->status(),
+                        ]);
+                    } else {
+                        $this->line("Status synced berhasil dikirim ke marketplace untuk order {$orderData['id_penjualan']}.");
+                    }
+                } catch (\Exception $e) {
+                    $this->warn("Error saat update status marketplace untuk order {$orderData['id_penjualan']}: " . $e->getMessage());
+                    Log::error('Marketplace update error', [
+                        'order_id' => $orderData['id_penjualan'],
+                        'error' => $e->getMessage(),
+                    ]);
                 }
 
-                DB::commit();
-                $this->info("Berhasil sync order: {$orderData['marketplace_order_id']}");
                 $syncedCount++;
             } catch (\Exception $e) {
                 DB::rollBack();
-                $this->error("Gagal sync order {$orderData['marketplace_order_id']}: " . $e->getMessage());
+                $this->error("Gagal sync order {$orderData['id_penjualan']}: " . $e->getMessage());
+                // Hanya rollback jika gagal di proses lokal (SKU, stok, dll)
             }
         }
 
         $this->newLine();
-        $this->info("Sync selesai. Total order baru: {$syncedCount}");
+        $this->info("Sync selesai. Total order baru yang berhasil disync lokal: {$syncedCount}");
         return 0;
     }
 
-    // Duplikat method generate ID dari PenjualanController
     private function generatePenjualanId()
     {
         $maxNum = Penjualan::max(DB::raw('CAST(SUBSTRING(id_penjualan, 3) AS UNSIGNED)')) ?? 0;

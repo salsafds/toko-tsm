@@ -17,7 +17,7 @@ return new class extends Migration
             $table->timestamp('tanggal_order')->useCurrent();
             $table->timestamp('tanggal_selesai')->nullable();
             $table->integer('diskon_penjualan')->default(0);
-            $table->decimal('tarif_ppn', 5, 2)->nullable();
+            $table->decimal('tarif_ppn', 5, 2)->default(11);
             $table->integer('total_dpp')->default(0);
             $table->integer('total_ppn')->default(0);
             $table->integer('total_non_ppn')->default(0);

@@ -12,12 +12,14 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->command('sync:marketplace')
-                ->everyMinute()  // Atau everyFiveMinutes() untuk lebih ringan
-                ->withoutOverlapping()
-                ->onOneServer()
-                ->appendOutputTo(storage_path('logs/marketplace-sync.log'));
+        $schedule->command('sync:stok-marketplace')
+            ->everyMinute() // Atau everyFiveMinutes() / cron sesuai kebutuhan
+            ->withoutOverlapping()
+            ->onOneServer()
+            ->appendOutputTo(storage_path('logs/stok-sync.log'));
     }
+
+    
 
     /**
      * Register the commands for the application.
