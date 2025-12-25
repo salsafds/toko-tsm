@@ -1,73 +1,74 @@
 @extends('layouts.appmaster')
 @section('title', 'Laporan Bulanan')
 @section('content')
-   <!-- Header + Filter Periode -->
-<div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4 pt-2">
-    <div>
-        <h1 class="text-2xl font-semibold text-gray-800">Laporan Toko Koperasi</h1>
-        <p class="text-sm text-gray-500 mt-1">Periode {{ $periodeTeks }}</p>
-    </div>
-    <!-- FORM FILTER -->
-    <form method="GET" class="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
-        <!-- Dropdown Periode -->
-        <div class="w-64 sm:w-64">
-            <select name="periode" id="periode" onchange="this.form.submit()"
-                    class="w-full rounded-md border border-gray-200 px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                <option value="" disabled {{ !$periode ? 'selected' : '' }}>-- Pilih Periode --</option>
-                <option value="7hari" {{ $periode == '7hari' ? 'selected' : '' }}>7 Hari Terakhir</option>
-                <option value="1bulan_terakhir" {{ $periode == '1bulan_terakhir' ? 'selected' : '' }}>1 Bulan Terakhir</option>
-                <option value="3bulan" {{ $periode == '3bulan' ? 'selected' : '' }}>3 Bulan Terakhir</option>
-                <option value="bulanan" {{ $periode == 'bulanan' ? 'selected' : '' }}>Bulanan</option>
-                <option value="tahunan" {{ $periode == 'tahunan' ? 'selected' : '' }}>Tahunan</option>
-            </select>
+<!-- Header + Filter Periode -->
+    <div class="mb-6">
+        <div class="mb-4">
+            <h1 class="text-3xl font-bold text-gray-800 tracking-tight">Laporan Toko Koperasi</h1>
+            <p class="text-gray-500 mt-1 flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                Periode Laporan: <span class="font-medium text-gray-700">{{ $periodeTeks }}</span>
+            </p>
         </div>
-        <!-- Kotak Kanan: STATIS -->
-        <div class="w-72">
-            <div class="flex items-center border border-gray-200 rounded-md overflow-hidden bg-white shadow-sm">
-                <!-- Icon Kalender -->
-                <label for="input-bulan"
-                       class="flex items-center justify-center w-12 h-11 cursor-pointer transition-colors
-                              {{ $periode === 'bulanan' ? 'text-gray-700 hover:bg-gray-50' : 'text-gray-400 cursor-not-allowed' }}"
-                       onclick="{{ $periode === 'bulanan' ? '' : 'event.preventDefault();' }}">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                    </svg>
-                </label>
-                <!-- Konten Tengah -->
-                <div class="flex-1">
-                    <!-- Input Bulan (bulanan) -->
-                    <input type="month" id="input-bulan" name="bulan"
-                           value="{{ request('bulan') ?? now()->format('Y-m') }}"
-                           onchange="this.form.submit()"
-                           class="w-full px-3 py-2.5 text-sm text-gray-800 outline-none {{ $periode === 'bulanan' ? 'block' : 'hidden' }}">
-                    <!-- Dropdown Tahun (tahunan) -->
-                    <select name="tahun" onchange="this.form.submit()"
-                            class="w-full px-3 py-2.5 text-sm text-gray-800 outline-none {{ $periode === 'tahunan' ? 'block' : 'hidden' }}">
-                        @for($y = now()->year; $y >= now()->year - 10; $y--)
-                            <option value="{{ $y }}" {{ request('tahun', now()->year) == $y ? 'selected' : '' }}>{{ $y }}</option>
-                        @endfor
-                    </select>
-                    <!-- Teks Rentang (7hari, 1bulan_terakhir, 3bulan) -->
-                    <div class="px-3 py-2.5 text-sm font-medium text-gray-700 truncate {{ in_array($periode, ['7hari','1bulan_terakhir','3bulan']) ? 'block' : 'hidden' }}">
-                        @if($periode == '7hari')
-                            {{ now()->subDays(6)->format('j') }} – {{ now()->format('j F Y') }}
-                        @elseif($periode == '1bulan_terakhir')
-                            {{ now()->subDays(29)->format('j M') }} – {{ now()->format('j M Y') }}
-                        @elseif($periode == '3bulan')
-                            {{ now()->subMonths(2)->translatedFormat('M') }} – {{ now()->translatedFormat('M Y') }}
+
+        <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                
+                <form method="GET" class="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
+                    
+                    <div class="relative w-full sm:w-56">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
+                        </div>
+                        <select name="periode" onchange="this.form.submit()" class="pl-10 block w-full rounded-lg border-gray-300 bg-gray-50 text-gray-700 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm py-2.5 shadow-sm border">
+                            <option value="" disabled {{ !$periode ? 'selected' : '' }}>Pilih Jenis Periode</option>
+                            <option value="7hari" {{ $periode == '7hari' ? 'selected' : '' }}>7 Hari Terakhir</option>
+                            <option value="1bulan_terakhir" {{ $periode == '1bulan_terakhir' ? 'selected' : '' }}>1 Bulan Terakhir</option>
+                            <option value="3bulan" {{ $periode == '3bulan' ? 'selected' : '' }}>3 Bulan Terakhir</option>
+                            <option value="bulanan" {{ $periode == 'bulanan' ? 'selected' : '' }}>Laporan Bulanan</option>
+                            <option value="tahunan" {{ $periode == 'tahunan' ? 'selected' : '' }}>Laporan Tahunan</option>
+                        </select>
+                    </div>
+
+                    <div class="w-full sm:w-64">
+                        @if($periode === 'bulanan')
+                            <input type="month" name="bulan" 
+                                value="{{ request('bulan') ?? now()->format('Y-m') }}" 
+                                onchange="this.form.submit()"
+                                class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 border px-3">
+                        @elseif($periode === 'tahunan')
+                            <select name="tahun" onchange="this.form.submit()" class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 border px-3 bg-white">
+                                @for($y = now()->year; $y >= now()->year - 5; $y--)
+                                    <option value="{{ $y }}" {{ request('tahun', now()->year) == $y ? 'selected' : '' }}>Tahun {{ $y }}</option>
+                                @endfor
+                            </select>
+                        @else
+                            <div class="block w-full rounded-lg border border-dashed border-gray-300 bg-gray-50 text-gray-400 sm:text-sm py-2.5 px-3 text-center select-none">
+                                Otomatis
+                            </div>
                         @endif
                     </div>
-                    <!-- Placeholder -->
-                    <div class="px-3 py-2.5 text-sm text-gray-400 {{ !$periode || !in_array($periode, ['7hari','1bulan_terakhir','3bulan','bulanan','tahunan']) ? 'block' : 'hidden' }}">
-                        -- Pilih periode terlebih dahulu --
-                    </div>
+                </form>
+
+                <div class="flex items-center gap-3 w-full lg:w-auto border-t lg:border-t-0 lg:border-l border-gray-100 pt-3 lg:pt-0 lg:pl-4">
+                    
+                    <a href="{{ route('master.laporan.bulanan.export', array_merge(request()->query(), ['format' => 'pdf', 'type' => 'global'])) }}" 
+                    class="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2.5 rounded-md text-sm font-medium shadow-sm transition">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        PDF Laporan
+                    </a>
+                    
+                    <a href="{{ route('master.laporan.bulanan.export', array_merge(request()->query(), ['format' => 'excel', 'type' => 'global'])) }}" 
+                    class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2.5 rounded-md text-sm font-medium shadow-sm transition">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                        Excel Laporan
+                    </a>
+                    
                 </div>
+
             </div>
         </div>
-    </form>
-</div>
-
+    </div>
     <!-- 4 Kartu Utama -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <div class="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
@@ -260,6 +261,7 @@
     </div>
 
     <!-- Riwayat Transaksi -->
+    <!-- Riwayat Transaksi -->
     <div id="riwayat-transaksi" class="bg-white rounded-lg shadow-lg mb-6 border border-gray-200 overflow-x-auto">
         <div class="px-5 py-4 border-b border-gray-200 flex items-center justify-between">
             <h2 class="text-sm font-medium text-gray-700">Riwayat Transaksi</h2>
@@ -277,16 +279,10 @@
                     <input type="hidden" name="sort_tanggal" value="{{ $sortTanggal }}">
                     <input type="hidden" name="per_page" value="{{ $perPage }}">
                 </form>
-                <a href="{{ route('master.laporan.bulanan.export', array_merge(request()->query(), ['format' => 'pdf'])) }}"
-                class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded text-sm font-medium transition">
-                    Print PDF
-                </a>
-                <a href="{{ route('master.laporan.bulanan.export', array_merge(request()->query(), ['format' => 'excel'])) }}"
-                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm font-medium transition">
-                    Print Excel
-                </a>
-            </div>
+                
+                </div>
         </div>
+
         <table class="min-w-full divide-y divide-gray-200 text-sm">
             <thead class="bg-gray-50 text-xs text-gray-500 uppercase">
                 <tr>
@@ -320,7 +316,7 @@
                     <td class="px-5 py-4 border-r border-gray-100">{{ $t->id }}</td>
                     <td class="px-5 py-4 border-r border-gray-100">
                         <span class="px-2 py-1 rounded text-xs font-medium {{ $t->jenis == 'penjualan' ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800' }}">
-                            {{ $t->jenis == 'penjualan' ? 'Jual' : 'Beli' }}
+                            {{ $t->jenis == 'penjualan' ? 'Penjualan' : 'Pembelian' }}
                         </span>
                     </td>
                     <td class="px-5 py-4 border-r border-gray-100">
@@ -340,17 +336,11 @@
             </tbody>
         </table>
 
-        <!-- Pagination -->
         <div class="flex items-center justify-between mt-4 mb-6 px-3">
-
-            <div class="flex items-center gap-2 text-sm text-gray-700">
+             <div class="flex items-center gap-2 text-sm text-gray-700">
                 <span>Show</span>
-
                 <form method="GET">
-                    <select name="per_page"
-                        onchange="this.form.submit()"
-                        class="border border-gray-300 rounded-md px-2 py-1 text-sm bg-white 
-                            focus:ring-indigo-500 focus:border-indigo-500">
+                    <select name="per_page" onchange="this.form.submit()" class="border border-gray-300 rounded-md px-2 py-1 text-sm bg-white focus:ring-indigo-500 focus:border-indigo-500">
                         <option value="10" {{ request('per_page', 15) == 10 ? 'selected' : '' }}>10</option>
                         <option value="15" {{ request('per_page', 15) == 15 ? 'selected' : '' }}>15</option>
                         <option value="30" {{ request('per_page', 15) == 30 ? 'selected' : '' }}>30</option>
@@ -359,59 +349,33 @@
                 </form>
             </div>
 
-            {{-- RIGHT: Pagination --}}
             <div class="flex items-center gap-4 select-none">
-
-                {{-- Previous --}}
                 @if ($transaksi->onFirstPage())
-                    <span class="flex items-center justify-center w-8 h-8 rounded-md
-                                border border-gray-300 text-gray-300">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-                        </svg>
+                    <span class="flex items-center justify-center w-8 h-8 rounded-md border border-gray-300 text-gray-300">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
                     </span>
                 @else
-                    <a href="{{ $transaksi->appends(request()->query())->previousPageUrl() }}"
-                    class="flex items-center justify-center w-8 h-8 rounded-md
-                            border border-gray-300 text-gray-600 hover:bg-gray-100 transition">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-                        </svg>
+                    <a href="{{ $transaksi->appends(request()->query())->previousPageUrl() }}" class="flex items-center justify-center w-8 h-8 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100 transition">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
                     </a>
                 @endif
 
-                {{-- Page Number --}}
                 <span class="text-gray-700 text-sm font-medium">
                     {{ $transaksi->currentPage() }} of {{ $transaksi->lastPage() }}
                 </span>
 
-                {{-- Next --}}
                 @if ($transaksi->hasMorePages())
-                    <a href="{{ $transaksi->appends(request()->query())->nextPageUrl() }}"
-                    class="flex items-center justify-center w-8 h-8 rounded-md
-                            border border-gray-300 text-gray-600 hover:bg-gray-100 transition">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-                        </svg>
+                    <a href="{{ $transaksi->appends(request()->query())->nextPageUrl() }}" class="flex items-center justify-center w-8 h-8 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100 transition">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
                     </a>
                 @else
-                    <span class="flex items-center justify-center w-8 h-8 rounded-md
-                                border border-gray-300 text-gray-300">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-                        </svg>
+                    <span class="flex items-center justify-center w-8 h-8 rounded-md border border-gray-300 text-gray-300">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
                     </span>
                 @endif
-
             </div>
-
         </div>
-     </div>
-
+    </div>
 
         {{-- Daftar Semua Barang – dengan pagination & export --}}
         <div class="bg-white rounded-lg shadow-lg border border-gray-200 overflow-x-auto">

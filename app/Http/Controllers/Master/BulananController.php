@@ -8,7 +8,21 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
-
+use Maatwebsite\Excel\Concerns\WithMultipleSheets;
+use Maatwebsite\Excel\Concerns\FromView;
+use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\WithTitle;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithStyles;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Maatwebsite\Excel\Concerns\WithCharts;
+use PhpOffice\PhpSpreadsheet\Chart\Chart;
+use PhpOffice\PhpSpreadsheet\Chart\DataSeries;
+use PhpOffice\PhpSpreadsheet\Chart\DataSeriesValues;
+use PhpOffice\PhpSpreadsheet\Chart\Legend;
+use PhpOffice\PhpSpreadsheet\Chart\PlotArea;
+use PhpOffice\PhpSpreadsheet\Chart\Title;
 class BulananController extends Controller
 {
     public function index(Request $request)
@@ -24,6 +38,7 @@ class BulananController extends Controller
             case '1bulan_terakhir':
                 $start = now()->subDays(29)->startOfDay();
                 $end   = now()->endOfDay();
+                
                 $periodeTeks = $start->format('j M') . ' – ' . $end->format('j M Y');
                 break;
             case '3bulan':
@@ -317,30 +332,78 @@ class BulananController extends Controller
         return $pdf->download($namaFile . '.pdf');
     }
 
-    public function export(Request $request)
+public function export(Request $request)
     {
+        if ($request->get('section') === 'daftar_barang') {
+            
+            $search = $request->get('search_barang');
+            
+            $query = DB::table('barang')->orderBy('nama_barang', 'asc');
+
+            if ($search) {
+                $query->where('nama_barang', 'like', "%{$search}%")
+                      ->orWhere('id_barang', 'like', "%{$search}%");
+            }
+
+            $daftarBarang = $query->get();
+            $periodeTeks = 'Per Tanggal ' . date('d F Y');
+            $format = $request->get('format', 'excel');
+
+            if ($format === 'pdf') {
+                $pdf = PDF::loadView('master.laporan.daftar-barang', compact('daftarBarang', 'periodeTeks'));
+                return $pdf->download('Daftar_Barang_' . date('Ymd_Hi') . '.pdf');
+            }
+
+            return Excel::download(new class($daftarBarang) implements FromCollection, WithHeadings, WithTitle, ShouldAutoSize, WithStyles {
+                protected $data;
+                public function __construct($data) { $this->data = $data; }
+                
+                public function collection() {
+                    return $this->data->map(fn($item) => [
+                        $item->id_barang,
+                        $item->nama_barang,
+                        $item->margin . '%',
+                        $item->harga_beli,
+                        $item->stok,
+                        $item->retail
+                    ]);
+                }
+
+                public function headings(): array {
+                    return ['Kode Barang', 'Nama Barang', 'Margin', 'Harga Beli (Rp)', 'Stok', 'Harga Jual (Rp)'];
+                }
+
+                public function title(): string { return 'Daftar Barang'; }
+
+                public function styles(Worksheet $sheet) {
+                    $sheet->getStyle('A1:F1')->getFont()->setBold(true);
+                    $sheet->getStyle('D2:D' . ($sheet->getHighestRow()))->getNumberFormat()->setFormatCode('#,##0');
+                    $sheet->getStyle('F2:F' . ($sheet->getHighestRow()))->getNumberFormat()->setFormatCode('#,##0');
+                    return [];
+                }
+            }, 'Daftar_Barang_' . date('Ymd_Hi') . '.xlsx');
+        }
+        
         $periode = $request->get('periode', 'bulanan');
 
         switch ($periode) {
             case '7hari':
-                $start = now()->subDays(6)->startOfDay();
-                $end   = now()->endOfDay();
-                $periodeTeks = $start->format('j') . ' – ' . $end->format('j F Y');
+                $start = $request->filled('tanggal_awal') ? Carbon::parse($request->tanggal_awal)->startOfDay() : now()->subDays(6)->startOfDay();
+                $end   = $request->filled('tanggal_akhir') ? Carbon::parse($request->tanggal_akhir)->endOfDay() : now()->endOfDay();
+                $periodeTeks = $start->format('j M') . ' – ' . $end->format('j M Y');
                 break;
             case '1bulan_terakhir':
-                $start = now()->subDays(29)->startOfDay();
-                $end   = now()->endOfDay();
+                $start = $request->filled('tanggal_awal') ? Carbon::parse($request->tanggal_awal)->startOfDay() : now()->subDays(29)->startOfDay();
+                $end   = $request->filled('tanggal_akhir') ? Carbon::parse($request->tanggal_akhir)->endOfDay() : now()->endOfDay();
                 $periodeTeks = $start->format('j M') . ' – ' . $end->format('j M Y');
                 break;
             case '3bulan':
-                $start = now()->subMonths(2)->startOfMonth();
-                $end   = now()->endOfMonth();
-                $periodeTeks = $start->translatedFormat('F') . ' – ' . $end->translatedFormat('F Y');
+                $start = $request->filled('tanggal_awal') ? Carbon::parse($request->tanggal_awal)->startOfDay() : now()->subMonths(2)->startOfMonth()->startOfDay();
+                $end   = $request->filled('tanggal_akhir') ? Carbon::parse($request->tanggal_akhir)->endOfDay() : now()->endOfMonth()->endOfDay();
+                $periodeTeks = $start->format('j M') . ' – ' . $end->format('j M Y');
                 break;
             case 'bulanan':
-                $bulan = $request->filled('bulan')
-                    ? Carbon::createFromFormat('Y-m', $request->bulan)
-                    : now();
+                $bulan = $request->filled('bulan') ? Carbon::createFromFormat('Y-m', $request->bulan) : now();
                 $start = $bulan->copy()->startOfMonth()->startOfDay();
                 $end   = $bulan->copy()->endOfMonth()->endOfDay();
                 $periodeTeks = $bulan->translatedFormat('F Y');
@@ -382,113 +445,188 @@ class BulananController extends Controller
         $nilaiStokAkhir = DB::table('barang')->sum(DB::raw('stok * harga_beli'));
 
         $stokKritis = DB::table('barang')
-            ->where('stok', '>', 0)->where('stok', '<', 10)
-            ->orderBy('stok')->get(['id_barang', 'nama_barang', 'stok']);
+            ->where('stok', '>', 0)
+            ->where('stok', '<', 10)
+            ->get();
 
         $terlaris = DB::table('detail_penjualan as dp')
             ->join('penjualan as p', 'dp.id_penjualan', '=', 'p.id_penjualan')
             ->join('barang as b', 'dp.id_barang', '=', 'b.id_barang')
             ->whereBetween('p.tanggal_selesai', [$start, $end])
-            ->select('b.nama_barang', DB::raw('SUM(dp.kuantitas) as qty'), DB::raw('SUM(dp.sub_total) as omzet'))
+            ->select(
+                'b.id_barang',
+                'b.nama_barang',
+                DB::raw('SUM(dp.kuantitas) as qty'),
+                DB::raw('SUM(dp.sub_total) as omzet')
+            )
             ->groupBy('b.id_barang', 'b.nama_barang')
-            ->orderByDesc('qty')->limit(10)->get();
+            ->orderByDesc('qty')
+            ->limit(10)
+            ->get();
 
-        $jenis = $request->get('jenis', 'all');
-
-        $penjualanQuery = DB::table('penjualan as p')
+        $penjualanData = DB::table('penjualan as p')
             ->leftJoin('pelanggan as pl', 'p.id_pelanggan', '=', 'pl.id_pelanggan')
             ->leftJoin('anggota as a', 'p.id_anggota', '=', 'a.id_anggota')
             ->leftJoin('users as u', 'p.id_user', '=', 'u.id_user')
             ->whereBetween('p.tanggal_selesai', [$start, $end])
             ->select(
-                DB::raw('p.tanggal_selesai as tanggal'), 'p.id_penjualan as id',
+                DB::raw('p.tanggal_selesai as tanggal'),
+                'p.id_penjualan as id',
                 DB::raw("'penjualan' as jenis"),
                 DB::raw('COALESCE(pl.nama_pelanggan, a.nama_anggota, "Umum") as nama_pihak'),
                 DB::raw('COALESCE(u.nama_lengkap, "-") as kasir'),
                 'p.total_harga_penjualan as total',
                 DB::raw('COALESCE(p.sumber_transaksi, "toko") as sumber')
-            );
+            )
+            ->orderBy('tanggal', 'desc')
+            ->get()
+            ->map(fn($i) => tap($i, fn($i) => $i->tanggal = Carbon::parse($i->tanggal)));
 
-        $pembelianQuery = DB::table('pembelian as pb')
+        $pembelianData = DB::table('pembelian as pb')
             ->join('supplier as s', 'pb.id_supplier', '=', 's.id_supplier')
             ->join('users as u', 'pb.id_user', '=', 'u.id_user')
             ->whereBetween('pb.tanggal_pembelian', [$start, $end])
             ->select(
-                DB::raw('pb.tanggal_pembelian as tanggal'), 'pb.id_pembelian as id',
-                DB::raw("'pembelian' as jenis"), 's.nama_supplier as nama_pihak',
-                'u.nama_lengkap as kasir', 'pb.jumlah_bayar as total',
+                DB::raw('pb.tanggal_pembelian as tanggal'),
+                'pb.id_pembelian as id',
+                DB::raw("'pembelian' as jenis"),
+                's.nama_supplier as nama_pihak',
+                'u.nama_lengkap as kasir',
+                'pb.jumlah_bayar as total',
                 DB::raw("'toko' as sumber")
-            );
-
-        $finalQuery = $jenis === 'jual' ? $penjualanQuery
-                    : ($jenis === 'beli' ? $pembelianQuery : $penjualanQuery->unionAll($pembelianQuery));
-
-        $transaksi = DB::table(DB::raw("({$finalQuery->toSql()}) as t"))
-            ->mergeBindings($finalQuery)
-            ->orderBy('tanggal', $request->get('sort_tanggal', 'desc'))
+            )
+            ->orderBy('tanggal', 'desc')
             ->get()
             ->map(fn($i) => tap($i, fn($i) => $i->tanggal = Carbon::parse($i->tanggal)));
 
-        $format  = $request->get('format', 'pdf');  
-        $section = $request->get('section');
+        $namaFile = "Laporan_Lengkap_" . str_replace([' ', '/'], '_', $periodeTeks);
+        $format   = $request->get('format', 'excel');
 
-        if ($section === 'daftar_barang') {
-            $daftarBarang = DB::table('barang')
-                ->select('id_barang','nama_barang','harga_beli','margin','retail','stok')
-                ->orderBy('nama_barang')->get();
+        $dataView = compact(
+            'periodeTeks', 'omzet', 'hpp', 'labaKotor', 'marginPersen',
+            'totalPembelian', 'pembelianMasuk', 'nilaiStokAkhir',
+            'stokKritis', 'terlaris'
+        );
+        
+        $mergedTransaksi = $penjualanData->merge($pembelianData)->sortByDesc('tanggal');
+        $dataView['transaksi'] = $mergedTransaksi;
 
-            $namaFile = "Daftar_Barang_{$periodeTeks}";
-
-            if ($format === 'excel') {
-                return Excel::download(new class($daftarBarang, $periodeTeks) implements \Maatwebsite\Excel\Concerns\FromView {
-                    protected $data, $periode;
-                    public function __construct($d, $p) { $this->data = $d; $this->periode = $p; }
-                    public function view(): \Illuminate\Contracts\View\View {
-                        return view('master.laporan.daftar-barang', [
-                            'daftarBarang' => $this->data,
-                            'periodeTeks'  => $this->periode
-                        ]);
-                    }
-                }, $namaFile . '.xlsx');
-            }
-
-            $pdf = PDF::loadView('master.laporan.daftar-barang', compact('daftarBarang', 'periodeTeks'))
-                      ->setPaper('a4', 'landscape');
+        if ($format === 'pdf') {
+            $pdf = PDF::loadView('master.laporan.bulanan-export', $dataView);
             return $pdf->download($namaFile . '.pdf');
         }
- 
-        $namaFile = "Laporan_Bulanan_" . str_replace([' ', '/'], '_', $periodeTeks);
-        $dataExport = compact('periodeTeks','omzet','hpp','labaKotor','marginPersen','totalPembelian',
-                              'pembelianMasuk','nilaiStokAkhir','stokKritis','terlaris','transaksi');
 
-        if ($format === 'excel') {
-            return Excel::download(new class($dataExport) implements \Maatwebsite\Excel\Concerns\FromCollection {
-                protected $data;
-                public function __construct($data) { $this->data = $data; }
+        return Excel::download(new class($penjualanData, $pembelianData, $dataView, $terlaris) implements WithMultipleSheets {
+            protected $penjualan, $pembelian, $ringkasan, $terlaris;
 
-                public function collection()
-                {
-                    $rows = collect();
-                    $rows->push(['TANGGAL', 'ID', 'JENIS', 'PIHAK', 'KASIR', 'TOTAL (Rp)', 'SUMBER']);
+            public function __construct($penjualan, $pembelian, $ringkasan, $terlaris) {
+                $this->penjualan = $penjualan;
+                $this->pembelian = $pembelian;
+                $this->ringkasan = $ringkasan;
+                $this->terlaris  = $terlaris;
+            }
 
-                    foreach ($this->data['transaksi'] as $t) {
-                        $rows->push([
-                            $t->tanggal,
-                            $t->id,
-                            $t->jenis === 'penjualan' ? 'PENJUALAN' : 'PEMBELIAN',
-                            $t->nama_pihak,
-                            $t->kasir,
-                            number_format($t->total, 0, ',', '.'),
-                            strtoupper($t->sumber)
-                        ]);
-                    }
-                    return $rows;
-                }
-            }, $namaFile . '.xlsx');
-        }
+            public function sheets(): array {
+                return [
+                    new class($this->penjualan) implements FromCollection, WithTitle, WithHeadings, ShouldAutoSize, WithStyles {
+                        protected $data;
+                        public function __construct($data) { $this->data = $data; }
+                        public function collection() {
+                            return $this->data->map(fn($r) => [
+                                $r->tanggal->format('d/m/Y'), 
+                                $r->id, 
+                                $r->nama_pihak,
+                                $r->kasir, 
+                                $r->total, 
+                                strtoupper($r->sumber)
+                            ]);
+                        }
+                        public function headings(): array { return ['Tanggal', 'No Nota', 'Pembeli', 'Kasir', 'Total (Rp)', 'Sumber']; }
+                        public function title(): string { return '1. Transaksi Penjualan'; }
+                        public function styles(Worksheet $sheet) { return [1 => ['font' => ['bold' => true]]]; }
+                    },
 
-        // PDF tetap cantik
-        $pdf = PDF::loadView('master.laporan.bulanan-export', $dataExport);
-        return $pdf->download($namaFile . '.pdf');
-    }
-}
+                    new class($this->pembelian) implements FromCollection, WithTitle, WithHeadings, ShouldAutoSize, WithStyles {
+                        protected $data;
+                        public function __construct($data) { $this->data = $data; }
+                        public function collection() {
+                            return $this->data->map(fn($r) => [
+                                $r->tanggal->format('d/m/Y'), 
+                                $r->id, 
+                                $r->nama_pihak,
+                                $r->kasir, 
+                                $r->total
+                            ]);
+                        }
+                        public function headings(): array { return ['Tanggal', 'No Nota', 'Supplier', 'Kasir', 'Total (Rp)']; }
+                        public function title(): string { return '2. Transaksi Pembelian'; }
+                        public function styles(Worksheet $sheet) { return [1 => ['font' => ['bold' => true]]]; }
+                    },
+
+                    new class($this->ringkasan) implements FromCollection, WithTitle, ShouldAutoSize, WithStyles {
+                        protected $d;
+                        public function __construct($data) { $this->d = $data; }
+                        public function collection() {
+                            return collect([
+                                ['LAPORAN RINGKASAN'],
+                                ['Periode', $this->d['periodeTeks']],
+                                ['Dicetak', date('d F Y H:i')],
+                                [''],
+                                ['1. KINERJA PENJUALAN'],
+                                ['Omzet Penjualan', $this->d['omzet']],
+                                ['HPP (Harga Pokok)', $this->d['hpp']],
+                                ['Laba Kotor', $this->d['labaKotor']],
+                                ['Margin Keuntungan', $this->d['marginPersen'] . '%'],
+                                [''],
+                                ['2. DATA PEMBELIAN'],
+                                ['Total Pembelian', $this->d['totalPembelian']],
+                                ['Barang Masuk Stok', $this->d['pembelianMasuk']],
+                                [''],
+                                ['3. DATA STOK'],
+                                ['Nilai Stok Akhir', $this->d['nilaiStokAkhir']],
+                                ['Jumlah Stok Kritis', $this->d['stokKritis']->count() . ' Item']
+                            ]);
+                        }
+                        public function title(): string { return '3. Ringkasan Laporan'; }
+                        public function styles(Worksheet $sheet) {
+                            $sheet->getStyle('B6:B8')->getNumberFormat()->setFormatCode('#,##0');
+                            $sheet->getStyle('B12:B13')->getNumberFormat()->setFormatCode('#,##0');
+                            $sheet->getStyle('B16')->getNumberFormat()->setFormatCode('#,##0');
+                            return [
+                                1 => ['font' => ['bold' => true, 'size' => 14]],
+                                5 => ['font' => ['bold' => true]],
+                                11 => ['font' => ['bold' => true]],
+                                15 => ['font' => ['bold' => true]],
+                            ];
+                        }
+                    },
+
+                    new class($this->terlaris) implements FromCollection, WithTitle, WithHeadings, ShouldAutoSize, WithStyles, WithCharts {
+                        protected $data;
+                        public function __construct($data) { $this->data = $data; }
+                        public function collection() {
+                            return collect($this->data)->map(fn($item, $key) => [
+                                $key + 1, $item->id_barang, $item->nama_barang, $item->qty, $item->omzet
+                            ]);
+                        }
+                        public function headings(): array { return ['Rank', 'Kode Barang', 'Nama Barang', 'Terjual (Qty)', 'Omzet (Rp)']; }
+                        public function title(): string { return '4. Barang Terlaris'; }
+                        public function styles(Worksheet $sheet) { return [1 => ['font' => ['bold' => true]]]; }
+                        public function charts() {
+                            $count = count($this->data);
+                            $title = $this->title();
+                            $label = [new DataSeriesValues(DataSeriesValues::DATASERIES_TYPE_STRING, "'$title'!\$D\$1", null, 1)];
+                            $categories = [new DataSeriesValues(DataSeriesValues::DATASERIES_TYPE_STRING, "'$title'!\$C\$2:\$C$" . ($count + 1), null, $count)];
+                            $values = [new DataSeriesValues(DataSeriesValues::DATASERIES_TYPE_NUMBER, "'$title'!\$D\$2:\$D$" . ($count + 1), null, $count)];
+                            $series = new DataSeries(DataSeries::TYPE_BARCHART, DataSeries::GROUPING_STANDARD, range(0, count($values) - 1), $label, $categories, $values);
+                            $series->setPlotDirection(DataSeries::DIRECTION_COL);
+                            $chart = new Chart('chart_terlaris', new Title('Grafik 10 Barang Terlaris (Qty)'), new Legend(Legend::POSITION_RIGHT, null, false), new PlotArea(null, [$series]), true, DataSeries::EMPTY_AS_GAP, null, null);
+                            $chart->setTopLeftPosition('G2');
+                            $chart->setBottomRightPosition('O20');
+                            return [$chart];
+                        }
+                    },
+                ];
+            }
+        }, $namaFile . '.xlsx');
+    }}
