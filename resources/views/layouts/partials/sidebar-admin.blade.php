@@ -123,24 +123,6 @@
         class="absolute left-full ml-2 bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-10"
       >Dashboard</span>
     </a>
-
-    <a 
-      href="{{ $dashboardRoute ?? '#' }}" 
-      class="flex items-center gap-3 px-2 py-2 rounded-lg relative group transition-colors"
-      :class="{
-        'justify-center': !isOpen && isDesktop,
-        'bg-blue-50 text-blue-700': '{{ $isDashboardActive }}' === '1',
-        'hover:bg-blue-50 text-gray-700': '{{ $isDashboardActive }}' !== '1'
-      }"
-    >
-      <img src="{{ asset('img/icon/iconLaporan.png') }}" alt="Icon Laporan" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
-      <span class="text-sm" x-show="isOpen" x-cloak>Laporan</span>
-      <span 
-        x-show="!isOpen && isDesktop" 
-        x-cloak
-        class="absolute left-full ml-2 bg-gray-800 text-white text-xs rounded py-1 px-2 hidden group-hover:block z-10"
-      >Laporan</span>
-    </a>
   </div>
 
   <hr class="mx-4 my-2 border-gray-200" x-show="isOpen" x-cloak>

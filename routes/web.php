@@ -27,6 +27,7 @@ use App\Http\Controllers\Master\UserController;
 use App\Http\Controllers\Admin\PembelianController;
 use App\Http\Controllers\Admin\BarangController;
 use App\Http\Controllers\Admin\PenjualanController;
+use App\Http\Controllers\Admin\DashboardAdminController;
 
 
 // Landing page
@@ -53,9 +54,9 @@ Route::get('/dashboard-master', function () {
     return view('master.dashboard-master');
 })->middleware(['auth', 'role:R01'])->name('dashboard-master');
 
-Route::get('/dashboard-admin', function () {
-    return view('admin.dashboard-admin');
-})->middleware(['auth', 'role:R02'])->name('dashboard-admin');
+Route::get('/dashboard-admin', [DashboardAdminController::class, 'index'])
+    ->middleware(['auth', 'role:R02'])
+    ->name('dashboard-admin');
 
 // ADMIN MASTER
 Route::middleware(['auth', 'role:R01'])->name('master.')->group(function () {

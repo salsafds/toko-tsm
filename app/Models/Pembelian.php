@@ -29,7 +29,7 @@ class Pembelian extends Model
     ];
 
     protected $casts = [
-        'tanggal_pembelian' => 'date',
+        'tanggal_pembelian' => 'datetime',
         'tanggal_terima' => 'datetime',
         'diskon' => 'decimal:2',
         'ppn' => 'decimal:2',
