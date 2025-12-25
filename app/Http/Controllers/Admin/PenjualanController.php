@@ -65,9 +65,19 @@ class PenjualanController extends Controller
         $nextId = $this->generateNextId();
         $pelanggans = Pelanggan::orderBy('nama_pelanggan')->get();
         $anggotas = Anggota::orderBy('nama_anggota')->get();
-        $barangs = Barang::where('stok', '>', 0)
-                        ->orderBy('nama_barang')
-                        ->get();
+        $barangs = Barang::orderBy('nama_barang')->get()->map(function($barang) {
+
+        $qtyHold = DetailPenjualan::where('id_barang', $barang->id_barang)
+                ->whereHas('penjualan', function($q) {
+                    $q->whereNull('tanggal_selesai'); 
+                })
+                ->sum('kuantitas');
+
+            $barang->stok_tersedia = max(0, $barang->stok - $qtyHold);
+                
+            return $barang;
+        });
+        $barangs = $barangs->where('stok_tersedia', '>', 0)->values();
 
         $agenEkspedisis = AgenEkspedisi::orderBy('nama_ekspedisi')->get();
 
@@ -201,10 +211,19 @@ $totalHarga = $subTotalBarangDanOngkir - $diskonNilai + $total_ppn;
 
         $pelanggans = Pelanggan::orderBy('nama_pelanggan')->get();
         $anggotas = Anggota::orderBy('nama_anggota')->get();
-        $barangs = Barang::where('stok', '>', 0)
-                        ->orWhereIn('id_barang', $penjualan->detailPenjualan->pluck('id_barang'))
-                        ->orderBy('nama_barang')
-                        ->get();
+        $barangs = Barang::orderBy('nama_barang')->get()->map(function($barang) {
+
+        $qtyHold = DetailPenjualan::where('id_barang', $barang->id_barang)
+                ->whereHas('penjualan', function($q) {
+                    $q->whereNull('tanggal_selesai'); 
+                })
+                ->sum('kuantitas');
+
+            $barang->stok_tersedia = max(0, $barang->stok - $qtyHold);
+                
+            return $barang;
+        });
+        $barangs = $barangs->where('stok_tersedia', '>', 0)->values();
 
         $agenEkspedisis = AgenEkspedisi::orderBy('nama_ekspedisi')->get();
 
