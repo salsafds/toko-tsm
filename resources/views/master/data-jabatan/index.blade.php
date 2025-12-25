@@ -104,7 +104,7 @@
     </div>
     <div>
       @if(isset($jabatans) && method_exists($jabatans, 'links'))
-        {{ $jabatans->appends(request()->query())->links() }}
+        {{ $jabatans->appends(request()->query())->links('vendor.pagination.custom') }}
       @endif
     </div>
   </div>

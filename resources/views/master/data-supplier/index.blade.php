@@ -108,7 +108,7 @@
     </div>
     <div>
       @if(isset($suppliers) && method_exists($suppliers, 'links'))
-        {{ $suppliers->appends(request()->query())->links() }}
+        {{ $suppliers->appends(request()->query())->links('vendor.pagination.custom') }}
       @endif
     </div>
   </div>

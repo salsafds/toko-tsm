@@ -9,27 +9,58 @@
     <p class="text-xs sm:text-sm text-gray-500 mt-1 text-left">Daftar pembelian dan informasi</p>
   </div>
 
-  <div class="flex flex-col items-start mb-4 gap-2 sm:flex-row sm:items-center sm:justify-between">
-    <div class="flex items-center gap-2 w-full sm:w-auto">
-      <form method="GET" action="{{ route('admin.pembelian.index') }}" class="flex items-center gap-2">
-        <label for="per_page" class="text-xs sm:text-sm text-gray-600">Show</label>
-        <select name="per_page" id="per_page" onchange="this.form.submit()" class="rounded-md border text-xs sm:text-sm px-2 py-1">
-          @php $per = request()->query('per_page', 10); @endphp
-          <option value="5" {{ $per==5 ? 'selected' : '' }}>5</option>
-          <option value="10" {{ $per==10 ? 'selected' : '' }}>10</option>
-          <option value="25" {{ $per==25 ? 'selected' : '' }}>25</option>
-          <option value="50" {{ $per==50 ? 'selected' : '' }}>50</option>
-        </select>
-      </form>
+  <div class="flex flex-col items-start mb-4 gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <!-- Kiri: Show entries + Periode -->
+    <div class="flex flex-wrap items-center gap-4">
+      <!-- Show entries -->
+      <div class="flex items-center gap-2">
+        <form method="GET" action="{{ route('admin.pembelian.index') }}" class="flex items-center gap-2">
+          @php
+            $currentPerPage = request()->query('per_page', 10);
+            $currentPeriode = request()->query('periode', 'all');
+            $currentQ = request()->query('q', '');
+          @endphp
+          <label for="per_page" class="text-xs sm:text-sm text-gray-600">Show</label>
+          <select name="per_page" id="per_page" onchange="this.form.submit()" class="rounded-md border text-xs sm:text-sm px-2 py-1">
+            <option value="5" {{ $currentPerPage == 5 ? 'selected' : '' }}>5</option>
+            <option value="10" {{ $currentPerPage == 10 ? 'selected' : '' }}>10</option>
+            <option value="25" {{ $currentPerPage == 25 ? 'selected' : '' }}>25</option>
+            <option value="50" {{ $currentPerPage == 50 ? 'selected' : '' }}>50</option>
+          </select>
+          <!-- Hidden inputs untuk mempertahankan filter lain -->
+          <input type="hidden" name="periode" value="{{ $currentPeriode }}">
+          <input type="hidden" name="q" value="{{ $currentQ }}">
+        </form>
+      </div>
+
+      <!-- Dropdown Periode -->
+      <div class="flex items-center gap-2">
+        <form method="GET" action="{{ route('admin.pembelian.index') }}" class="flex items-center gap-2">
+          <label for="periode" class="text-xs sm:text-sm text-gray-600">Periode</label>
+          <select name="periode" id="periode" onchange="this.form.submit()" class="rounded-md border text-xs sm:text-sm px-2 py-1">
+            <option value="all" {{ $currentPeriode == 'all' ? 'selected' : '' }}>Semua</option>
+            <option value="7days" {{ $currentPeriode == '7days' ? 'selected' : '' }}>7 Hari Terakhir</option>
+            <option value="3months" {{ $currentPeriode == '3months' ? 'selected' : '' }}>3 Bulan Terakhir</option>
+            <option value="1year" {{ $currentPeriode == '1year' ? 'selected' : '' }}>1 Tahun Terakhir</option>
+          </select>
+          <!-- Hidden inputs untuk mempertahankan filter lain -->
+          <input type="hidden" name="per_page" value="{{ $currentPerPage }}">
+          <input type="hidden" name="q" value="{{ $currentQ }}">
+        </form>
+      </div>
     </div>
 
+    <!-- Kanan: Search + Tambah -->
     <div class="flex items-center gap-2 w-full sm:w-auto">
       <form method="GET" action="{{ route('admin.pembelian.index') }}" class="flex items-center gap-2 w-full sm:w-auto">
         <div class="relative border rounded-md w-full sm:w-64">
           <svg class="absolute left-3 top-2.5 h-4 sm:h-5 w-4 sm:w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z"/>
           </svg>
-          <input name="q" value="{{ request()->query('q', '') }}" placeholder="Search…" aria-label="Search" class="pl-10 pr-3 py-2 rounded-md border-gray-200 text-xs sm:text-sm w-full" />
+          <input name="q" value="{{ $currentQ }}" placeholder="Search…" aria-label="Search" class="pl-10 pr-3 py-2 rounded-md border-gray-200 text-xs sm:text-sm w-full" />
+          <!-- Hidden untuk mempertahankan filter lain -->
+          <input type="hidden" name="per_page" value="{{ $currentPerPage }}">
+          <input type="hidden" name="periode" value="{{ $currentPeriode }}">
         </div>
       </form>
 
@@ -114,7 +145,7 @@
     </div>
     <div>
       @if(isset($pembelian) && method_exists($pembelian, 'links'))
-        {{ $pembelian->appends(request()->query())->links() }}
+        {{ $pembelian->appends(request()->query())->links('vendor.pagination.custom') }}
       @endif
     </div>
   </div>

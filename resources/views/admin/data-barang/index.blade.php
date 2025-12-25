@@ -120,7 +120,7 @@
     </div>
     <div>
       @if(isset($barang) && method_exists($barang, 'links'))
-        {{ $barang->appends(request()->query())->links() }}
+        {{ $barang->appends(request()->query())->links('vendor.pagination.custom') }}
       @endif
     </div>
   </div>

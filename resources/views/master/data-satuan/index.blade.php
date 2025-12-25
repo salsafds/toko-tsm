@@ -104,7 +104,7 @@
     </div>
     <div>
       @if(isset($satuans) && method_exists($satuans, 'links'))
-        {{ $satuans->appends(request()->query())->links() }}
+        {{ $satuans->appends(request()->query())->links('vendor.pagination.custom') }}
       @endif
     </div>
   </div>

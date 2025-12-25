@@ -111,7 +111,7 @@
 
         <div>
             @if(isset($agens) && method_exists($agens, 'links'))
-                {{ $agens->appends(request()->query())->links() }}
+                {{ $agens->appends(request()->query())->links('vendor.pagination.custom') }}
             @endif
         </div>
     </div>

@@ -116,7 +116,7 @@
 
         <div>
             @if(isset($pelanggans) && method_exists($pelanggans, 'links'))
-                {{ $pelanggans->appends(request()->query())->links() }}
+                {{ $pelanggans->appends(request()->query())->links('vendor.pagination.custom') }}
             @endif
         </div>
     </div>

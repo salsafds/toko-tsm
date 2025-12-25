@@ -104,7 +104,7 @@
     </div>
     <div>
       @if(isset($bahasas) && method_exists($bahasas, 'links'))
-        {{ $bahasas->appends(request()->query())->links() }}
+        {{ $bahasas->appends(request()->query())->links('vendor.pagination.custom') }}
       @endif
     </div>
   </div>

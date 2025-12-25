@@ -111,7 +111,7 @@
 
         <div>
             @if(isset($users) && method_exists($users, 'links'))
-                {{ $users->appends(request()->query())->links() }}
+                {{ $users->appends(request()->query())->links('vendor.pagination.custom') }}
             @endif
         </div>
     </div>

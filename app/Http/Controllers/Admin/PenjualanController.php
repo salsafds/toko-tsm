@@ -21,6 +21,24 @@ class PenjualanController extends Controller
     {
         $query = Penjualan::with(['pelanggan', 'anggota', 'user']);
 
+        if ($periode = $request->query('periode')) {
+        switch ($periode) {
+            case '7days':
+                $query->where('tanggal_order', '>=', now()->subDays(7));
+                break;
+            case '3months':
+                $query->where('tanggal_order', '>=', now()->subMonths(3));
+                break;
+            case '1year':
+                $query->where('tanggal_order', '>=', now()->subYears(1));
+                break;
+            case 'all':
+            default:
+                // tidak ada filter periode
+                break;
+        }
+    }
+        
         if ($search = $request->query('q')) {
             $query->where(function ($q) use ($search) {
                 $q->where('id_penjualan', 'like', "%{$search}%")

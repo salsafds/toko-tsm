@@ -104,7 +104,7 @@
     </div>
     <div>
       @if(isset($kategoris) && method_exists($kategoris, 'links'))
-        {{ $kategoris->appends(request()->query())->links() }}
+        {{ $kategoris->appends(request()->query())->links('vendor.pagination.custom') }}
       @endif
     </div>
   </div>

@@ -104,7 +104,7 @@
     </div>
     <div>
       @if(isset($provinsis) && method_exists($provinsis, 'links'))
-        {{ $provinsis->appends(request()->query())->links() }}
+        {{ $provinsis->appends(request()->query())->links('vendor.pagination.custom') }}
       @endif
     </div>
   </div>

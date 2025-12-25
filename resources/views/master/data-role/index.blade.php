@@ -106,7 +106,7 @@
     </div>
     <div>
       @if(isset($roles) && method_exists($roles, 'links'))
-        {{ $roles->appends(request()->query())->links() }}
+        {{ $roles->appends(request()->query())->links('vendor.pagination.custom') }}
       @endif
     </div>
   </div>

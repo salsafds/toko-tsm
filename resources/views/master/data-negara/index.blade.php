@@ -104,7 +104,7 @@
     </div>
     <div>
       @if(isset($negaras) && method_exists($negaras, 'links'))
-        {{ $negaras->appends(request()->query())->links() }}
+        {{ $negaras->appends(request()->query())->links('vendor.pagination.custom') }}
       @endif
     </div>
   </div>

@@ -104,7 +104,7 @@
     </div>
     <div>
       @if(isset($pendidikans) && method_exists($pendidikans, 'links'))
-        {{ $pendidikans->appends(request()->query())->links() }}
+        {{ $pendidikans->appends(request()->query())->links('vendor.pagination.custom') }}
       @endif
     </div>
   </div>

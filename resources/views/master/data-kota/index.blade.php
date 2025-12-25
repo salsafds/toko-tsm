@@ -104,7 +104,7 @@
     </div>
     <div>
       @if(isset($kotas) && method_exists($kotas, 'links'))
-        {{ $kotas->appends(request()->query())->links() }}
+        {{ $kotas->appends(request()->query())->links('vendor.pagination.custom') }}
       @endif
     </div>
   </div>
