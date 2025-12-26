@@ -186,15 +186,49 @@
 {{-- CHART --}}
 <script src="{{ asset('vendor/chartjs/chart.umd.min.js') }}"></script>
 <script>
-new Chart(document.getElementById('chartHarian'), {
-  type: 'bar',
+const ctx = document.getElementById('chartHarian');
+
+new Chart(ctx, {
+  type: 'line',
   data: {
     labels: @json($chartLabels),
     datasets: [
-      { label: 'Penjualan', data: @json($chartPenjualan) },
-      { label: 'Pembelian', data: @json($chartPembelian) }
+      {
+        label: 'Penjualan',
+        data: @json($chartPenjualan),
+        borderColor: 'rgb(34, 197, 94)', // hijau
+        backgroundColor: 'rgba(34, 197, 94, 0.2)',
+        tension: 0.3, // buat line smooth
+        fill: true,
+      },
+      {
+        label: 'Pembelian',
+        data: @json($chartPembelian),
+        borderColor: 'rgb(59, 130, 246)', // biru
+        backgroundColor: 'rgba(59, 130, 246, 0.2)',
+        tension: 0.3,
+        fill: true,
+      }
     ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'top' },
+      tooltip: { mode: 'index', intersect: false }
+    },
+    scales: {
+      x: {
+        title: { display: true, text: 'Jam' }
+      },
+      y: {
+        beginAtZero: true,
+        title: { display: true, text: 'Jumlah (Rp)' }
+      }
+    }
   }
 });
 </script>
+
 @endsection
