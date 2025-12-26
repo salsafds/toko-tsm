@@ -60,10 +60,13 @@
             </div>
             <div class="p-4">
                 <div class="relative mb-4">
-                    <input type="text" id="productSearch"
-                        class="block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm pl-4 pr-10 py-2 transition"
-                        placeholder="Ketik nama barang" autocomplete="off">
+                <input type="text" id="productSearch"
+                    class="block w-full rounded-lg border-2 border-gray-300 bg-white shadow-sm 
+                        focus:ring-blue-500 focus:border-blue-500 focus:outline-none 
+                        sm:text-sm pl-4 pr-12 py-3 transition-all duration-200"
+                    placeholder="Ketik nama barang atau kode..." autocomplete="off">
                 </div>
+
                 <div id="searchResults" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 max-h-80 overflow-y-auto custom-scrollbar p-1">
                     <div class="col-span-full text-center text-gray-400 py-8 text-sm italic">
                         Mulai ketik nama barang untuk menampilkan hasil...
@@ -77,7 +80,7 @@
             <div class="bg-blue-50 px-4 py-3 border-b border-blue-200 flex justify-between items-center">
                 <h3 class="text-sm font-bold text-blue-800 uppercase tracking-wider flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-                    Keranjang Belanja
+                    Penjualan Barang
                 </h3>
                 <span id="cartCountBadge" class="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow-sm">0 Item</span>
             </div>
@@ -95,7 +98,7 @@
                         </thead>
                         <tbody id="cartTableBody" class="bg-white divide-y divide-gray-200">
                             <tr id="emptyCartMessage">
-                                <td colspan="5" class="px-4 py-8 text-center text-gray-400 text-sm italic">Keranjang masih kosong.</td>
+                                <td colspan="5" class="px-4 py-8 text-center text-gray-400 text-sm italic">Item barang belum ditambahkan.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -277,7 +280,7 @@
 </form>
 
 {{-- === CUSTOM MODAL COMPONENT (NO ANIMATION) === --}}
-<div id="customModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+<div id="customModal" class="fixed inset-0 z-50 items-center justify-center bg-black bg-opacity-50 hidden">
   <div class="bg-white rounded-lg shadow-xl w-full max-w-sm mx-4 overflow-hidden" id="customModalContent">
     <div class="p-5 text-center">
       <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full mb-4" id="modalIconContainer"></div>
@@ -368,6 +371,7 @@ document.addEventListener('DOMContentLoaded', function () {
         modalButtons.appendChild(btnOk);
       }
       modal.classList.remove('hidden');
+      modal.classList.add('flex');
     }
 
     function closeModal() {

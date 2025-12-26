@@ -12,6 +12,7 @@ use App\Models\KategoriBarang;
 use App\Models\Satuan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator; 
 
 class PembelianController extends Controller
 {
@@ -19,8 +20,7 @@ class PembelianController extends Controller
     {
         $query = Pembelian::with(['supplier', 'user', 'detailPembelian'])
             ->where('id_user', Auth::user()->id_user)
-            ->orderBy('id_pembelian', 'desc');  
-
+            ->orderBy('id_pembelian', 'desc');
         if ($periode = $request->query('periode')) {
         switch ($periode) {
             case '7days':
@@ -37,7 +37,7 @@ class PembelianController extends Controller
                 // tidak ada filter tambahan
                 break;
         }}
-
+            
         if ($search = $request->query('q')) {
             $query->where(function ($q) use ($search) {
                 $q->where('id_pembelian', 'like', "%{$search}%")
@@ -81,7 +81,6 @@ class PembelianController extends Controller
             'details.*.harga_beli' => 'required|numeric|min:0',
             'details.*.kuantitas' => 'required|integer|min:1',
         ]);
-
 
         $totalSubTotal = 0;
         foreach ($request->details as $detail) {
@@ -235,44 +234,44 @@ class PembelianController extends Controller
     }
 
     public function selesai($id_pembelian)
-{
-    $pembelian = Pembelian::with('detailPembelian')->findOrFail($id_pembelian);
+    {
+        $pembelian = Pembelian::with('detailPembelian')->findOrFail($id_pembelian);
 
-    if ($pembelian->tanggal_terima) {
+        if ($pembelian->tanggal_terima) {
+            return redirect()->route('admin.pembelian.index')
+                ->with('error', 'Pembelian sudah selesai.');
+        }
+
+        $totalSebelumDiskon = $pembelian->detailPembelian->sum('sub_total');
+        $nilaiDiskon = $totalSebelumDiskon * ($pembelian->diskon / 100);
+        $totalSetelahDiskon = $totalSebelumDiskon - $nilaiDiskon;
+        $biayaTambahan = $pembelian->biaya_pengiriman ?? 0;
+        $totalNilaiPersediaan = $totalSetelahDiskon + $biayaTambahan;
+            
+        $biayaTambahan = $pembelian->biaya_pengiriman ?? 0;
+
+        $pembelian->update(['tanggal_terima' => now()]);
+
+        foreach ($pembelian->detailPembelian as $detail) {
+            $proporsi = $totalSebelumDiskon > 0 ? $detail->sub_total / $totalSebelumDiskon : 0;
+
+            $diskonDialokasikan = $nilaiDiskon * $proporsi;
+            $biayaTambahanDialokasikan = $biayaTambahan * $proporsi;
+
+            $hppPerUnit = $detail->kuantitas > 0
+                ? ($detail->sub_total - $diskonDialokasikan + $biayaTambahanDialokasikan) / $detail->kuantitas
+                : 0;
+
+            app(BarangController::class)->tambahStokDariPembelian(
+                $detail->id_barang,
+                $detail->kuantitas,
+                $hppPerUnit
+            );
+        }
+
         return redirect()->route('admin.pembelian.index')
-            ->with('error', 'Pembelian sudah selesai.');
+            ->with('success', 'Pembelian selesai! Stok & HPP diperbarui');
     }
-
-    $totalSebelumDiskon = $pembelian->detailPembelian->sum('sub_total');
-    $nilaiDiskon = $totalSebelumDiskon * ($pembelian->diskon / 100);
-    $totalSetelahDiskon = $totalSebelumDiskon - $nilaiDiskon;
-    $biayaTambahan = $pembelian->biaya_pengiriman ?? 0;
-    $totalNilaiPersediaan = $totalSetelahDiskon + $biayaTambahan;
-
-
-    $pembelian->update(['tanggal_terima' => now()]);
-
-    foreach ($pembelian->detailPembelian as $detail) {
-        $proporsi = $totalSebelumDiskon > 0 ? $detail->sub_total / $totalSebelumDiskon : 0;
-
-        $diskonDialokasikan = $nilaiDiskon * $proporsi;
-        $biayaTambahanDialokasikan = $biayaTambahan * $proporsi;
-
-
-        $hppPerUnit = $detail->kuantitas > 0
-            ? ($detail->sub_total - $diskonDialokasikan + $biayaTambahanDialokasikan) / $detail->kuantitas
-            : 0;
-
-        app(BarangController::class)->tambahStokDariPembelian(
-            $detail->id_barang,
-            $detail->kuantitas,
-            $hppPerUnit
-        );
-    }
-
-    return redirect()->route('admin.pembelian.index')
-        ->with('success', 'Pembelian selesai! Stok & HPP diperbarui');
-}
  
     private function generateNextId()
     {
@@ -297,41 +296,61 @@ class PembelianController extends Controller
 
     public function storeBarang(Request $request)
     {
-        $request->validate([
+
+        $validator = Validator::make($request->all(), [
             'nama_barang' => 'required|string|max:255',
+            'sku' => 'required|string|unique:barang,sku', 
             'id_kategori_barang' => 'required|exists:kategori_barang,id_kategori_barang',
-            'id_supplier_barang' => 'required|exists:supplier,id_supplier',
+            'id_supplier' => 'required|exists:supplier,id_supplier',
             'id_satuan' => 'required|exists:satuan,id_satuan',
             'merk_barang' => 'nullable|string|max:255',
             'berat' => 'required|numeric|min:0.01',
             'margin' => 'nullable|numeric|min:0|max:100',
+            'kena_ppn' => 'required|in:Ya,Tidak', 
         ]);
 
-        $barang = Barang::create([
-            'id_barang' => $this->generateNextIdBarang(),
-            'nama_barang' => $request->nama_barang,
-            'id_kategori_barang' => $request->id_kategori_barang,
-            'id_supplier' => $request->id_supplier_barang,
-            'id_satuan' => $request->id_satuan,
-            'merk_barang' => $request->merk_barang ?: '',
-            'berat' => $request->berat,
-            'harga_beli' => 0,
-            'stok' => 0,
-            'retail' => 0,
-            'margin' => $request->margin ?? 0,
-        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first() 
+            ], 422);
+        }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Barang baru berhasil ditambahkan.',
-            'barang' => $barang
-        ]);
+        try {
+            $barang = Barang::create([
+                'id_barang' => $this->generateNextIdBarang(),
+                'nama_barang' => $request->nama_barang,
+                'sku' => $request->sku, 
+                'id_kategori_barang' => $request->id_kategori_barang,
+                'id_supplier' => $request->id_supplier,
+                'id_satuan' => $request->id_satuan,
+                'merk_barang' => $request->merk_barang ?? '-',
+                'berat' => $request->berat,
+                'kena_ppn' => $request->kena_ppn, 
+                'harga_beli' => 0,
+                'stok' => 0,
+                'retail' => 0,
+                'margin' => $request->margin ?? 0,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Barang baru berhasil ditambahkan.',
+                'barang' => $barang
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menyimpan database: ' . $e->getMessage()
+            ], 500);
+        }
     }
+
     public function show($id)
     {
-
-    $pembelian = Pembelian::with(['supplier', 'user', 'detailPembelian.barang']) 
-        ->findOrFail($id);
-    return view('admin.pembelian.show', compact('pembelian'));
+        $pembelian = Pembelian::with(['supplier', 'user', 'detailPembelian.barang']) 
+            ->findOrFail($id);
+        return view('admin.pembelian.show', compact('pembelian'));
     }
 }

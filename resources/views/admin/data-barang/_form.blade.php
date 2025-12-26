@@ -176,11 +176,11 @@
         <p class="text-sm text-red-600 mt-1">{{ $errors->first('berat') }}</p>
       @else
         <p id="berat_error" class="text-sm text-red-600 mt-1 hidden"></p>
-        <p class="text-xs text-gray-500">Contoh: 1.5 (dalam kilogram).</p>
+        <p class="text-xs text-gray-500">Contoh: 1.5 </p>
       @endif
     </div>
 
-    {{-- Margin --}}
+{{-- Margin (%) --}}
     <div>
       <label for="margin" class="block text-sm font-medium text-gray-700">
         Margin (%)
@@ -192,19 +192,19 @@
         step="0.01"
         min="0"
         max="100"
-        value="{{ old('margin', $barang->margin ?? 0) }}"
+        value="{{ old('margin', isset($barang) ? ($barang->margin == 0 ? 0 : $barang->margin) : 0) }}"
         class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('margin') ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-blue-500 focus:ring-blue-100' }}"
-        placeholder="Masukkan margin dalam persen (contoh: 30.00)"
+        placeholder="0"
       >
       @if ($errors->has('margin'))
         <p class="text-sm text-red-600 mt-1">{{ $errors->first('margin') }}</p>
       @else
         <p id="margin_error" class="text-sm text-red-600 mt-1 hidden"></p>
-        <p class="text-xs text-gray-500">Margin keuntungan dalam persen (0-100). Default: 0.</p>
+        <p class="text-xs text-gray-500">Margin keuntungan dalam persen (0-100)</p>
       @endif
     </div>
-  </div>
-    {{-- Kena PPN --}}
+
+    {{-- Kena PPN? -- DIPINDAHKAN KE SAMPING KANAN MARGIN --}}
     <div>
       <label class="block text-sm font-medium text-gray-700">
         Kena PPN? <span class="text-rose-600">*</span>
@@ -227,9 +227,9 @@
         <p class="text-sm text-red-600 mt-1">{{ $errors->first('kena_ppn') }}</p>
       @else
         <p id="kena_ppn_error" class="text-sm text-red-600 mt-1 hidden"></p>
-        <p class="text-xs text-gray-500">Pilih apakah barang ini kena PPN 12% atau tidak (misal: beras, telur = Tidak).</p>
       @endif
     </div>
+  </div>
   {{-- Tombol --}}
   <div class="flex items-center gap-3">
     <button 
@@ -248,3 +248,139 @@
     </a>
   </div>
 </form>
+
+{{-- === CUSTOM MODAL  === --}}
+<div id="customModal" class="fixed inset-0 z-50 items-center justify-center bg-black bg-opacity-50 hidden">
+  <div class="bg-white rounded-lg shadow-xl w-full max-w-sm mx-4 overflow-hidden" id="customModalContent">
+    <div class="p-5 text-center">
+      <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full mb-4" id="modalIconContainer"></div>
+      <h3 class="text-lg leading-6 font-medium text-gray-900" id="modalTitle">Judul</h3>
+      <div class="mt-2">
+        <p class="text-sm text-gray-500" id="modalMessage">Pesan</p>
+      </div>
+    </div>
+    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-2" id="modalButtons"></div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('barangForm');
+    form.setAttribute('novalidate', true);
+    const modal = document.getElementById('customModal');
+    const modalContent = document.getElementById('customModalContent');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalMessage = document.getElementById('modalMessage');
+    const modalIconContainer = document.getElementById('modalIconContainer');
+    const modalButtons = document.getElementById('modalButtons');
+
+    function openModal(title, message, type, onConfirm = null) {
+      modalTitle.textContent = title;
+      modalMessage.textContent = message;
+      
+      let iconHtml = ''; let iconColorClass = '';
+      if(type === 'error') {
+        iconColorClass = 'bg-red-100';
+        iconHtml = `<svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
+      } else if (type === 'success') {
+        iconColorClass = 'bg-green-100';
+        iconHtml = `<svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>`;
+      } else if (type === 'warning') {
+        iconColorClass = 'bg-yellow-100';
+        iconHtml = `<svg class="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>`;
+      }
+      modalIconContainer.className = `mx-auto flex items-center justify-center h-12 w-12 rounded-full mb-4 ${iconColorClass}`;
+      modalIconContainer.innerHTML = iconHtml;
+
+      modalButtons.innerHTML = '';
+      if (type === 'warning' || onConfirm) {
+        const btnConfirm = document.createElement('button');
+        btnConfirm.className = "w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm";
+        btnConfirm.textContent = 'Ya, Simpan';
+        btnConfirm.onclick = () => { closeModal(); if(onConfirm) onConfirm(); };
+        const btnCancel = document.createElement('button');
+        btnCancel.className = "mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm";
+        btnCancel.textContent = 'Batal';
+        btnCancel.onclick = closeModal;
+        modalButtons.appendChild(btnConfirm); modalButtons.appendChild(btnCancel);
+      } else {
+        const btnOk = document.createElement('button');
+        btnOk.className = "w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 sm:ml-3 sm:w-auto sm:text-sm";
+        btnOk.textContent = 'OK';
+        btnOk.onclick = closeModal;
+        modalButtons.appendChild(btnOk);
+      }
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeModal() {
+      modal.classList.add('hidden');
+    }
+
+    const showNotif = (message, type = 'success') => {
+        openModal(type === 'error' ? 'Oops!' : (type === 'warning' ? 'Perhatian' : 'Berhasil'), message, type);
+    };
+
+    const showConfirm = (title, message, confirmText, callback) => {
+        openModal(title, message, 'warning', callback);
+    };
+
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        let hasError = false;
+
+        document.querySelectorAll('.text-red-600.mt-1').forEach(el => el.classList.add('hidden'));
+        document.querySelectorAll('input, select').forEach(el => el.classList.remove('border-red-500', 'bg-red-50'));
+
+        const requiredFields = [
+            { id: 'nama_barang', msg: 'Nama barang wajib diisi.' },
+            { id: 'sku', msg: 'Kode SKU wajib diisi.' },
+            { id: 'id_kategori_barang', msg: 'Pilih kategori barang.' },
+            { id: 'id_supplier', msg: 'Pilih supplier.' },
+            { id: 'id_satuan', msg: 'Pilih satuan barang.' },
+            { id: 'berat', msg: 'Berat barang wajib diisi.' }
+        ];
+
+        requiredFields.forEach(field => {
+            const el = document.getElementById(field.id);
+            if (el && !el.value.trim()) {
+                el.classList.add('border-red-500', 'bg-red-50');
+                const errorText = document.getElementById(field.id + '_error');
+                if (errorText) {
+                    errorText.classList.remove('hidden');
+                    errorText.textContent = field.msg;
+                }
+                hasError = true;
+            }
+        });
+
+        const ppnRadios = document.querySelectorAll('input[name="kena_ppn"]');
+        let ppnChecked = false;
+        ppnRadios.forEach(r => { if(r.checked) ppnChecked = true; });
+        
+        if (!ppnChecked) {
+            const errorText = document.getElementById('kena_ppn_error');
+            if (errorText) {
+                errorText.classList.remove('hidden');
+                errorText.textContent = 'Pilih status PPN.';
+            }
+            hasError = true;
+        }
+
+        if (hasError) {
+            showNotif('Periksa kembali isian form Anda.', 'warning');
+        } else {
+            const namaBarang = document.getElementById('nama_barang').value;
+            showConfirm(
+                'Simpan Data Barang?', 
+                `Pastikan data untuk "${namaBarang}" sudah benar. Lanjutkan penyimpanan?`, 
+                'Ya, Simpan', 
+                () => {
+                    form.submit();
+                }
+            );
+        }
+    });
+});
+</script>

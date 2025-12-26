@@ -80,7 +80,7 @@
           <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->satuan->nama_satuan }}</td>
           <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ number_format($item->retail, 0, ',', '.') }}</td>
           <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ number_format($item->harga_beli, 0, ',', '.') }}</td>
-          <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->margin }}%</td>
+          <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ \Illuminate\Support\Number::trim($item->margin) }}%</td>
           <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->kena_ppn }}</td>
           <td class="px-2 sm:px-4 py-2 text-center">
             <div class="flex justify-center items-center gap-2 sm:gap-3">
@@ -92,10 +92,7 @@
                     onsubmit="return confirm('Apakah Anda yakin ingin menghapus data barang ini?');">
                 @csrf
                 @method('DELETE')
-                <button type="submit"
-                        class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-rose-100 text-rose-700 hover:bg-rose-200 focus:outline-none focus:ring-2 focus:ring-rose-300">
-                  Delete
-                </button>
+                <button type="button" onclick="confirmAction(this.closest('form'), 'Hapus barang ini? Data tidak bisa dikembalikan.', 'error')" class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-rose-100 text-rose-700 hover:bg-rose-200">Delete</button>
               </form>
             </div>
           </td>
@@ -126,6 +123,20 @@
   </div>
 </div>
 
+<!-- custom modal -->
+<div id="customModal" class="fixed inset-0 z-50 items-center justify-center bg-black bg-opacity-50 hidden transition-opacity duration-300">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-sm mx-4 overflow-hidden transform transition-all duration-300 scale-95 opacity-0" id="customModalContent">
+      <div class="p-5 text-center">
+        <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full mb-4" id="modalIconContainer"></div>
+        <h3 class="text-lg leading-6 font-medium text-gray-900" id="modalTitle">Judul</h3>
+        <div class="mt-2">
+          <p class="text-sm text-gray-500" id="modalMessage">Pesan</p>
+        </div>
+      </div>
+      <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-2" id="modalButtons"></div>
+    </div>
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   const searchInput = document.querySelector('input[name="q"]');
@@ -152,6 +163,71 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   if (searchInput) searchInput.addEventListener('keyup', fetchData);
+
+  // modal logic
+  const modal = document.getElementById('customModal');
+    const modalContent = document.getElementById('customModalContent');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalMessage = document.getElementById('modalMessage');
+    const modalIconContainer = document.getElementById('modalIconContainer');
+    const modalButtons = document.getElementById('modalButtons');
+
+    window.openModal = function(title, message, type, onConfirm = null) {
+      modalTitle.textContent = title;
+      modalMessage.textContent = message;
+      
+      let iconHtml = ''; let iconColorClass = '';
+      if(type === 'error') {
+        iconColorClass = 'bg-red-100';
+        iconHtml = `<svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
+      } else if (type === 'success') {
+        iconColorClass = 'bg-green-100';
+        iconHtml = `<svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>`;
+      } else if (type === 'warning') {
+        iconColorClass = 'bg-yellow-100';
+        iconHtml = `<svg class="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>`;
+      }
+      modalIconContainer.className = `mx-auto flex items-center justify-center h-12 w-12 rounded-full mb-4 ${iconColorClass}`;
+      modalIconContainer.innerHTML = iconHtml;
+
+      modalButtons.innerHTML = '';
+      if (type === 'warning' || type === 'error' && onConfirm) {
+        const btnConfirm = document.createElement('button');
+        btnConfirm.className = `w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 ${type === 'error' ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'} text-base font-medium text-white focus:outline-none sm:ml-3 sm:w-auto sm:text-sm`;
+        btnConfirm.textContent = 'Ya, Lanjutkan';
+        btnConfirm.onclick = () => { closeModal(); if(onConfirm) onConfirm(); };
+        const btnCancel = document.createElement('button');
+        btnCancel.className = "mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm";
+        btnCancel.textContent = 'Batal';
+        btnCancel.onclick = closeModal;
+        modalButtons.appendChild(btnConfirm); modalButtons.appendChild(btnCancel);
+      } else {
+        const btnOk = document.createElement('button');
+        btnOk.className = "w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 sm:ml-3 sm:w-auto sm:text-sm";
+        btnOk.textContent = 'OK';
+        btnOk.onclick = closeModal;
+        modalButtons.appendChild(btnOk);
+      }
+      modal.classList.remove('hidden');
+      setTimeout(() => { modalContent.classList.remove('scale-95', 'opacity-0'); modalContent.classList.add('scale-100', 'opacity-100'); }, 10);
+      modal.classList.add('flex');
+    }
+
+    window.closeModal = function() {
+      modalContent.classList.remove('scale-100', 'opacity-100'); modalContent.classList.add('scale-95', 'opacity-0');
+      setTimeout(() => { modal.classList.add('hidden'); }, 300);
+    }
+
+    window.showNotification = function(msg, type = 'success') { openModal(type === 'error' ? 'Oops!' : 'Berhasil', msg, type); }
+    window.confirmAction = function(form, msg, type = 'warning') { openModal('Konfirmasi', msg, type, () => { form.submit(); }); }
+
+    // Check Session
+    @if(session('success'))
+        showNotification("{{ session('success') }}", 'success');
+    @endif
+    @if(session('error'))
+        showNotification("{{ session('error') }}", 'error');
+    @endif
 });
 </script>
 @endsection
