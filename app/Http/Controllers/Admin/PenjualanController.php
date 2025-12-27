@@ -111,6 +111,16 @@ class PenjualanController extends Controller
             ];
         }
 
+        // Hitung dulu apakah ada barang yang kena PPN
+        $adaBarangKenaPPN = collect($request->barang)->contains(function ($item) {
+            $barang = Barang::find($item['id_barang']);
+            return $barang && (strtolower($barang->kena_ppn) === 'ya');
+        });
+
+        $rules['tarif_ppn'] = $adaBarangKenaPPN 
+            ? 'required|numeric|min:0|max:100' 
+            : 'nullable|numeric|min:0|max:100';
+
         $request->validate($rules);
 
         if (!$request->id_pelanggan && !$request->id_anggota) {
@@ -261,6 +271,23 @@ $totalHarga = $subTotalBarangDanOngkir - $diskonNilai + $total_ppn;
                 'nomor_resi' => 'nullable|string|max:255',
             ];
         }
+
+        // Cek apakah ada barang yang kena PPN
+        $adaKenaPPN = false;
+        if ($request->has('barang') && is_array($request->barang)) {
+            foreach ($request->barang as $item) {
+                $barang = Barang::find($item['id_barang']);
+                if ($barang && strtolower($barang->kena_ppn) === 'ya') {
+                    $adaKenaPPN = true;
+                    break;
+                }
+            }
+        }
+
+        // Atur rule tarif_ppn secara dinamis
+        $rules['tarif_ppn'] = $adaKenaPPN
+            ? 'required|numeric|min:0|max:100'
+            : 'nullable|numeric|min:0|max:100';
 
         $request->validate($rules);
 

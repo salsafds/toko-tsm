@@ -105,7 +105,13 @@
           @endphp
           <tr class="hover:bg-gray-50 transition-colors">
             <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r border-gray-100">{{ $item->id_penjualan }}</td>
-            <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->user?->nama_lengkap ?? 'N/A' }}</td>
+            <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r text-center">
+                @if($item->sumber_transaksi === 'marketplace')
+                    Marketplace
+                @else
+                    {{ $item->user?->nama_lengkap ?? 'N/A' }}
+                @endif
+            </td>
             <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $namaPembeli }}</td>
             <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r text-center">{{ $jenisPembeli }}</td>
             <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r text-right">Rp {{ number_format($item->total_harga_penjualan, 0, ',', '.') }}</td>
@@ -317,10 +323,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Check Session
     @if(session('success'))
-        showNotification("{{ session('success') }}", 'success');
+        showNotification("{{ html_entity_decode(session('success')) }}", 'success');
     @endif
     @if(session('error'))
-        showNotification("{{ session('error') }}", 'error');
+        showNotification("{{ html_entity_decode(session('error')) }}", 'error');
     @endif
 });
 </script>

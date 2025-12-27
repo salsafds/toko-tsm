@@ -194,7 +194,7 @@
             </div>
             <div>
                 <label for="tarif_ppn" class="block text-sm font-medium text-gray-700">
-                    Tarif PPN (%) <span class="text-rose-600">*</span>
+                    Tarif PPN (%)
                 </label>
                 <input
                     type="number"
@@ -202,17 +202,17 @@
                     id="tarif_ppn"
                     value="{{ old('tarif_ppn', $penjualan->tarif_ppn ?? '0') }}"
                     class="w-full rounded-md border-2 px-3 py-2 text-sm transition-colors focus:outline-none
-                           {{ $errors->has('tarif_ppn')
-                               ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-4 focus:ring-red-500/20'
-                               : 'border-gray-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20' }}"
+                        {{ $errors->has('tarif_ppn')
+                            ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-4 focus:ring-red-500/20'
+                            : 'border-gray-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20' }}"
                     min="0"
                     max="100"
                     step="0.01"
-                    required
                 >
                 @error('tarif_ppn')
                     <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
                 @enderror
+                <p id="tarif_ppn_error" class="text-sm text-red-600 mt-1 hidden"></p>
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700">Total Bayar</label>
@@ -485,22 +485,19 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    searchInput.addEventListener('input', function(e) {
-        const query = e.target.value.toLowerCase();
+    // Tampilkan semua barang saat pertama kali load
+    function renderAllProducts() {
         resultsContainer.innerHTML = '';
-        if (query.length < 1) {
-            resultsContainer.innerHTML = '<div class="col-span-full text-center text-gray-400 py-8 text-sm italic">Mulai ketik nama barang untuk menampilkan hasil...</div>';
+        if (allProducts.length === 0) {
+            resultsContainer.innerHTML = '<div class="col-span-full text-center text-gray-500 py-8 text-sm">Tidak ada barang tersedia.</div>';
             return;
         }
-        const filtered = allProducts.filter(p => p.nama_barang.toLowerCase().includes(query));
-        if (filtered.length === 0) {
-            resultsContainer.innerHTML = '<div class="col-span-full text-center text-gray-500 py-8 text-sm">Barang tidak ditemukan.</div>';
-            return;
-        }
-        filtered.forEach(p => {
+
+        allProducts.forEach(p => {
             const stock = parseInt(p.stok_tersedia ?? p.stok);
             const price = parseFloat(p.retail);
             const isOOS = stock <= 0;
+
             const card = document.createElement('div');
             card.className = `border rounded-md p-3 flex flex-col justify-between transition hover:shadow-md ${isOOS ? 'bg-gray-100 opacity-75' : 'bg-white'}`;
             card.innerHTML = `
@@ -510,7 +507,53 @@ document.addEventListener('DOMContentLoaded', function () {
                     <div class="text-sm font-semibold text-blue-600 mt-1">Rp ${formatRupiah(price)}</div>
                 </div>
                 <button type="button" onclick="addToCart('${p.id_barang}')"
-                    class="mt-3 w-full py-1.5 rounded text-xs font-bold uppercase tracking-wide flex items-center justify-center gap-1 transition-colors ${isOOS ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm active:bg-blue-800'}" ${isOOS ? 'disabled' : ''}>
+                    class="mt-3 w-full py-1.5 rounded text-xs font-bold uppercase tracking-wide flex items-center justify-center gap-1 transition-colors 
+                    ${isOOS ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm active:bg-blue-800'}" 
+                    ${isOOS ? 'disabled' : ''}>
+                    ${isOOS ? 'Habis' : '<span class="text-lg leading-none">+</span> Tambah'}
+                </button>
+            `;
+            resultsContainer.appendChild(card);
+        });
+    }
+
+    // Filter barang saat mengetik
+    searchInput.addEventListener('input', function(e) {
+        const query = e.target.value.trim().toLowerCase();
+
+        resultsContainer.innerHTML = '';
+
+        let filtered = allProducts;
+
+        if (query.length > 0) {
+            filtered = allProducts.filter(p => 
+                p.nama_barang.toLowerCase().includes(query) ||
+                (p.kode_barang && p.kode_barang.toLowerCase().includes(query))
+            );
+        }
+
+        if (filtered.length === 0) {
+            resultsContainer.innerHTML = '<div class="col-span-full text-center text-gray-500 py-8 text-sm">Barang tidak ditemukan.</div>';
+            return;
+        }
+
+        filtered.forEach(p => {
+            const stock = parseInt(p.stok_tersedia ?? p.stok);
+            const price = parseFloat(p.retail);
+            const isOOS = stock <= 0;
+
+            const card = document.createElement('div');
+            card.className = `border rounded-md p-3 flex flex-col justify-between transition hover:shadow-md ${isOOS ? 'bg-gray-100 opacity-75' : 'bg-white'}`;
+            card.innerHTML = `
+                <div>
+                    <div class="font-bold text-sm text-gray-800 truncate" title="${p.nama_barang}">${p.nama_barang}</div>
+                    <div class="text-xs text-gray-500 mt-1">Tersedia: <span class="${stock < 5 ? 'text-red-500 font-bold' : 'text-green-600'}">${stock}</span></div>
+                    <div class="text-sm font-semibold text-blue-600 mt-1">Rp ${formatRupiah(price)}</div>
+                </div>
+                <button type="button" onclick="addToCart('${p.id_barang}')"
+                    class="mt-3 w-full py-1.5 rounded text-xs font-bold uppercase tracking-wide flex items-center justify-center gap-1 transition-colors 
+                    ${isOOS ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm active:bg-blue-800'}" 
+                    ${isOOS ? 'disabled' : ''}>
                     ${isOOS ? 'Habis' : '<span class="text-lg leading-none">+</span> Tambah'}
                 </button>
             `;
@@ -547,11 +590,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 qty: 1,
                 kena_ppn: product.kena_ppn ? product.kena_ppn.toLowerCase() : 'tidak'
             });
-            showNotif('Barang masuk keranjang', 'success');
         }
         renderCart();
         updateButtonState();
     };
+
+    // Reset error PPN saat cart berubah
+    const ppnError = document.getElementById('tarif_ppn_error');
+    if (ppnError) {
+        ppnError.classList.add('hidden');
+        ppnError.textContent = '';
+    }
+    document.getElementById('tarif_ppn').classList.remove('border-red-500', 'bg-red-50');
 
     // --- 2. Update Qty Buttons ---
     window.updateCartQty = function(id, change) {
@@ -781,6 +831,11 @@ document.addEventListener('DOMContentLoaded', function () {
     uangDiterimaInput.addEventListener('input', hitungTotal);
     document.getElementById('tarif_ppn').addEventListener('input', hitungTotal);
 
+    // Fungsi untuk cek apakah ada barang kena PPN di cart
+    function adaBarangKenaPPN() {
+        return cart.some(item => item.kena_ppn === 'ya');
+    }
+
     // --- 5. Form Submit ---
     form.addEventListener('submit', function (e) {
         e.preventDefault();
@@ -807,6 +862,38 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('barang_error').textContent = 'Pilih setidaknya satu barang.';
             showNotif('Keranjang belanja masih kosong!', 'error');
             hasError = true;
+        }
+
+        // Validasi Tarif PPN dinamis
+        const tarifPPNInput = document.getElementById('tarif_ppn');
+        const tarifPPNValue = parseFloat(tarifPPNInput.value) || 0;
+
+        if (adaBarangKenaPPN()) {
+            if (tarifPPNValue <= 0) {
+                // Tampilkan error (bisa pakai cara yang sama dengan error lain)
+                tarifPPNInput.classList.add('border-red-500', 'bg-red-50');
+                // Buat elemen error jika belum ada
+                let ppnError = document.getElementById('tarif_ppn_error');
+                if (!ppnError) {
+                    ppnError = document.createElement('p');
+                    ppnError.id = 'tarif_ppn_error';
+                    ppnError.className = 'text-sm text-red-600 mt-1';
+                    tarifPPNInput.parentNode.appendChild(ppnError);
+                }
+                ppnError.textContent = 'Tarif PPN wajib diisi lebih dari 0 karena ada barang kena PPN.';
+                ppnError.classList.remove('hidden');
+                hasError = true;
+                showNotif('Tarif PPN wajib diisi karena ada barang kena PPN!', 'error');
+            }
+        } else {
+            // Jika tidak ada barang kena PPN, boleh 0 atau kosong
+            // Reset error jika ada
+            tarifPPNInput.classList.remove('border-red-500', 'bg-red-50');
+            const ppnError = document.getElementById('tarif_ppn_error');
+            if (ppnError) {
+                ppnError.classList.add('hidden');
+                ppnError.textContent = '';
+            }
         }
 
         if (ekspedisiCheckbox.checked) {
@@ -880,6 +967,7 @@ if (isEditMode) {
     submitButton.disabled = true;
     submitButton.classList.add('opacity-50','cursor-not-allowed');
 }
+renderAllProducts();
 isBooting = false;
 updateButtonState();
 });
