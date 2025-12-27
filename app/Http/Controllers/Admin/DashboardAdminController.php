@@ -8,6 +8,7 @@ use App\Models\Penjualan;
 use App\Models\DetailPenjualan;
 use App\Models\Pembelian;
 use App\Models\Barang;
+use Illuminate\Support\Facades\DB;
 
 class DashboardAdminController extends Controller
 {
@@ -58,9 +59,8 @@ class DashboardAdminController extends Controller
         $chartPenjualan = array_fill(0, 24, 0);
         $chartPembelian = array_fill(0, 24, 0);
 
-        $penjualanPerJam = Penjualan::selectRaw('HOUR(tanggal_order) jam, SUM(total_harga_penjualan) total')
-            ->whereDate('tanggal_order', $today)
-            ->whereNotNull('tanggal_selesai')
+        $penjualanPerJam = Penjualan::selectRaw('HOUR(tanggal_selesai) jam, SUM(total_harga_penjualan) total')
+            ->whereDate('tanggal_selesai', $today)
             ->groupBy('jam')
             ->get();
 
@@ -68,43 +68,65 @@ class DashboardAdminController extends Controller
             $chartPenjualan[$row->jam] = (int) $row->total;
         }
 
-        $pembelianPerJam = Pembelian::selectRaw('HOUR(tanggal_pembelian) jam, SUM(jumlah_bayar) total')
-            ->whereDate('tanggal_pembelian', $today)
-            ->whereNotNull('tanggal_terima')
-            ->groupBy('jam')
+        $pembelianPerJam = DB::table('pembelian')
+            ->join('detail_pembelian', 'pembelian.id_pembelian', '=', 'detail_pembelian.id_pembelian')
+            ->selectRaw('HOUR(pembelian.tanggal_terima) as jam')
+            ->addSelect([DB::raw('SUM(detail_pembelian.sub_total) as total')])
+            ->whereDate('pembelian.tanggal_terima', $today)
+            ->whereNotNull('pembelian.tanggal_terima')
+            ->groupByRaw('HOUR(pembelian.tanggal_terima)')
             ->get();
 
         foreach ($pembelianPerJam as $row) {
-            $chartPembelian[$row->jam] = (int) $row->total;
+            $chartPembelian[(int) $row->jam] = (float) $row->total;
         }
+        
 
         /* =========================
         | 3️⃣ TRANSAKSI TERBARU (ARRAY MURNI)
         ========================== */
 
-        $penjualan = Penjualan::with(['pelanggan', 'anggota'])
+        // Penjualan: Ambil yang selesai hari ini ATAU (pending DAN order hari ini)
+        $penjualanSelesai = Penjualan::with(['pelanggan', 'anggota'])
+            ->whereDate('tanggal_selesai', $today)
+            ->get();
+
+        $penjualanPending = Penjualan::with(['pelanggan', 'anggota'])
+            ->whereNull('tanggal_selesai')
             ->whereDate('tanggal_order', $today)
             ->get();
 
+        $penjualan = $penjualanSelesai->merge($penjualanPending);
+
         $penjualanArr = $penjualan->map(function ($p) {
+            $effectiveDate = $p->tanggal_selesai ?? $p->tanggal_order;
             return [
-                'tanggal' => $p->tanggal_order->format('Y-m-d H:i'),
+                'tanggal' => $effectiveDate->format('Y-m-d H:i'),
+                'effective_date' => $effectiveDate,  // Untuk sort internal
                 'jenis'   => 'Penjualan',
-                'akun'    => $p->pelanggan->nama_pelanggan
-                              ?? $p->anggota->nama_anggota
-                              ?? '-',
+                'akun'    => $p->pelanggan->nama_pelanggan ?? $p->anggota->nama_anggota ?? '-',
                 'total'   => $p->total_harga_penjualan,
                 'status'  => $p->tanggal_selesai ? 'selesai' : 'pending',
             ];
         });
 
-        $pembelian = Pembelian::with('supplier')
+        // Pembelian: Sama seperti atas
+        $pembelianDiterima = Pembelian::with('supplier')
+            ->whereDate('tanggal_terima', $today)
+            ->get();
+
+        $pembelianPending = Pembelian::with('supplier')
+            ->whereNull('tanggal_terima')
             ->whereDate('tanggal_pembelian', $today)
             ->get();
 
+        $pembelian = $pembelianDiterima->merge($pembelianPending);
+
         $pembelianArr = $pembelian->map(function ($p) {
+            $effectiveDate = $p->tanggal_terima ?? $p->tanggal_pembelian;
             return [
-                'tanggal' => $p->tanggal_pembelian->format('Y-m-d H:i'),
+                'tanggal' => $effectiveDate->format('Y-m-d H:i'),
+                'effective_date' => $effectiveDate,  // Untuk sort
                 'jenis'   => 'Pembelian',
                 'akun'    => $p->supplier->nama_supplier ?? '-',
                 'total'   => $p->jumlah_bayar,
@@ -112,11 +134,16 @@ class DashboardAdminController extends Controller
             ];
         });
 
+        // Merge dan sort by effective_date desc
         $transaksiTerbaru = collect()
             ->merge($penjualanArr)
             ->merge($pembelianArr)
-            ->sortByDesc('tanggal')
+            ->sortByDesc('effective_date')
             ->take(5)
+            ->map(function ($item) {
+                unset($item['effective_date']);  // Hapus field internal
+                return $item;
+            })
             ->values()
             ->toArray();
 

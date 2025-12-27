@@ -184,51 +184,90 @@
 </div>
 
 {{-- CHART --}}
-<script src="{{ asset('vendor/chartjs/chart.umd.min.js') }}"></script>
+@push('js')
 <script>
-const ctx = document.getElementById('chartHarian');
+document.addEventListener('DOMContentLoaded', function () {
+    const ctx = document.getElementById('chartHarian');
+    if (!ctx) return;
 
-new Chart(ctx, {
-  type: 'line',
-  data: {
-    labels: @json($chartLabels),
-    datasets: [
-      {
-        label: 'Penjualan',
-        data: @json($chartPenjualan),
-        borderColor: 'rgb(34, 197, 94)', // hijau
-        backgroundColor: 'rgba(34, 197, 94, 0.2)',
-        tension: 0.3, // buat line smooth
-        fill: true,
-      },
-      {
-        label: 'Pembelian',
-        data: @json($chartPembelian),
-        borderColor: 'rgb(59, 130, 246)', // biru
-        backgroundColor: 'rgba(59, 130, 246, 0.2)',
-        tension: 0.3,
-        fill: true,
-      }
-    ]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { position: 'top' },
-      tooltip: { mode: 'index', intersect: false }
-    },
-    scales: {
-      x: {
-        title: { display: true, text: 'Jam' }
-      },
-      y: {
-        beginAtZero: true,
-        title: { display: true, text: 'Jumlah (Rp)' }
-      }
+    // Safety check kalau Chart belum ready
+    if (typeof Chart === 'undefined') {
+        console.error('Chart.js belum loaded!');
+        return;
     }
-  }
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: @json($chartLabels),
+            datasets: [
+                {
+                    label: 'Penjualan',
+                    data: @json($chartPenjualan),
+                    borderColor: 'rgb(34, 197, 94)',
+                    backgroundColor: 'rgba(34, 197, 94, 0.15)',
+                    tension: 0.3,
+                    fill: true
+                },
+                {
+                    label: 'Pembelian',
+                    data: @json($chartPembelian),
+                    borderColor: 'rgb(59, 130, 246)',
+                    backgroundColor: 'rgba(59, 130, 246, 0.15)',
+                    tension: 0.3,
+                    fill: true
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false
+            },
+            plugins: {
+                legend: {
+                    position: 'top'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.y !== null) {
+                                label += 'Rp ' + context.parsed.y.toLocaleString('id-ID');
+                            }
+                            return label;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Jam'
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return 'Rp ' + value.toLocaleString('id-ID');
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Nominal (Rp)'
+                    }
+                }
+            }
+        }
+    });
 });
 </script>
-
+@endpush
 @endsection

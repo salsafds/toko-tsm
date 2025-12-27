@@ -472,7 +472,6 @@
         </div>
 
 @push('js')
-<script src="{{ Vite::asset('resources/js/app.js') }}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         // === SCRIPT SEARCH BARANG ===

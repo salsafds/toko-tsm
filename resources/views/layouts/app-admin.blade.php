@@ -112,5 +112,7 @@
   >
     @include('layouts.partials.footer')
   </footer>
+  @yield('scripts')
+  @stack('js')
 </body>
 </html>
