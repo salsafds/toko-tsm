@@ -34,7 +34,6 @@ class PembelianController extends Controller
                 break;
             case 'all':
             default:
-                // tidak ada filter tambahan
                 break;
         }}
             

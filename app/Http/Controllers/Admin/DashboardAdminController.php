@@ -16,10 +16,7 @@ class DashboardAdminController extends Controller
     {
         $today = Carbon::today();
 
-        /* =========================
-        | 1️⃣ SUMMARY (SELESAI SAJA)
-        ========================== */
-
+        //SUMMARY CARDS
         $totalPendapatanHariIni = Penjualan::whereDate('tanggal_selesai', $today)
             ->whereNotNull('tanggal_selesai')
             ->sum('total_harga_penjualan');
@@ -51,10 +48,7 @@ class DashboardAdminController extends Controller
             })
             ->count();
 
-        /* =========================
-        | 2️⃣ GRAFIK PER JAM
-        ========================== */
-
+        //GRAFIK
         $chartLabels = range(0, 23);
         $chartPenjualan = array_fill(0, 24, 0);
         $chartPembelian = array_fill(0, 24, 0);
@@ -82,9 +76,7 @@ class DashboardAdminController extends Controller
         }
         
 
-        /* =========================
-        | 3️⃣ TRANSAKSI TERBARU (ARRAY MURNI)
-        ========================== */
+        //TRANSAKSI TERBARU
 
         // Penjualan: Ambil yang selesai hari ini ATAU (pending DAN order hari ini)
         $penjualanSelesai = Penjualan::with(['pelanggan', 'anggota'])
@@ -110,7 +102,7 @@ class DashboardAdminController extends Controller
             ];
         });
 
-        // Pembelian: Sama seperti atas
+        // Pembelian
         $pembelianDiterima = Pembelian::with('supplier')
             ->whereDate('tanggal_terima', $today)
             ->get();
@@ -147,10 +139,7 @@ class DashboardAdminController extends Controller
             ->values()
             ->toArray();
 
-        /* =========================
-        | 4️⃣ RIWAYAT TRANSAKSI (ARRAY MURNI)
-        ========================== */
-
+        //RIWAYAT TRANSAKSI
         $riwayatTransaksiHariIni = collect()
             ->merge($penjualanArr)
             ->merge($pembelianArr)
@@ -158,10 +147,7 @@ class DashboardAdminController extends Controller
             ->values()
             ->toArray();
 
-        /* =========================
-        | 5️⃣ STATUS STOK
-        ========================== */
-
+        //STATUS STOK
         $barangStokHabis = Barang::where('stok', '<=', 0)->count();
         $daftarBarangStokHabis = Barang::where('stok', '<=', 0)->get();
 
