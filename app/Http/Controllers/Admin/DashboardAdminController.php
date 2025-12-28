@@ -20,20 +20,20 @@ class DashboardAdminController extends Controller
         | 1️⃣ SUMMARY (SELESAI SAJA)
         ========================== */
 
-        $totalPendapatanHariIni = Penjualan::whereDate('tanggal_order', $today)
+        $totalPendapatanHariIni = Penjualan::whereDate('tanggal_selesai', $today)
             ->whereNotNull('tanggal_selesai')
             ->sum('total_harga_penjualan');
 
-        $totalPenjualanHariIni = Penjualan::whereDate('tanggal_order', $today)
+        $totalPenjualanHariIni = Penjualan::whereDate('tanggal_selesai', $today)
             ->whereNotNull('tanggal_selesai')
             ->count();
 
         $totalTransaksiHariIni =
-            Penjualan::whereDate('tanggal_order', $today)
+            Penjualan::whereDate('tanggal_selesai', $today)
                 ->whereNotNull('tanggal_selesai')
                 ->count()
             +
-            Pembelian::whereDate('tanggal_pembelian', $today)
+            Pembelian::whereDate('tanggal_terima', $today)
                 ->whereNotNull('tanggal_terima')
                 ->count();
 
