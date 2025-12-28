@@ -255,18 +255,87 @@
 
 
 {{-- ================= CHART JS ================= --}}
-<script src="{{ asset('vendor/chartjs/chart.umd.min.js') }}"></script>
+@push('js')
 <script>
-new Chart(document.getElementById('chartLine'), {
-    type: 'line',
-    data: {
-        labels: @json($chartLabels),
-        datasets: [
-            { label: 'Penjualan', data: @json($chartPenjualan), tension: 0.3 },
-            { label: 'Pembelian', data: @json($chartPembelian), tension: 0.3 }
-        ]
-    }
-});
+document.addEventListener('DOMContentLoaded', function () {
+    const ctx = document.getElementById('chartLine');
+    if (!ctx) return;
 
+    if (typeof Chart === 'undefined') {
+        console.warn('Chart.js belum loaded via Vite');
+        return;
+    }
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: @json($chartLabels),
+            datasets: [
+                {
+                    label: 'Penjualan',
+                    data: @json($chartPenjualan),
+                    borderColor: 'rgb(34, 197, 94)',
+                    backgroundColor: 'rgba(34, 197, 94, 0.15)',
+                    tension: 0.3,
+                    fill: true
+                },
+                {
+                    label: 'Pembelian',
+                    data: @json($chartPembelian),
+                    borderColor: 'rgb(59, 130, 246)',
+                    backgroundColor: 'rgba(59, 130, 246, 0.15)',
+                    tension: 0.3,
+                    fill: true
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false
+            },
+            plugins: {
+                legend: {
+                    position: 'top'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) label += ': ';
+                            if (context.parsed.y !== null) {
+                                label += 'Rp ' + context.parsed.y.toLocaleString('id-ID');
+                            }
+                            return label;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Tanggal'
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return 'Rp ' + value.toLocaleString('id-ID');
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Nominal (Rp)'
+                    }
+                }
+            }
+        }
+    });
+});
 </script>
+@endpush
 @endsection
