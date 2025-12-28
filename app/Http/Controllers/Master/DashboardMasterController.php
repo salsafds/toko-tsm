@@ -227,7 +227,6 @@ class DashboardMasterController extends Controller
             'chartPembelian',
             'perbandingan',
             'top',
-            'userPerRole',
             'transaksiBulanan'
         ));
     }
