@@ -22,6 +22,7 @@ use App\Http\Controllers\Master\SatuanController;
 use App\Http\Controllers\Master\SupplierController;
 use App\Http\Controllers\Master\PelangganController;
 use App\Http\Controllers\Master\UserController;
+use App\Http\Controllers\Master\DashboardMasterController;
 
 // Admin Controllers
 use App\Http\Controllers\Admin\PembelianController;
@@ -50,9 +51,9 @@ Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 //DASHBOARD
-Route::get('/dashboard-master', function () {
-    return view('master.dashboard-master');
-})->middleware(['auth', 'role:R01'])->name('dashboard-master');
+Route::get('/dashboard-master', [DashboardMasterController::class, 'index'])
+    ->middleware(['auth', 'role:R01'])
+    ->name('dashboard-master');
 
 Route::get('/dashboard-admin', [DashboardAdminController::class, 'index'])
     ->middleware(['auth', 'role:R02'])
