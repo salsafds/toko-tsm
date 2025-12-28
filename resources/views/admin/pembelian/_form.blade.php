@@ -68,7 +68,8 @@
                       sm:text-sm pl-4 pr-12 py-3 transition-all duration-200"
                 placeholder="Ketik nama barang atau kode..." autocomplete="off">
          </div>
-            <div id="searchResults" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 max-h-80 overflow-y-auto custom-scrollbar p-1">
+            <div id="searchResults" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 
+                     max-h-44 overflow-y-auto custom-scrollbar p-4 bg-gray-50 rounded-lg border border-gray-200">
                 <div class="col-span-full text-center text-gray-400 py-8 text-sm italic">
                     Mulai ketik nama barang untuk menampilkan hasil...
                 </div>
@@ -464,13 +465,39 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    searchInput.addEventListener('input', function(e) {
-        const query = e.target.value.toLowerCase();
-        resultsContainer.innerHTML = '';
-        if (query.length < 1) {
-            resultsContainer.innerHTML = '<div class="col-span-full text-center text-gray-400 py-8 text-sm italic">Mulai ketik nama barang...</div>';
+        // Tampilkan semua barang saat pertama kali load (sama seperti di penjualan)
+        function renderAllProducts() {
+          resultsContainer.innerHTML = '';
+          if (allProducts.length === 0) {
+            resultsContainer.innerHTML = '<div class="col-span-full text-center text-gray-500 py-8 text-sm">Tidak ada barang tersedia.</div>';
             return;
+          }
+
+          allProducts.forEach(p => {
+            const defaultPrice = parseFloat(p.harga_beli) || 0;
+            const card = document.createElement('div');
+            card.className = `border rounded-md p-3 flex flex-col justify-between transition hover:shadow-md bg-white`;
+            card.innerHTML = `
+              <div>
+                <div class="font-bold text-sm text-gray-800 truncate" title="${p.nama_barang}">${p.nama_barang}</div>
+                <div class="text-xs text-gray-500 mt-1">Default Beli: Rp ${formatRupiah(defaultPrice)}</div>
+              </div>
+              <button type="button" onclick="addToCart('${p.id_barang}')"
+                class="mt-3 w-full py-1.5 rounded text-xs font-bold uppercase tracking-wide flex items-center justify-center gap-1 transition-colors bg-blue-600 hover:bg-blue-700 text-white shadow-sm active:bg-blue-800">
+                <span class="text-lg leading-none">+</span> Tambah
+              </button>
+            `;
+            resultsContainer.appendChild(card);
+          });
         }
+
+    searchInput.addEventListener('input', function(e) {
+      const query = e.target.value.toLowerCase();
+      resultsContainer.innerHTML = '';
+      if (query.length < 1) {
+        renderAllProducts();
+        return;
+      }
         const filtered = allProducts.filter(p => 
             p.nama_barang.toLowerCase().includes(query) || (p.kode_barang && p.kode_barang.toLowerCase().includes(query))
         );
@@ -808,6 +835,8 @@ if (isEditMode) {
 
     // --- INITIALIZATION ---
     initCart();
+    // Tampilkan semua produk di area pencarian seperti di form penjualan
+    renderAllProducts();
     if (isEditMode) {
         setTimeout(() => {
             initialState = getSnapshot();

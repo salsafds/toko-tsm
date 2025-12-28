@@ -261,10 +261,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Check Session
     @if(session('success'))
-        showNotification("{{ session('success') }}", 'success');
+      showNotification(@json(session('success')), 'success');
     @endif
     @if(session('error'))
-        showNotification("{{ session('error') }}", 'error');
+      showNotification(@json(session('error')), 'error');
     @endif
 });
 </script>
