@@ -193,17 +193,6 @@
          }">
         <span>Laporan Mutasi</span>
       </a>
-
-      <!-- Laporan Stok (contoh submenu ke-2) -->
-      <a href="{{ route('dashboard-master') }}"
-         @click="saveScrollPosition()"
-         class="flex items-center px-3 py-2 rounded-lg text-sm transition-colors"
-         :class="{
-           'bg-blue-50 text-blue-700 font-medium': {{ request()->is('laporan/stok*') ? 'true' : 'false' }},
-           'hover:bg-blue-50 text-gray-600': {{ !request()->is('laporan/stok*') }}
-         }">
-        <span>Laporan Stok</span>
-      </a>
     </div>
   </div>
 </div>

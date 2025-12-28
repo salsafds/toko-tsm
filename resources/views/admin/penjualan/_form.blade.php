@@ -67,7 +67,8 @@
                     placeholder="Ketik nama barang atau kode..." autocomplete="off">
                 </div>
 
-                <div id="searchResults" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 max-h-80 overflow-y-auto custom-scrollbar p-1">
+                <div id="searchResults" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 
+                     max-h-44 overflow-y-auto custom-scrollbar p-4 bg-gray-50 rounded-lg border border-gray-200">
                     <div class="col-span-full text-center text-gray-400 py-8 text-sm italic">
                         Mulai ketik nama barang untuk menampilkan hasil...
                     </div>

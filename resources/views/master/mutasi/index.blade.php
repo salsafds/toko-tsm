@@ -1,7 +1,5 @@
 @extends('layouts.appmaster')
-
 @section('title', 'Laporan Mutasi Barang')
-
 @section('content')
 <div class="container mx-auto">
     <div class="flex flex-col items-start mb-4 sm:mb-6">
