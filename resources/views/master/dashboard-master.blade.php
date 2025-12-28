@@ -15,7 +15,7 @@
         </div>
     </div>
 
-    {{-- ================= SUMMARY ================= --}}
+    {{-- SUMMARY --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div class="bg-white p-4 rounded-lg shadow-sm">
             <div class="text-sm text-gray-500">Total Transaksi</div>
@@ -72,7 +72,6 @@
 
     </div>
 
-    {{-- ================= CHART ================= --}}
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
 
         {{-- LINE CHART --}}
@@ -121,7 +120,7 @@
         </div>
     </div>
 
-    {{-- ================= TOP DATA (1 BARIS) ================= --}}
+    {{-- TOP DATA --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
 
         {{-- TOP BARANG --}}
@@ -200,7 +199,7 @@
 
     </div>
 
-    {{-- ================= RIWAYAT TRANSAKSI BULANAN ================= --}}
+    {{-- RIWAYAT TRANSAKSI BULANAN --}}
     <div id="riwayat-transaksi" class="bg-white p-4 rounded-lg shadow-sm">
         <h2 class="text-sm font-medium text-gray-700 mb-4">
             Riwayat Transaksi Bulan Ini
@@ -213,7 +212,7 @@
                         <th class="px-3 py-2">No</th>
                         <th class="px-3 py-2">Tanggal</th>
                         <th class="px-3 py-2">Jenis</th>
-                        <th class="px-3 py-2">Akun</th>
+                        <th class="px-3 py-2">Pembeli</th>
                         <th class="px-3 py-2">Jumlah</th>
                         <th class="px-3 py-2">Status</th>
                     </tr>
@@ -254,7 +253,7 @@
     </div>
 
 
-{{-- ================= CHART JS ================= --}}
+{{-- CHART --}}
 @push('js')
 <script>
 document.addEventListener('DOMContentLoaded', function () {

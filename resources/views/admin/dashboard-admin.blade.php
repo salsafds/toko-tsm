@@ -11,7 +11,7 @@
     <p class="text-sm text-gray-500 mt-1">Ringkasan operasional hari ini</p>
   </div>
 
-  {{-- 1️⃣ SUMMARY CARDS --}}
+  {{-- SUMMARY CARDS --}}
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
     <div class="bg-white p-4 rounded-lg shadow-sm">
       <div class="text-sm text-gray-500">Pendapatan Hari Ini</div>
@@ -49,7 +49,7 @@
     </div>
   </div>
 
-  {{-- 2️⃣ GRAFIK --}}
+  {{-- GRAFIK --}}
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
 
     <div class="lg:col-span-2 bg-white p-4 rounded-lg shadow-sm">
@@ -62,7 +62,7 @@
       </div>
     </div>
 
-    {{-- 3️⃣ TRANSAKSI TERBARU --}}
+    {{-- TRANSAKSI TERBARU --}}
     <div class="bg-white p-4 rounded-lg shadow-sm">
       <h2 class="text-sm font-medium text-gray-700 mb-3">Transaksi Terbaru</h2>
 
@@ -93,7 +93,7 @@
     </div>
   </div>
 
-  {{-- 5️⃣ STATUS STOK --}}
+  {{-- STATUS STOK --}}
   <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
     <div class="bg-white p-4 rounded-lg shadow-sm">
       <div class="text-sm text-gray-500">Barang Stok Habis</div>
@@ -139,7 +139,7 @@
     </div>
   </div>
 
-  {{-- 4️⃣ RIWAYAT TRANSAKSI --}}
+  {{-- RIWAYAT TRANSAKSI --}}
   <div id="riwayat-transaksi" class="bg-white p-4 rounded-lg shadow-sm">
     <h2 class="text-sm font-medium text-gray-700 mb-4">Riwayat Transaksi Hari Ini</h2>
 
@@ -150,7 +150,7 @@
             <th class="px-3 py-2">No</th>
             <th class="px-3 py-2">Tanggal</th>
             <th class="px-3 py-2">Jenis</th>
-            <th class="px-3 py-2">Akun</th>
+            <th class="px-3 py-2">Pembeli</th>
             <th class="px-3 py-2">Jumlah</th>
             <th class="px-3 py-2">Status</th>
           </tr>
