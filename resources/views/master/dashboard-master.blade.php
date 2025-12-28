@@ -85,14 +85,39 @@
             </div>
         </div>
 
-        {{-- BAR CHART --}}
+        {{-- CUPLIKAN TRANSAKSI --}}
         <div class="bg-white p-4 rounded-lg shadow-sm">
             <h2 class="text-sm font-medium text-gray-700 mb-3">
-                Perbandingan Bulanan
+                Transaksi Terbaru Bulan Ini
             </h2>
-            <div class="h-64">
-                <canvas id="chartBar"></canvas>
-            </div>
+
+            <ul class="space-y-3">
+                @forelse($transaksiBulanan->take(5) as $trx)
+                    <li class="flex justify-between">
+                        <div>
+                            <div class="text-sm font-medium">
+                                {{ $trx['jenis'] }} - {{ $trx['akun'] }}
+                            </div>
+                            <div class="text-xs text-gray-500">
+                                {{ $trx['tanggal'] }} • 
+                                Rp {{ number_format($trx['total'],0,',','.') }}
+                            </div>
+                        </div>
+                        <div class="text-sm text-gray-700">
+                            {{ ucfirst($trx['status']) }}
+                        </div>
+                    </li>
+                @empty
+                    <li class="text-sm text-gray-500">
+                        Belum ada transaksi bulan ini
+                    </li>
+                @endforelse
+            </ul>
+
+            <a href="#riwayat-transaksi"
+              class="mt-4 block text-sm text-blue-700 hover:underline">
+                Lihat semua transaksi bulan ini
+            </a>
         </div>
     </div>
 
@@ -175,61 +200,6 @@
 
     </div>
 
-    {{-- ================= MONITORING SISTEM ================= --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-
-        {{-- USER PER ROLE (TETAP) --}}
-        <div class="bg-white p-4 rounded-lg shadow-sm">
-            <h2 class="text-sm font-medium text-gray-700 mb-3">
-                User per Role
-            </h2>
-            <ul class="space-y-2 text-sm">
-                @foreach($userPerRole as $r)
-                    <li class="flex justify-between">
-                        <span>{{ $r->role->nama_role }}</span>
-                        <span class="font-semibold">{{ $r->total }}</span>
-                    </li>
-                @endforeach
-            </ul>
-        </div>
-
-        {{-- CUPLIKAN TRANSAKSI --}}
-        <div class="bg-white p-4 rounded-lg shadow-sm">
-            <h2 class="text-sm font-medium text-gray-700 mb-3">
-                Transaksi Terbaru Bulan Ini
-            </h2>
-
-            <ul class="space-y-3">
-                @forelse($transaksiBulanan->take(5) as $trx)
-                    <li class="flex justify-between">
-                        <div>
-                            <div class="text-sm font-medium">
-                                {{ $trx['jenis'] }} - {{ $trx['akun'] }}
-                            </div>
-                            <div class="text-xs text-gray-500">
-                                {{ $trx['tanggal'] }} • 
-                                Rp {{ number_format($trx['total'],0,',','.') }}
-                            </div>
-                        </div>
-                        <div class="text-sm text-gray-700">
-                            {{ ucfirst($trx['status']) }}
-                        </div>
-                    </li>
-                @empty
-                    <li class="text-sm text-gray-500">
-                        Belum ada transaksi bulan ini
-                    </li>
-                @endforelse
-            </ul>
-
-            <a href="#riwayat-transaksi"
-              class="mt-4 block text-sm text-blue-700 hover:underline">
-                Lihat semua transaksi bulan ini
-            </a>
-        </div>
-
-    </div>
-
     {{-- ================= RIWAYAT TRANSAKSI BULANAN ================= --}}
     <div id="riwayat-transaksi" class="bg-white p-4 rounded-lg shadow-sm">
         <h2 class="text-sm font-medium text-gray-700 mb-4">
@@ -298,14 +268,5 @@ new Chart(document.getElementById('chartLine'), {
     }
 });
 
-new Chart(document.getElementById('chartBar'), {
-    type: 'bar',
-    data: {
-        labels: ['Penjualan', 'Pembelian'],
-        datasets: [{
-            data: [{{ $perbandingan['penjualan'] }}, {{ $perbandingan['pembelian'] }}]
-        }]
-    }
-});
 </script>
 @endsection

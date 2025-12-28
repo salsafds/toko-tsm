@@ -11,7 +11,6 @@ use App\Models\Penjualan;
 use App\Models\DetailPenjualan;
 use App\Models\Pembelian;
 use App\Models\Barang;
-use App\Models\User;
 
 class DashboardMasterController extends Controller
 {
@@ -179,15 +178,6 @@ class DashboardMasterController extends Controller
             'pelanggan' => $topPelanggan,
             'anggota'   => $topAnggota,
         ];
-
-
-        /* ===============================
-        | USER PER ROLE
-        =============================== */
-        $userPerRole = User::select('id_role', DB::raw('COUNT(*) total'))
-            ->groupBy('id_role')
-            ->with('role')
-            ->get();
 
         /* ===============================
         | TRANSAKSI BULANAN
