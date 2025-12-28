@@ -131,12 +131,12 @@ class DashboardMasterController extends Controller
         // TOP SUPPLIER (berdasarkan JUMLAH transaksi pembelian)
         $topSupplier = Pembelian::select(
                 'id_supplier',
-                DB::raw('COUNT(id_pembelian) as total')
+                DB::raw('COUNT(id_pembelian) as jumlah_transaksi')  // <-- UBAH DI SINI
             )
             ->whereBetween('tanggal_pembelian', [$start, $end])
             ->whereNotNull('tanggal_terima')
             ->groupBy('id_supplier')
-            ->orderByDesc('total')
+            ->orderByDesc('jumlah_transaksi')  // ubah juga di sini
             ->with('supplier')
             ->limit(5)
             ->get();

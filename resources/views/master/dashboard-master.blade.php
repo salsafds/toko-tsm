@@ -148,12 +148,12 @@
             </h2>
             <ul class="space-y-2 text-sm">
                 @forelse($top['supplier'] as $s)
-                    <li class="flex justify-between">
-                        <span class="truncate">{{ $s->supplier->nama_supplier }}</span>
-                        <span class="font-semibold">
-                            {{ number_format($s->total,0,',','.') }}
-                        </span>
-                    </li>
+    <li class="flex justify-between">
+        <span class="truncate">{{ $s->supplier->nama_supplier }}</span>
+        <span class="font-semibold">
+            {{ number_format($s->jumlah_transaksi, 0, ',', '.') }}
+        </span>
+    </li>
                 @empty
                     <li class="text-gray-500">Tidak ada data</li>
                 @endforelse
