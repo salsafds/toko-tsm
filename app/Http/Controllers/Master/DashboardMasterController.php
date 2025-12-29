@@ -10,22 +10,17 @@ use Carbon\Carbon;
 use App\Models\Penjualan;
 use App\Models\DetailPenjualan;
 use App\Models\Pembelian;
-use App\Models\Barang;
 
 class DashboardMasterController extends Controller
 {
     public function index()
     {
-        /* ===============================
-        | PERIODE (BULAN INI)
-        =============================== */
+        //PERIODE PER BULAN
         $start = Carbon::now()->startOfMonth();
         $end   = Carbon::now()->endOfMonth();
         $periode = $start->translatedFormat('F Y');
 
-        /* ===============================
-        | SUMMARY
-        =============================== */
+        //SUMMARY
         $totalPenjualan = Penjualan::whereBetween('tanggal_order', [$start, $end])
             ->whereNotNull('tanggal_selesai')
             ->count();
@@ -81,9 +76,7 @@ class DashboardMasterController extends Controller
             'keuntungan'  => $keuntungan,
         ];
 
-        /* ===============================
-        | GRAFIK HARIAN
-        =============================== */
+        //GRAFIK HARIAN
         $chartLabels = [];
         $chartPenjualan = [];
         $chartPembelian = [];
@@ -109,11 +102,9 @@ class DashboardMasterController extends Controller
             'pembelian' => array_sum($chartPembelian),
         ];
 
-        /* ===============================
-        | TOP DATA (JUMLAH TRANSAKSI)
-        =============================== */
+        //TOP DATA DARI JUMLAH TRANSAKSI
 
-        // TOP 5 BARANG TERLARIS (berdasarkan total item terjual)
+        // TOP 5 BARANG TERLARIS 
         $topBarang = DetailPenjualan::select(
                 'id_barang',
                 DB::raw('SUM(kuantitas) as total')
@@ -128,7 +119,7 @@ class DashboardMasterController extends Controller
             ->get();
 
 
-        // TOP SUPPLIER (berdasarkan JUMLAH transaksi pembelian)
+        // TOP SUPPLIER
         $topSupplier = Pembelian::select(
                 'id_supplier',
                 DB::raw('COUNT(id_pembelian) as jumlah_transaksi')  // <-- UBAH DI SINI
@@ -142,7 +133,7 @@ class DashboardMasterController extends Controller
             ->get();
 
 
-        // TOP PELANGGAN (berdasarkan JUMLAH transaksi penjualan)
+        // TOP PELANGGAN 
         $topPelanggan = Penjualan::select(
                 'id_pelanggan',
                 DB::raw('COUNT(id_penjualan) as total')
@@ -157,7 +148,7 @@ class DashboardMasterController extends Controller
             ->get();
 
 
-        // TOP ANGGOTA (berdasarkan JUMLAH transaksi penjualan)
+        // TOP ANGGOTA 
         $topAnggota = Penjualan::select(
                 'id_anggota',
                 DB::raw('COUNT(id_penjualan) as total')
@@ -179,9 +170,7 @@ class DashboardMasterController extends Controller
             'anggota'   => $topAnggota,
         ];
 
-        /* ===============================
-        | TRANSAKSI BULANAN
-        =============================== */
+        //TRANSAKSI BULANAN
         $penjualanArr = Penjualan::with(['pelanggan', 'anggota'])
             ->whereBetween('tanggal_order', [$start, $end])
             ->get()
@@ -216,9 +205,7 @@ class DashboardMasterController extends Controller
             ->sortByDesc('tanggal')
             ->values();
 
-        /* ===============================
-        | RETURN VIEW
-        =============================== */
+        //RETURN VIEW
         return view('master.dashboard-master', compact(
             'periode',
             'summary',

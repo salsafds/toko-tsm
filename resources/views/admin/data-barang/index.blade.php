@@ -51,62 +51,62 @@
     </div>
   @endif
 
-{{-- Table --}}
-<div class="bg-white rounded-lg shadow-sm overflow-x-auto border border-gray-200">
-  <table class="min-w-full divide-y divide-gray-200 table-auto">
-    <thead class="bg-gray-50">
-      <tr class="text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-        <th class="w-24 sm:w-32 px-2 sm:px-4 py-2 sm:py-3 border-r border-gray-200">ID Barang</th>
-        <th class="w-24 sm:w-32 px-2 sm:px-4 py-2 sm:py-3 border-r border-gray-200">SKU</th>
-        <th class="flex-1 px-2 sm:px-4 py-2 sm:py-3 border-r">Nama Barang</th>
-        <th class="w-32 sm:w-40 px-2 sm:px-4 py-2 sm:py-3 border-r">Kategori</th>
-        <th class="w-24 sm:w-32 px-2 sm:px-4 py-2 sm:py-3 border-r">Stok</th>
-        <th class="w-24 sm:w-32 px-2 sm:px-4 py-2 sm:py-3 border-r">Satuan</th>
-        <th class="w-32 sm:w-40 px-2 sm:px-4 py-2 sm:py-3 border-r">Harga Retail</th>
-        <th class="w-32 sm:w-40 px-2 sm:px-4 py-2 sm:py-3 border-r">Harga Beli</th>
-        <th class="w-24 sm:w-32 px-2 sm:px-4 py-2 sm:py-3 border-r">Margin (%)</th> 
-        <th class="w-24 sm:w-32 px-2 sm:px-4 py-2 sm:py-3 border-r">Kena PPN</th>
-        <th class="w-32 sm:w-40 px-2 sm:px-4 py-2 sm:py-3">Aksi</th>
-      </tr>
-    </thead>
-    <tbody class="bg-white divide-y divide-gray-100">
-      @forelse($barang as $item)
-        <tr class="hover:bg-gray-50 transition-colors">
-          <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r border-gray-100">{{ $item->id_barang }}</td>
-          <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->sku }}</td>
-          <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->nama_barang }}</td>
-          <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->kategoriBarang->nama_kategori }}</td>
-          <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->stok }}</td>
-          <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->satuan->nama_satuan }}</td>
-          <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ number_format($item->retail, 0, ',', '.') }}</td>
-          <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ number_format($item->harga_beli, 0, ',', '.') }}</td>
-          <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ \Illuminate\Support\Number::trim($item->margin) }}%</td>
-          <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->kena_ppn }}</td>
-          <td class="px-2 sm:px-4 py-2 text-center">
-            <div class="flex justify-center items-center gap-2 sm:gap-3">
-              <a href="{{ route('admin.data-barang.edit', $item->id_barang) }}"
-                 class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300">
-                Edit
-              </a>
-              <form action="{{ route('admin.data-barang.destroy', $item->id_barang) }}" method="POST"
-                    onsubmit="return confirm('Apakah Anda yakin ingin menghapus data barang ini?');">
-                @csrf
-                @method('DELETE')
-                <button type="button" onclick="confirmAction(this.closest('form'), 'Hapus barang ini? Data tidak bisa dikembalikan.', 'error')" class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-rose-100 text-rose-700 hover:bg-rose-200">Delete</button>
-              </form>
-            </div>
-          </td>
+  {{-- Table --}}
+  <div class="bg-white rounded-lg shadow-sm overflow-x-auto border border-gray-200">
+    <table class="min-w-full divide-y divide-gray-200 table-auto">
+      <thead class="bg-gray-50">
+        <tr class="text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+          <th class="w-24 sm:w-32 px-2 sm:px-4 py-2 sm:py-3 border-r border-gray-200">ID Barang</th>
+          <th class="w-24 sm:w-32 px-2 sm:px-4 py-2 sm:py-3 border-r border-gray-200">SKU</th>
+          <th class="flex-1 px-2 sm:px-4 py-2 sm:py-3 border-r">Nama Barang</th>
+          <th class="w-32 sm:w-40 px-2 sm:px-4 py-2 sm:py-3 border-r">Kategori</th>
+          <th class="w-24 sm:w-32 px-2 sm:px-4 py-2 sm:py-3 border-r">Stok</th>
+          <th class="w-24 sm:w-32 px-2 sm:px-4 py-2 sm:py-3 border-r">Satuan</th>
+          <th class="w-32 sm:w-40 px-2 sm:px-4 py-2 sm:py-3 border-r">Harga Retail</th>
+          <th class="w-32 sm:w-40 px-2 sm:px-4 py-2 sm:py-3 border-r">Harga Beli</th>
+          <th class="w-24 sm:w-32 px-2 sm:px-4 py-2 sm:py-3 border-r">Margin (%)</th> 
+          <th class="w-24 sm:w-32 px-2 sm:px-4 py-2 sm:py-3 border-r">Kena PPN</th>
+          <th class="w-32 sm:w-40 px-2 sm:px-4 py-2 sm:py-3">Aksi</th>
         </tr>
-      @empty
-        <tr>
-          <td colspan="9" class="px-4 py-6 sm:py-8 text-center text-xs sm:text-sm text-gray-500"> 
-            Tidak ada data barang.
-          </td>
-        </tr>
-      @endforelse
-    </tbody>
-  </table>
-</div>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-100">
+        @forelse($barang as $item)
+          <tr class="hover:bg-gray-50 transition-colors">
+            <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r border-gray-100">{{ $item->id_barang }}</td>
+            <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->sku }}</td>
+            <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->nama_barang }}</td>
+            <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->kategoriBarang->nama_kategori }}</td>
+            <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->stok }}</td>
+            <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->satuan->nama_satuan }}</td>
+            <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ number_format($item->retail, 0, ',', '.') }}</td>
+            <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ number_format($item->harga_beli, 0, ',', '.') }}</td>
+            <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ \Illuminate\Support\Number::trim($item->margin) }}%</td>
+            <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 border-r">{{ $item->kena_ppn }}</td>
+            <td class="px-2 sm:px-4 py-2 text-center">
+              <div class="flex justify-center items-center gap-2 sm:gap-3">
+                <a href="{{ route('admin.data-barang.edit', $item->id_barang) }}"
+                  class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                  Edit
+                </a>
+                <form action="{{ route('admin.data-barang.destroy', $item->id_barang) }}" method="POST"
+                      onsubmit="return confirm('Apakah Anda yakin ingin menghapus data barang ini?');">
+                  @csrf
+                  @method('DELETE')
+                  <button type="button" onclick="confirmAction(this.closest('form'), 'Hapus barang ini? Data tidak bisa dikembalikan.', 'error')" class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-rose-100 text-rose-700 hover:bg-rose-200">Delete</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        @empty
+          <tr>
+            <td colspan="9" class="px-4 py-6 sm:py-8 text-center text-xs sm:text-sm text-gray-500"> 
+              Tidak ada data barang.
+            </td>
+          </tr>
+        @endforelse
+      </tbody>
+    </table>
+  </div>
 
   {{-- Pagination --}}
   <div class="mt-4 flex flex-col sm:flex-row items-center justify-between gap-2">
@@ -123,7 +123,7 @@
   </div>
 </div>
 
-<!-- custom modal -->
+{{-- Custom Modal --}} 
 <div id="customModal" class="fixed inset-0 z-50 items-center justify-center bg-black bg-opacity-50 hidden transition-opacity duration-300">
     <div class="bg-white rounded-lg shadow-xl w-full max-w-sm mx-4 overflow-hidden transform transition-all duration-300 scale-95 opacity-0" id="customModalContent">
       <div class="p-5 text-center">

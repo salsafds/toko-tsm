@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   if (!form || !negaraSelect || !provinsiSelect) return;
 
-  // Dynamic province loading
+  // Provinsi Loading
   negaraSelect.addEventListener('change', function () {
     const idNegara = this.value;
     const provinsisUrl = form.dataset.provinsisUrl.replace(':id_negara', idNegara);
@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function () {
       });
   });
 
-  // Trigger change event on load to populate provinsi if a country is pre-selected
+  // Trigger change event jika negara belum dipilih 
   if (negaraSelect.value) {
     negaraSelect.dispatchEvent(new Event('change'));
   }

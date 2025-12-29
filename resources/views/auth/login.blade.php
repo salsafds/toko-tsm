@@ -89,7 +89,7 @@
     const eyeOpen = document.querySelector("#eyeOpen");
     const eyeClosed = document.querySelector("#eyeClosed");
 
-    // safety: cek elemen sebelum menambahkan event listener
+    // cek elemen sebelum menambahkan event listener
     if (togglePassword && password) {
       togglePassword.addEventListener("click", () => {
         const type = password.getAttribute("type") === "password" ? "text" : "password";

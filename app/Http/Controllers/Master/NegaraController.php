@@ -5,8 +5,6 @@ namespace App\Http\Controllers\Master;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Negara;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class NegaraController extends Controller
 {
@@ -29,7 +27,7 @@ class NegaraController extends Controller
 
     public function create()
     {
-        // Generate preview ID untuk form (berurutan)
+        // Generate preview ID 
         $nextId = $this->generateNextId();
         return view('master.data-negara.create', compact('nextId'));
     }
@@ -89,18 +87,14 @@ class NegaraController extends Controller
                          ->with('success', 'Data negara berhasil dihapus.');
     }
 
-    /**
-     * Generate ID negara berurutan (NG01, NG02, dll.)
-     */
+    //GENERATE ID NEGARA
     private function generateNextId()
     {
-        // Ambil MAX angka dari id_negara (SUBSTRING setelah 'NG', cast ke UNSIGNED)
-        // Jika table kosong, maxNum = null → fallback ke 0
         $maxNum = Negara::selectRaw('MAX(CAST(SUBSTRING(id_negara, 3) AS UNSIGNED)) as max_num')
                         ->value('max_num') ?? 0;
         $nextNumber = $maxNum + 1;
         
-        // Format: NG + 2 digit dengan leading zero (NG01, NG02, ..., NG10, dll.)
+        // Format ID: NG + 2 digit
         return 'NG' . str_pad($nextNumber, 2, '0', STR_PAD_LEFT);
     }
 }

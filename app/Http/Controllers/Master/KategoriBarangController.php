@@ -5,8 +5,6 @@ namespace App\Http\Controllers\Master;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\KategoriBarang;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class KategoriBarangController extends Controller
 {
@@ -29,7 +27,7 @@ class KategoriBarangController extends Controller
 
     public function create()
     {
-        // Generate preview ID untuk form (berurutan)
+        // Generate preview ID 
         $nextId = $this->generateNextId();
         return view('master.data-kategori-barang.create', compact('nextId'));
     }
@@ -89,13 +87,9 @@ class KategoriBarangController extends Controller
                          ->with('success', 'Data kategori barang berhasil dihapus.');
     }
 
-    /**
-     * Generate ID kategori berurutan (KT0001, KT0002, dll.)
-     */
+    //GENERATE ID KATEGORI BARANG
     private function generateNextId()
     {
-        // Ambil MAX angka dari id_kategori (SUBSTRING setelah 'KT', cast ke UNSIGNED)
-        // Jika table kosong, maxNum = null → fallback ke 0
         $maxNum = KategoriBarang::selectRaw('MAX(CAST(SUBSTRING(id_kategori_barang, 4) AS UNSIGNED)) as max_num')
                                ->value('max_num') ?? 0;
         $nextNumber = $maxNum + 1;

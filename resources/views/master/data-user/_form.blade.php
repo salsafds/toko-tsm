@@ -208,7 +208,6 @@
     </div>
   </div>
 
-  {{-- Space untuk Foto User --}}
 
   {{-- Tombol --}}
   <div class="flex items-center gap-3">

@@ -5,8 +5,6 @@ namespace App\Http\Controllers\Master;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Satuan;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class SatuanController extends Controller
 {
@@ -89,18 +87,14 @@ class SatuanController extends Controller
                          ->with('success', 'Data satuan berhasil dihapus.');
     }
 
-    /**
-     * Generate ID satuan berurutan (ST01, ST02, dll.)
-     */
+    //GENERATE ID SATUAN
     private function generateNextId()
     {
-        // Ambil MAX angka dari id_satuan (SUBSTRING setelah 'ST', cast ke UNSIGNED)
-        // Jika table kosong, maxNum = null → fallback ke 0
         $maxNum = Satuan::selectRaw('MAX(CAST(SUBSTRING(id_satuan, 4) AS UNSIGNED)) as max_num')
                         ->value('max_num') ?? 0;
         $nextNumber = $maxNum + 1;
         
-        // Format: ST + 2 digit dengan leading zero (ST01, ST02, ..., ST10, dll.)
+        // Format ID: ST + 2 digit 
         return 'ST' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
     }
 }

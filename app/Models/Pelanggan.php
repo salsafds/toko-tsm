@@ -25,8 +25,6 @@ class Pelanggan extends Model
         'id_provinsi',
         'id_kota',
     ];
-
-    // relasi ke tabel lain
     public function negara() { return $this->belongsTo(Negara::class, 'id_negara'); }
     public function provinsi() { return $this->belongsTo(Provinsi::class, 'id_provinsi'); }
     public function kota() { return $this->belongsTo(Kota::class, 'id_kota'); }

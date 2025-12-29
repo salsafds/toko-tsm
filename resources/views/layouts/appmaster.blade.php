@@ -65,7 +65,7 @@
   @resize.window.debounce.250ms="isDesktop = window.innerWidth >= 640"
   @sidebar-toggled.window="isOpen = $event.detail.isOpen; console.log('Body received sidebar-toggled, isOpen:', isOpen)"
 >
-  <!-- Overlay for Mobile -->
+  {{-- Overlay for Mobile --}}
   <div 
     x-cloak
   x-show.transition.opacity.duration.300ms="isOpen && !isDesktop"
@@ -74,7 +74,7 @@
   :class="{ 'show': isOpen && !isDesktop }"
   ></div>
 
-  <!-- Header -->
+  {{-- Header --}}
   <header 
     x-cloak 
     class="fixed top-0 right-0 left-0  transition-all duration-300 z-20"
@@ -84,10 +84,10 @@
 
   </header>
 
-  <!-- Sidebar partial -->
+  {{-- Sidebar partial --}}
   @include('layouts.partials.sidebarmaster')
 
-  <!-- Konten halaman -->
+  {{-- Konten halaman --}}
   <main 
   x-cloak 
   class="pt-20 px-6 transition-all duration-300 z-10"
@@ -104,7 +104,7 @@
   @yield('content')
 </main>
 
-  <!-- Footer -->
+  {{-- Footer --}}
   <footer 
     x-cloak 
     class="p-2 transition-all duration-300 z-0"

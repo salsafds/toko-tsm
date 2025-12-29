@@ -10,9 +10,9 @@
   </div>
 
   <div class="flex flex-col items-start mb-4 gap-4 sm:flex-row sm:items-center sm:justify-between">
-    <!-- Kiri: Show entries + Periode -->
+    {{-- Show entries + Periode --}}
     <div class="flex flex-wrap items-center gap-4">
-      <!-- Show entries -->
+      {{-- Show entries --}}
       <div class="flex items-center gap-2">
         <form method="GET" action="{{ route('admin.pembelian.index') }}" class="flex items-center gap-2">
           @php
@@ -27,13 +27,13 @@
             <option value="25" {{ $currentPerPage == 25 ? 'selected' : '' }}>25</option>
             <option value="50" {{ $currentPerPage == 50 ? 'selected' : '' }}>50</option>
           </select>
-          <!-- Hidden inputs untuk mempertahankan filter lain -->
+          {{-- Hidden inputs untuk mempertahankan filter lain --}}
           <input type="hidden" name="periode" value="{{ $currentPeriode }}">
           <input type="hidden" name="q" value="{{ $currentQ }}">
         </form>
       </div>
 
-      <!-- Dropdown Periode -->
+      {{-- Dropdown Periode --}}
       <div class="flex items-center gap-2">
         <form method="GET" action="{{ route('admin.pembelian.index') }}" class="flex items-center gap-2">
           <label for="periode" class="text-xs sm:text-sm text-gray-600">Periode</label>
@@ -43,14 +43,14 @@
             <option value="3months" {{ $currentPeriode == '3months' ? 'selected' : '' }}>3 Bulan Terakhir</option>
             <option value="1year" {{ $currentPeriode == '1year' ? 'selected' : '' }}>1 Tahun Terakhir</option>
           </select>
-          <!-- Hidden inputs untuk mempertahankan filter lain -->
+          {{-- Hidden inputs untuk mempertahankan filter lain --}}
           <input type="hidden" name="per_page" value="{{ $currentPerPage }}">
           <input type="hidden" name="q" value="{{ $currentQ }}">
         </form>
       </div>
     </div>
 
-    <!-- Kanan: Search + Tambah -->
+    {{-- Search + Tambah --}}
     <div class="flex items-center gap-2 w-full sm:w-auto">
       <form method="GET" action="{{ route('admin.pembelian.index') }}" class="flex items-center gap-2 w-full sm:w-auto">
         <div class="relative border rounded-md w-full sm:w-64">
@@ -58,7 +58,7 @@
             <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z"/>
           </svg>
           <input name="q" value="{{ $currentQ }}" placeholder="Search…" aria-label="Search" class="pl-10 pr-3 py-2 rounded-md border-gray-200 text-xs sm:text-sm w-full" />
-          <!-- Hidden untuk mempertahankan filter lain -->
+          {{-- Hidden untuk mempertahankan filter lain --}}
           <input type="hidden" name="per_page" value="{{ $currentPerPage }}">
           <input type="hidden" name="periode" value="{{ $currentPeriode }}">
         </div>
@@ -160,7 +160,7 @@
   </div>
 </div>
 
-<!-- custom modal -->
+{{-- Custom Modal --}}
 <div id="customModal" class="fixed inset-0 z-50 items-center justify-center bg-black bg-opacity-50 hidden transition-opacity duration-300">
     <div class="bg-white rounded-lg shadow-xl w-full max-w-sm mx-4 overflow-hidden transform transition-all duration-300 scale-95 opacity-0" id="customModalContent">
       <div class="p-5 text-center">

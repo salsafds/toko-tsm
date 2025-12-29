@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function () {
     return;
   }
 
-  // Store initial values for edit mode
+  // initial values buat store
   const initial = {
     nama: namaInput?.value.trim() || '',
     negara: negaraSelect?.value || '',

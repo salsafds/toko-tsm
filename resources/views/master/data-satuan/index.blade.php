@@ -51,7 +51,7 @@
     </div>
   @endif
 
-  {{-- Table --}}
+  {{-- Tabel --}}
   <div class="bg-white rounded-lg shadow-sm overflow-x-auto border border-gray-200">
     <table class="min-w-full divide-y divide-gray-200 table-auto">
       <thead class="bg-gray-50">

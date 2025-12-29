@@ -27,8 +27,5 @@ class Kernel extends ConsoleKernel
     protected function commands(): void
     {
         $this->load(__DIR__.'/Commands');
-
-        // Otomatis load semua file di folder Commands
-        // Command SyncMarketplaceOrders kamu sudah otomatis terdeteksi
     }
 }

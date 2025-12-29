@@ -8,7 +8,7 @@
     <h1 class="text-2xl sm:text-2xl font-semibold text-gray-800 text-left">Informasi Detail Pembelian</h1>
   </div>
 
- <!-- Tombol Kembali -->
+    {{-- Tombol Kembali --}}
     <div class="mb-4">
     <a href="{{ route('admin.pembelian.index') }}" class="inline-flex items-center px-3 sm:px-4 py-2 bg-gray-500 text-white rounded-md text-sm hover:bg-gray-600">
         <svg class="h-4 sm:h-5 w-4 sm:w-5 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -55,14 +55,14 @@
     <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6 border border-gray-200 mb-6">
     <h2 class="text-lg font-semibold text-gray-800 mb-4">Informasi Biaya</h2>
     @php
-        // Hitung sub total dari detail barang
+        // sub total dari detail barang
         $subTotal = 0;
         if ($pembelian->detailPembelian) {
         foreach ($pembelian->detailPembelian as $detail) {
             $subTotal += $detail->harga_beli * $detail->kuantitas;
         }
         }
-        // Hitung total pembayaran seperti di form
+        // total pembayaran seperti di form
         $diskon = $pembelian->diskon ?? 0;
         $ppn = $pembelian->ppn ?? 0;
         $biayaPengiriman = $pembelian->biaya_pengiriman ?? 0;

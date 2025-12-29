@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function () {
     return;
   }
 
-  // Store initial values for edit mode
+  // initial values buat store
   const initial = {
     nama: namaInput?.value.trim() || '',
     negara: negaraSelect?.value || '',
@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function () {
     email: emailInput?.value.trim() || ''
   };
 
-  // Dynamic dropdown logic
+  // Logika Dropdown
   function updateProvinsiOptions(id_negara, selectedProvinsi = '') {
     if (!id_negara) {
       provinsiSelect.innerHTML = '<option value="">-- Pilih Provinsi --</option>';
@@ -142,13 +142,13 @@ document.addEventListener('DOMContentLoaded', function () {
       });
   }
 
-  // Initialize dropdowns on page load
+  // Initialize dropdowns 
   if (negaraSelect.value) {
     console.log('Initializing with negara:', negaraSelect.value, 'provinsi:', provinsiSelect.dataset.selected); // Debug log
     updateProvinsiOptions(negaraSelect.value, provinsiSelect.dataset.selected || '');
   }
 
-  // Event listeners for dropdown changes
+  // Event listeners saat dropdown diganti
   negaraSelect.addEventListener('change', () => {
     console.log('Negara changed to:', negaraSelect.value); // Debug log
     updateProvinsiOptions(negaraSelect.value);
@@ -161,7 +161,7 @@ document.addEventListener('DOMContentLoaded', function () {
     checkChanges();
   });
 
-  // Check for changes in edit mode
+  // Cek untuk perubahan di edit mode
   function checkChanges() {
     if (!submitButton) return;
     const current = {
@@ -177,14 +177,14 @@ document.addEventListener('DOMContentLoaded', function () {
     submitButton.classList.toggle('opacity-50', same);
   }
 
-  // Add change listeners for inputs
+  // change listeners untuk input
   [namaInput, negaraSelect, provinsiSelect, kotaSelect, teleponInput, emailInput].forEach(el => {
     if (!el) return;
     el.addEventListener('input', checkChanges);
     el.addEventListener('change', checkChanges);
   });
 
-  // Form submission with validation
+  // submit dan validasi
   form.addEventListener('submit', function (e) {
     e.preventDefault();
 

@@ -6,8 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Provinsi;
 use App\Models\Negara;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class ProvinsiController extends Controller
 {
@@ -106,9 +104,7 @@ class ProvinsiController extends Controller
                          ->with('success', 'Data provinsi berhasil dihapus.');
     }
 
-        /**
-     * Return JSON list provinsi untuk sebuah negara (AJAX).
-     */
+    //Return JSON list provinsi .
     public function provinsiByNegara($id_negara)
     {
         $provinsis = \App\Models\Provinsi::where('id_negara', $id_negara)
@@ -119,18 +115,14 @@ class ProvinsiController extends Controller
     }
 
 
-    /**
-     * Generate ID provinsi berurutan (PV001, PV002, dll.)
-     */
+    //GENERATE ID PROVINSI
     private function generateNextId()
     {
-        // Ambil MAX angka dari id_provinsi (SUBSTRING setelah 'PV', cast ke UNSIGNED)
-        // Jika table kosong, maxNum = null → fallback ke 0
         $maxNum = Provinsi::selectRaw('MAX(CAST(SUBSTRING(id_provinsi, 3) AS UNSIGNED)) as max_num')
                         ->value('max_num') ?? 0;
         $nextNumber = $maxNum + 1;
         
-        // Format: PV + 3 digit dengan leading zero (PV001, PV002, ..., PV100, dll.)
+        // Format ID: PV + 3 digit
         return 'PV' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
     }
 }

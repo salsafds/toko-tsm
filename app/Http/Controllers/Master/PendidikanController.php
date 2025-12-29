@@ -5,8 +5,6 @@ namespace App\Http\Controllers\Master;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Pendidikan;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class PendidikanController extends Controller
 {
@@ -29,7 +27,7 @@ class PendidikanController extends Controller
 
     public function create()
     {
-        // Generate preview ID untuk form (berurutan)
+        // Generate preview ID 
         $nextId = $this->generateNextId();
         return view('master.data-pendidikan.create', compact('nextId'));
     }
@@ -89,18 +87,14 @@ class PendidikanController extends Controller
                          ->with('success', 'Data pendidikan berhasil dihapus.');
     }
 
-    /**
-     * Generate ID pendidikan berurutan (PD01, PD02, dll.)
-     */
+    //GENERATE ID PENDIDIKAN
     private function generateNextId()
     {
-        // Ambil MAX angka dari id_pendidikan (SUBSTRING setelah 'PD', cast ke UNSIGNED)
-        // Jika table kosong, maxNum = null → fallback ke 0
         $maxNum = Pendidikan::selectRaw('MAX(CAST(SUBSTRING(id_pendidikan, 3) AS UNSIGNED)) as max_num')
                         ->value('max_num') ?? 0;
         $nextNumber = $maxNum + 1;
         
-        // Format: PD + 2 digit dengan leading zero (PD01, PD02, ..., PD10, dll.)
+        // Format ID: PD + 2 digit
         return 'PD' . str_pad($nextNumber, 2, '0', STR_PAD_LEFT);
     }
 }
