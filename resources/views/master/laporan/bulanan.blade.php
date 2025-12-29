@@ -1,7 +1,7 @@
 @extends('layouts.appmaster')
 @section('title', 'Laporan Bulanan')
 @section('content')
-<!-- Header + Filter Periode -->
+{{-- Header + Filter Periode --}}
     <div class="mb-6">
         <div class="mb-4">
             <h1 class="text-3xl font-bold text-gray-800 tracking-tight">Laporan Toko Koperasi</h1>
@@ -69,7 +69,8 @@
             </div>
         </div>
     </div>
-    <!-- 4 Kartu Utama -->
+
+    {{-- Main Cards --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <div class="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
             <div class="text-sm font-medium text-gray-500">Omzet Penjualan</div>
@@ -90,9 +91,9 @@
         </div>
     </div>
 
-    <!-- Ringkasan Pembelian & HPP -->
+    {{-- Ringkasan Pembelian & HPP --}}
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-        <!-- Ringkasan Pembelian -->
+        {{-- Ringkasan Pembelian --}}
         <div class="bg-white p-6 rounded-lg shadow-lg">
             <h2 class="text-sm font-semibold text-gray-700 mb-5">Ringkasan Pembelian</h2>
             <div class="space-y-4">
@@ -108,7 +109,7 @@
                 </div>
             </div>
         </div>
-        <!-- HPP & Laba Kotor -->
+        {{-- HPP & Laba Kotor --}}
         <div class="bg-white p-6 rounded-lg shadow-lg">
             <h2 class="text-sm font-semibold text-gray-700 mb-5">HPP & Laba Kotor</h2>
             <div class="space-y-4">
@@ -181,7 +182,7 @@
         </tbody>
     </table>
 
-    <!-- Pagination – SAMA PERSIS seperti Riwayat Transaksi -->
+    {{-- <!-- Pagination --}}
     <div class="flex justify-end mt-4 mb-6 px-3">
         <div class="flex items-center gap-4 select-none">
             @if ($stokKritis->onFirstPage())
@@ -218,24 +219,23 @@
 </div>
 @endif
 
-<!-- 10 Barang Terlaris + Bar Chart -->
+{{-- 10 Barang Terlaris + Bar Chart --}}
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        <!-- CHART -->
+        {{-- CHART --}}
         <div class="bg-white p-5 rounded-lg shadow-lg">
             <h2 class="text-sm font-medium text-gray-700 mb-4 text-center font-semibold">10 Barang Terlaris (Qty)</h2>
-            <div class="relative h-80 w-full pb-12"> <!-- pb-12 = padding bawah biar label multi-line muat -->
+            <div class="relative h-80 w-full pb-12">
                 <canvas id="chartTerlaris"></canvas>
             </div>
         </div>
 
-        <!-- Detail Terlaris (tetap sama) -->
+        {{-- Detail Terlaris --}}
         <div class="bg-white p-5 rounded-lg shadow-lg border border-gray-200 overflow-x-auto">
             <div class="flex items-center justify-between mb-4">
                 <h2 class="text-sm font-medium text-gray-700">Detail Terlaris</h2>
                 <a href="{{ route('master.laporan.terlaris') . '?' . http_build_query(request()->query()) }}" class="text-xs text-indigo-600 hover:underline">Lihat selengkapnya</a>
             </div>
             <table class="min-w-full divide-y divide-gray-200 text-sm">
-                <!-- tabel tetap sama seperti sebelumnya -->
                 <thead class="bg-gray-50 text-xs text-gray-500 uppercase">
                     <tr>
                         <th class="px-4 py-2 text-left border-r border-gray-200">Rank</th>
@@ -260,8 +260,7 @@
         </div>
     </div>
 
-    <!-- Riwayat Transaksi -->
-    <!-- Riwayat Transaksi -->
+    {{-- Riwayat Transaksi --}}
     <div id="riwayat-transaksi" class="bg-white rounded-lg shadow-lg mb-6 border border-gray-200 overflow-x-auto">
         <div class="px-5 py-4 border-b border-gray-200 flex items-center justify-between">
             <h2 class="text-sm font-medium text-gray-700">Riwayat Transaksi</h2>
@@ -377,7 +376,7 @@
         </div>
     </div>
 
-        {{-- Daftar Semua Barang – dengan pagination & export --}}
+        {{-- Daftar Semua Barang --}}
         <div class="bg-white rounded-lg shadow-lg border border-gray-200 overflow-x-auto">
             <div class="px-5 py-4 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <h2 class="text-sm font-medium text-gray-700">
@@ -465,18 +464,16 @@
                 </tbody>
             </table>
 
-            <!-- Pagination tetap sama -->
-            <div class="flex justify-end mt-4 mb-6 px-3">
-                <!-- ... (pagination tidak berubah) ... -->
-            </div>
+            {{-- Pagination --}}
+            
         </div>
 
 @push('js')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // === SCRIPT SEARCH BARANG ===
+        // SEARCH BARANG
         const searchInput = document.getElementById('searchBarang');
-        if (searchInput) {  // tambahan safety check
+        if (searchInput) { 
             const tbody = document.getElementById('tbodyDaftarBarang');
             const rows = tbody.querySelectorAll('tr');
 
@@ -514,7 +511,7 @@
             });
         }
 
-        // === SCRIPT CHART TERLARIS ===
+        // CHART TERLARIS
         const canvas = document.getElementById('chartTerlaris');
         if (!canvas) return;
 

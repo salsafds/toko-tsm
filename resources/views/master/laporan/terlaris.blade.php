@@ -1,10 +1,9 @@
 @extends('layouts.appmaster')
 @section('title', 'Barang Terlaris')
 @section('content')
-   <!-- Header + Filter Periode (tetap sama) -->
+   {{-- Header + Filter Periode  --}}
    <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4 pt-2">
        <div class="flex items-start gap-4">
-           <!-- Tombol Kembali (icon only, style sama persis pagination bulanan) -->
            <a href="{{ route('master.laporan.bulanan') . '?' . request()->getQueryString() }}"
               class="flex items-center justify-center w-10 h-10 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100 transition shadow-sm"
               title="Kembali ke Laporan Bulanan">
@@ -19,9 +18,9 @@
            </div>
        </div>
 
-       <!-- FORM FILTER (dipindah ke kanan agar tombol kembali tetap di kiri) -->
+       {{-- FORM FILTER --}}
        <form method="GET" class="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
-           <!-- Dropdown Periode -->
+           {{-- Dropdown Periode --}}
            <div class="w-64 sm:w-64">
                <select name="periode" id="periode" onchange="this.form.submit()"
                        class="w-full rounded-md border border-gray-200 px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
@@ -33,10 +32,10 @@
                    <option value="tahunan" {{ $periode == 'tahunan' ? 'selected' : '' }}>Tahunan</option>
                </select>
            </div>
-           <!-- Kotak Kanan: STATIS -->
+           
            <div class="w-72">
                <div class="flex items-center border border-gray-200 rounded-md overflow-hidden bg-white shadow-sm">
-                   <!-- Icon Kalender -->
+                   {{-- Icon Kalender --}}
                    <label for="input-bulan"
                           class="flex items-center justify-center w-12 h-11 cursor-pointer transition-colors
                                  {{ $periode === 'bulanan' ? 'text-gray-700 hover:bg-gray-50' : 'text-gray-400 cursor-not-allowed' }}"
@@ -46,7 +45,7 @@
                                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                        </svg>
                    </label>
-                   <!-- Konten Tengah -->
+                   {{-- Konten Tengah --}}
                    <div class="flex-1">
                        <input type="month" id="input-bulan" name="bulan"
                               value="{{ request('bulan') ?? now()->format('Y-m') }}"
@@ -76,12 +75,12 @@
        </form>
    </div>
 
-   <!-- Tabel Semua Barang Terlaris (bagian bawah tetap tidak berubah) -->
+   {{-- Tabel Barang Terlaris --}}
    <div class="bg-white rounded-lg shadow-lg mb-6 border border-gray-200 overflow-x-auto">
        <div class="px-5 py-4 border-b border-gray-200 flex items-center justify-between">
            <h2 class="text-sm font-medium text-gray-700">Daftar Semua Barang Terlaris ({{ $terlarisAll->total() }})</h2>
            <div class="flex items-center gap-4">
-               <!-- Show entries -->
+               {{-- Show entries --}}
                <div class="flex items-center gap-2 text-sm text-gray-700">
                    <span>Show</span>
                    <form method="GET">
@@ -99,7 +98,7 @@
                        </select>
                    </form>
                </div>
-               <!-- Export Buttons -->
+               {{-- Tombol Export --}}
                <div class="flex gap-2">
                    <a href="{{ route('master.laporan.terlaris.export', array_merge(request()->query(), ['format' => 'pdf'])) }}"
                       class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded text-xs font-medium transition">
@@ -136,47 +135,24 @@
                @endforelse
            </tbody>
        </table>
-       <!-- Pagination (tetap sama) -->
-       <div class="flex items-center justify-between mt-4 mb-6 px-3">
-           <div class="flex items-center gap-2 text-sm text-gray-700">
-               <span>Show</span>
-               <form method="GET">
-                   <select name="per_page"
-                       onchange="this.form.submit()"
-                       class="border border-gray-300 rounded-md px-2 py-1 text-sm bg-white 
-                           focus:ring-indigo-500 focus:border-indigo-500">
-                       <option value="10" {{ request('per_page', 15) == 10 ? 'selected' : '' }}>10</option>
-                       <option value="15" {{ request('per_page', 15) == 15 ? 'selected' : '' }}>15</option>
-                       <option value="30" {{ request('per_page', 15) == 30 ? 'selected' : '' }}>30</option>
-                       <option value="50" {{ request('per_page', 15) == 50 ? 'selected' : '' }}>50</option>
-                   </select>
-               </form>
-           </div>
-           <div class="flex items-center gap-4 select-none">
-               @if ($terlarisAll->onFirstPage())
-                   <span class="flex items-center justify-center w-8 h-8 rounded-md border border-gray-300 text-gray-300">
-                       <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-                   </span>
-               @else
-                   <a href="{{ $terlarisAll->appends(request()->query())->previousPageUrl() }}"
-                      class="flex items-center justify-center w-8 h-8 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100 transition">
-                       <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-                   </a>
-               @endif
-               <span class="text-gray-700 text-sm font-medium">
-                   {{ $terlarisAll->currentPage() }} of {{ $terlarisAll->lastPage() }}
-               </span>
-               @if ($terlarisAll->hasMorePages())
-                   <a href="{{ $terlarisAll->appends(request()->query())->nextPageUrl() }}"
-                      class="flex items-center justify-center w-8 h-8 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100 transition">
-                       <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                   </a>
-               @else
-                   <span class="flex items-center justify-center w-8 h-8 rounded-md border border-gray-300 text-gray-300">
-                       <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                   </span>
-               @endif
-           </div>
-       </div>
+
+       {{-- Pagination --}}
+       <div class="mt-4 flex flex-col sm:flex-row items-center justify-between gap-2 px-3 mb-6">
+            {{-- Info jumlah data --}}
+            <div class="text-xs sm:text-sm text-gray-600">
+                @if($terlarisAll->total())
+                    Menampilkan {{ $terlarisAll->firstItem() }} 
+                    sampai {{ $terlarisAll->lastItem() }} 
+                    dari {{ $terlarisAll->total() }} data
+                @endif
+            </div>
+
+            {{-- Pagination links --}}
+            <div>
+                @if(method_exists($terlarisAll, 'links'))
+                    {{ $terlarisAll->appends(request()->query())->links('vendor.pagination.custom') }}
+                @endif
+            </div>
+        </div>
    </div>
 @endsection

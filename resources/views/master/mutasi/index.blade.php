@@ -7,7 +7,7 @@
         <p class="text-sm text-gray-500 mt-1">Riwayat stok masuk dan keluar semua barang</p>
     </div>
 
-    <!-- Header + Filter -->
+    {{-- Header + Filter --}}
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
         <div class="flex items-center gap-3">
             <form method="GET" class="flex items-center gap-2">
@@ -17,8 +17,6 @@
                         <option value="{{ $val }}" {{ request('per_page',25) == $val ? 'selected' : '' }}>{{ $val }}</option>
                     @endforeach
                 </select>
-
-                {{-- Keep filter & sort saat ganti per_page --}}
                 @if(request()->has('period'))   <input type="hidden" name="period" value="{{ request('period') }}"> @endif
                 @if(request()->has('sort'))     <input type="hidden" name="sort" value="{{ request('sort') }}"> @endif
                 @if(request()->has('direction'))<input type="hidden" name="direction" value="{{ request('direction') }}"> @endif
@@ -53,12 +51,12 @@
         </div>
     </div>
 
-    <!-- Tabel dengan Sorting Icon Keren -->
+    {{-- Tabel --}}
     <div class="bg-white rounded-lg shadow-sm overflow-x-auto border border-gray-200">
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr class="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {{-- Helper buat link sorting --}}
+                    {{-- Helper link sorting --}}
                     @php
                         $currentSort = request('sort', 'tanggal');
                         $currentDir  = request('direction', 'asc');
@@ -172,7 +170,7 @@
         </table>
     </div>
 
-    <!-- Pagination -->
+    {{-- Pagination --}}
     <div class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div class="text-sm text-gray-600">
             Menampilkan {{ $paginated->firstItem() ?? 0 }} sampai {{ $paginated->lastItem() ?? 0 }} dari {{ $paginated->total() }} transaksi
