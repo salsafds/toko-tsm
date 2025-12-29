@@ -88,6 +88,8 @@ Route::middleware(['auth', 'role:R01'])->name('master.')->group(function () {
     //Print laporan bulanan    
     Route::get('/laporan/bulanan/export', [BulananController::class, 'export'])
     ->name('laporan.bulanan.export');
+    Route::get('/dashboard/drilldown', [DashboardMasterController::class, 'chartDrilldown'])
+        ->name('dashboard.drilldown');
     
     //data user(karyawan)
     Route::resource('data-user', UserController::class);

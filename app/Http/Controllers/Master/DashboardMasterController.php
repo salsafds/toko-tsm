@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers\Master;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Models\Pembelian;
+use App\Models\Penjualan;
 
 // MODELS
-use App\Models\Penjualan;
+use Illuminate\Http\Request;
 use App\Models\DetailPenjualan;
-use App\Models\Pembelian;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 
 class DashboardMasterController extends Controller
 {
@@ -217,4 +218,45 @@ class DashboardMasterController extends Controller
             'transaksiBulanan'
         ));
     }
+    public function chartDrilldown(Request $request)
+{
+    $request->validate([
+        'tanggal' => 'required|date',
+        'tipe'    => 'required|in:penjualan,pembelian'
+    ]);
+
+    $tanggal = Carbon::parse($request->tanggal);
+    $labels = [];
+    $data   = [];
+
+    for ($hour = 0; $hour < 24; $hour++) {
+        $startHour = $tanggal->copy()->setTime($hour, 0, 0);
+        $endHour   = $startHour->copy()->addHour()->subSecond();
+
+        $labels[] = str_pad($hour, 2, '0', STR_PAD_LEFT) . ':00';
+
+        if ($request->tipe === 'penjualan') {
+            $value = Penjualan::whereBetween('tanggal_order', [$startHour, $endHour])
+                ->whereNotNull('tanggal_selesai')
+                ->sum('total_harga_penjualan');
+        } else {
+            $value = Pembelian::whereBetween('tanggal_pembelian', [$startHour, $endHour])
+                ->whereNotNull('tanggal_terima')
+                ->sum('jumlah_bayar');
+        }
+
+        $data[] = $value;
+    }
+
+    $title = $request->tipe === 'penjualan' 
+        ? 'Penjualan per Jam - ' . $tanggal->translatedFormat('d F Y')
+        : 'Pembelian per Jam - ' . $tanggal->translatedFormat('d F Y');
+
+    return response()->json([
+        'labels' => $labels,
+        'data'   => $data,
+        'title'  => $title,
+        'tipe'   => ucfirst($request->tipe)
+    ]);
+}
 }

@@ -75,10 +75,15 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
 
         {{-- LINE CHART --}}
-        <div class="lg:col-span-2 bg-white p-4 rounded-lg shadow-sm">
-            <h2 class="text-sm font-medium text-gray-700 mb-3">
-                Penjualan & Pembelian Harian
-            </h2>
+        <div class="lg:col-span-2 bg-white p-4 rounded-lg shadow-sm relative">
+            <div class="flex justify-between items-start mb-3">
+                <h2 class="text-sm font-medium text-gray-700" id="chartTitle">
+                    Penjualan & Pembelian Harian
+                </h2>
+                <a href="#" id="backToMonthly" class="text-xs text-blue-600 hover:underline hidden">
+                    ← Kembali ke data bulanan
+                </a>
+            </div>
             <div class="h-64">
                 <canvas id="chartLine"></canvas>
             </div>
@@ -258,81 +263,163 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const ctx = document.getElementById('chartLine');
+    const chartTitle = document.getElementById('chartTitle');
+    const backLink = document.getElementById('backToMonthly');
     if (!ctx) return;
 
-    if (typeof Chart === 'undefined') {
-        console.warn('Chart.js belum loaded via Vite');
-        return;
-    }
+    let chart;
+    const labels = @json($chartLabels);
+    const dataPenjualan = @json($chartPenjualan);
+    const dataPembelian = @json($chartPembelian);
 
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: @json($chartLabels),
-            datasets: [
-                {
-                    label: 'Penjualan',
-                    data: @json($chartPenjualan),
-                    borderColor: 'rgb(34, 197, 94)',
-                    backgroundColor: 'rgba(34, 197, 94, 0.15)',
-                    tension: 0.3,
-                    fill: true
-                },
-                {
-                    label: 'Pembelian',
-                    data: @json($chartPembelian),
-                    borderColor: 'rgb(59, 130, 246)',
-                    backgroundColor: 'rgba(59, 130, 246, 0.15)',
-                    tension: 0.3,
-                    fill: true
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            interaction: {
-                mode: 'index',
-                intersect: false
-            },
-            plugins: {
-                legend: {
-                    position: 'top'
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            let label = context.dataset.label || '';
-                            if (label) label += ': ';
-                            if (context.parsed.y !== null) {
-                                label += 'Rp ' + context.parsed.y.toLocaleString('id-ID');
-                            }
-                            return label;
-                        }
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Tanggal'
-                    }
-                },
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function(value) {
-                            return 'Rp ' + value.toLocaleString('id-ID');
-                        }
+    // Jika penjualan atau pembelian > 0
+    const clickableDays = labels.map((_, i) => dataPenjualan[i] > 0 || dataPembelian[i] > 0);
+
+    function renderMonthlyChart() {
+        if (chart) chart.destroy();
+
+        chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Penjualan',
+                        data: dataPenjualan,
+                        borderColor: 'rgb(34, 197, 94)',
+                        backgroundColor: 'rgba(34, 197, 94, 0.15)',
+                        tension: 0.3,
+                        fill: true,
+                        pointRadius: dataPenjualan.map(v => v > 0 ? 5 : 3),
+                        pointHoverRadius: 8
                     },
-                    title: {
-                        display: true,
-                        text: 'Nominal (Rp)'
+                    {
+                        label: 'Pembelian',
+                        data: dataPembelian,
+                        borderColor: 'rgb(59, 130, 246)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.15)',
+                        tension: 0.3,
+                        fill: true,
+                        pointRadius: dataPembelian.map(v => v > 0 ? 5 : 3),
+                        pointHoverRadius: 8
                     }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'nearest',     // penting: ambil yang terdekat dengan kursor
+                    intersect: true,     // klik harus tepat di titik/garis
+                    axis: 'x'
+                },
+                plugins: {
+                    legend: { position: 'top' },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                if (context.parsed.y === null || context.parsed.y === 0) return '';
+                                return context.dataset.label + ': Rp ' + context.parsed.y.toLocaleString('id-ID');
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: { title: { display: true, text: 'Tanggal' } },
+                    y: {
+                        beginAtZero: true,
+                        ticks: { callback: v => 'Rp ' + v.toLocaleString('id-ID') },
+                        title: { display: true, text: 'Nominal (Rp)' }
+                    }
+                },
+                onClick: (event, elements) => {
+                    if (elements.length === 0) return;
+
+                    const clickedElement = elements[0];
+                    const index = clickedElement.index;
+                    const datasetIndex = clickedElement.datasetIndex;
+
+                    // Validasi: hari harus punya transaksi
+                    if (!clickableDays[index]) return;
+
+                    // Pastikan datasetIndex valid
+                    if (datasetIndex !== 0 && datasetIndex !== 1) return;
+
+                    const date = labels[index];
+                    const month = '{{ Carbon\Carbon::now()->format("m") }}';
+                    const year = '{{ Carbon\Carbon::now()->format("Y") }}';
+                    const fullDate = `${year}-${month.padStart(2, '0')}-${String(date).padStart(2, '0')}`;
+
+                    // Tentukan tipe berdasarkan dataset yang diklik
+                    const tipe = datasetIndex === 0 ? 'penjualan' : 'pembelian';
+
+                    fetch(`{{ route('master.dashboard.drilldown') }}?tanggal=${fullDate}&tipe=${tipe}`)
+                        .then(res => {
+                            if (!res.ok) throw new Error('Network error');
+                            return res.json();
+                        })
+                        .then(data => {
+                            if (chart) chart.destroy();
+
+                            chart = new Chart(ctx, {
+                                type: 'line',
+                                data: {
+                                    labels: data.labels,
+                                    datasets: [{
+                                        label: data.tipe,
+                                        data: data.data,
+                                        borderColor: tipe === 'penjualan' ? 'rgb(34, 197, 94)' : 'rgb(59, 130, 246)',
+                                        backgroundColor: tipe === 'penjualan' 
+                                            ? 'rgba(34, 197, 94, 0.15)' 
+                                            : 'rgba(59, 130, 246, 0.15)',
+                                        tension: 0.3,
+                                        fill: true,
+                                        pointRadius: 5,
+                                        pointHoverRadius: 8
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    plugins: {
+                                        legend: { position: 'top' },
+                                        tooltip: {
+                                            callbacks: {
+                                                label: ctx => `${data.tipe}: Rp ${ctx.parsed.y.toLocaleString('id-ID')}`
+                                            }
+                                        }
+                                    },
+                                    scales: {
+                                        x: { title: { display: true, text: 'Jam' } },
+                                        y: {
+                                            beginAtZero: true,
+                                            ticks: { callback: v => 'Rp ' + v.toLocaleString('id-ID') },
+                                            title: { display: true, text: 'Nominal (Rp)' }
+                                        }
+                                    }
+                                }
+                            });
+
+                            chartTitle.textContent = data.title;
+                            backLink.classList.remove('hidden');
+                        })
+                        .catch(err => {
+                            console.error('Error drilldown:', err);
+                            alert('Gagal memuat data drilldown. Cek console untuk detail.');
+                        });
                 }
             }
-        }
+        });
+
+        chartTitle.textContent = 'Penjualan & Pembelian Harian';
+        backLink.classList.add('hidden');
+    }
+
+    renderMonthlyChart();
+
+    backLink.addEventListener('click', e => {
+        e.preventDefault();
+        renderMonthlyChart();
     });
 });
 </script>

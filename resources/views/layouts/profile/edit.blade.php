@@ -1,4 +1,4 @@
-@extends('layouts.appmaster')
+@extends(Auth::check() && Auth::user()->id_role === 'R02' ? 'layouts.app-admin' : 'layouts.appmaster')
 
 @section('title', 'Edit Profil')
 
