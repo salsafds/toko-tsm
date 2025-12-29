@@ -62,11 +62,11 @@ Route::get('/dashboard-admin', [DashboardAdminController::class, 'index'])
 // ADMIN MASTER
 Route::middleware(['auth', 'role:R01'])->name('master.')->group(function () {
 
-    //laporan bulanan
+    // Laporan Bulanan
     Route::get('laporan/bulanan', [BulananController::class, 'index'])
      ->name('laporan.bulanan');
 
-    // Barang Terlaris - Halaman lengkap (semua barang terlaris)
+    // Barang Terlaris
     Route::get('laporan/terlaris', [BulananController::class, 'terlaris'])
         ->name('laporan.terlaris');
 
@@ -81,77 +81,76 @@ Route::middleware(['auth', 'role:R01'])->name('master.')->group(function () {
     Route::get('/mutasi-barang/export', [MutasiController::class, 'export'])
         ->name('mutasi.export');
 
-    // Print daftar barang
+    // Print Daftar Barang
     Route::get('/stok/pdf', [BulananController::class, 'pdfStok'])
         ->name('stok.pdf');
 
-    //Print laporan bulanan    
+    // Print Laporan Bulanan    
     Route::get('/laporan/bulanan/export', [BulananController::class, 'export'])
     ->name('laporan.bulanan.export');
     
-    //data user(karyawan)
+    // Data User (Karyawan)
     Route::resource('data-user', UserController::class);
     Route::post('data-user/check-username', [UserController::class, 'checkUsername'])
      ->name('data-user.check-username');
     
-    //data supplier
+    // Data Supplier
     Route::resource('data-supplier', SupplierController::class);
     Route::get('data-supplier/provinsis/{id_negara}', [SupplierController::class, 'getProvinsiByNegara'])->name('data-supplier.provinsis');
     Route::get('data-supplier/kotas/{id_provinsi}', [SupplierController::class, 'getKotaByProvinsi'])->name('data-supplier.kotas');
     
-    //data kategori barang
+    // Data Kategori Barang
     Route::resource('data-kategori-barang', KategoriBarangController::class);
     
-    //data agen ekspedisi
+    // Data Agen Ekspedisi
     Route::resource('data-agen-ekspedisi', AgenEkspedisiController::class);
     Route::get('data-agen-ekspedisi/provinsis/{id_negara}', [AgenEkspedisiController::class, 'getProvinsiByNegara'])->name('data-agen-ekspedisi.provinsis');
     Route::get('data-agen-ekspedisi/kotas/{id_provinsi}', [AgenEkspedisiController::class, 'getKotaByProvinsi'])->name('data-agen-ekspedisi.kotas');
     
-    //data pelanggan
+    // Data Pelanggan
     Route::resource('data-pelanggan', PelangganController::class);
     Route::get('data-pelanggan/provinsis/{id_negara}', [PelangganController::class, 'getProvinsiByNegara'])->name('data-pelanggan.provinsis');
     Route::get('data-pelanggan/kotas/{id_provinsi}', [PelangganController::class, 'getKotaByProvinsi'])->name('data-pelanggan.kotas');
     
-    //data negara
+    // Data Negara
     Route::resource('data-negara', NegaraController::class);
     
-    //data provinsi
+    // Data Provinsi
     Route::resource('data-provinsi', ProvinsiController::class);
     
-    //data kota
+    // Data Kota
     Route::resource('data-kota', KotaController::class);
     Route::get('data-kota/provinsis/{id_negara}', [KotaController::class, 'getProvinsiByNegara'])->name('data-kota.provinsis');
     
-    //data pendidikan
+    // Data Pendidikan
     Route::resource('data-pendidikan', PendidikanController::class);
     
-    //data satuan
+    // Data Satuan
     Route::resource('data-satuan', SatuanController::class);
     
-    //data jabatan
+    // Data Jabatan
     Route::resource('data-jabatan', JabatanController::class);
     
-    //data role
+    // Data Role
     Route::resource('data-role', RoleController::class);
     
-    //data bahasa
+    // Data Bahasa
     Route::resource('data-bahasa', BahasaController::class);
     
 });
 
 Route::middleware(['auth', 'role:R02'])->name('admin.')->group(function () {
-    //data penjualan
+    // Data Penjualan
     Route::resource('penjualan', PenjualanController::class);
     Route::get('penjualan/{id}/print', [PenjualanController::class, 'print'])->name('penjualan.print');
     Route::patch('penjualan/{id_penjualan}/selesai', [PenjualanController::class, 'selesai'])->name('penjualan.selesai');
 
-    //data pembelian
+    // Data Pembelian
     Route::resource('pembelian', PembelianController::class);
     Route::patch('pembelian/{id_pembelian}/selesai', [PembelianController::class, 'selesai'])->name('pembelian.selesai');
     Route::post('pembelian/store-barang', [PembelianController::class, 'storeBarang'])->name('pembelian.storeBarang');
     Route::get('/admin/pembelian/{id}/view', [PembelianController::class, 'show'])->name('admin.pembelian.show');
 
-    
-    //data barang
+    // Data Barang
     Route::resource('data-barang', BarangController::class);
 });
