@@ -171,12 +171,10 @@ class BulananController extends Controller
         ));
     }
 
-    // ====================== BARU: Halaman lengkap barang terlaris ======================
     public function terlaris(Request $request)
     {
         $periode = $request->get('periode', 'bulanan');
 
-        // Logika periode sama persis seperti di index()
         switch ($periode) {
             case '7hari':
                 $start = now()->subDays(6)->startOfDay();
@@ -234,7 +232,6 @@ class BulananController extends Controller
         return view('master.laporan.terlaris', compact('terlarisAll', 'periodeTeks', 'periode'));
     }
 
-    // ====================== BARU: Export barang terlaris (PDF & Excel) ======================
     public function exportTerlaris(Request $request)
     {
         $periode = $request->get('periode', 'bulanan');

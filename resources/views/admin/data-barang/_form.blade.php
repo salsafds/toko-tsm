@@ -180,7 +180,7 @@
       @endif
     </div>
 
-{{-- Margin (%) --}}
+    {{-- Margin (%) --}}
     <div>
       <label for="margin" class="block text-sm font-medium text-gray-700">
         Margin (%)
@@ -204,7 +204,7 @@
       @endif
     </div>
 
-    {{-- Kena PPN? -- DIPINDAHKAN KE SAMPING KANAN MARGIN --}}
+    {{-- PPN --}}
     <div>
       <label class="block text-sm font-medium text-gray-700">
         Kena PPN? <span class="text-rose-600">*</span>
@@ -230,6 +230,7 @@
       @endif
     </div>
   </div>
+  
   {{-- Tombol --}}
   <div class="flex items-center gap-3">
     <button 
@@ -249,19 +250,19 @@
   </div>
 </form>
 
-{{-- === CUSTOM MODAL  === --}}
-<div id="customModal" class="fixed inset-0 z-50 items-center justify-center bg-black bg-opacity-50 hidden">
-  <div class="bg-white rounded-lg shadow-xl w-full max-w-sm mx-4 overflow-hidden" id="customModalContent">
-    <div class="p-5 text-center">
-      <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full mb-4" id="modalIconContainer"></div>
-      <h3 class="text-lg leading-6 font-medium text-gray-900" id="modalTitle">Judul</h3>
-      <div class="mt-2">
-        <p class="text-sm text-gray-500" id="modalMessage">Pesan</p>
+  {{-- === CUSTOM MODAL  === --}}
+  <div id="customModal" class="fixed inset-0 z-50 items-center justify-center bg-black bg-opacity-50 hidden">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-sm mx-4 overflow-hidden" id="customModalContent">
+      <div class="p-5 text-center">
+        <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full mb-4" id="modalIconContainer"></div>
+        <h3 class="text-lg leading-6 font-medium text-gray-900" id="modalTitle">Judul</h3>
+        <div class="mt-2">
+          <p class="text-sm text-gray-500" id="modalMessage">Pesan</p>
+        </div>
       </div>
+      <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-2" id="modalButtons"></div>
     </div>
-    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-2" id="modalButtons"></div>
   </div>
-</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {

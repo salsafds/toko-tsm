@@ -7,8 +7,6 @@ use Illuminate\Http\Request;
 use App\Models\Kota;
 use App\Models\Negara;
 use App\Models\Provinsi;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class KotaController extends Controller
 {
@@ -31,7 +29,7 @@ class KotaController extends Controller
 
     public function create()
     {
-        // Generate preview ID untuk form (berurutan)
+        // Generate preview ID 
         $nextId = $this->generateNextId();
 
         // ambil daftar negara & provinsi untuk dropdown
@@ -117,18 +115,14 @@ class KotaController extends Controller
                          ->with('success', 'Data kota berhasil dihapus.');
     }
 
-    /**
-     * Generate ID kota berurutan (KT001, KT002, dll.)
-     */
+    //GENERATE ID KOTA
     private function generateNextId()
     {
-        // Ambil MAX angka dari id_kota (SUBSTRING setelah 'KT', cast ke UNSIGNED)
-        // Jika table kosong, maxNum = null → fallback ke 0
         $maxNum = Kota::selectRaw('MAX(CAST(SUBSTRING(id_kota, 3) AS UNSIGNED)) as max_num')
                         ->value('max_num') ?? 0;
         $nextNumber = $maxNum + 1;
         
-        // Format: KT + 3 digit dengan leading zero (KT001, KT002, ..., KT100, dll.)
+        // Format ID: KT + 3 digit 
         return 'KT' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
     }
     public function getProvinsiByNegara($id_negara)

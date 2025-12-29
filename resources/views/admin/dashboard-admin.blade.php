@@ -11,7 +11,7 @@
     <p class="text-sm text-gray-500 mt-1">Ringkasan operasional hari ini</p>
   </div>
 
-  {{-- SUMMARY CARDS --}}
+  {{-- SUMMARY --}}
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
     <div class="bg-white p-4 rounded-lg shadow-sm">
       <div class="text-sm text-gray-500">Pendapatan Hari Ini</div>
@@ -190,7 +190,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const ctx = document.getElementById('chartHarian');
     if (!ctx) return;
 
-    // Safety check kalau Chart belum ready
+    // check kalau Chart belum ready
     if (typeof Chart === 'undefined') {
         console.error('Chart.js belum loaded!');
         return;

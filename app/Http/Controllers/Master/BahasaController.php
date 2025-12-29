@@ -5,8 +5,6 @@ namespace App\Http\Controllers\Master;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Bahasa;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class BahasaController extends Controller
 {
@@ -29,7 +27,7 @@ class BahasaController extends Controller
 
     public function create()
     {
-        // Generate preview ID untuk form (berurutan)
+        // Generate ID
         $nextId = $this->generateNextId();
         return view('master.data-bahasa.create', compact('nextId'));
     }
@@ -89,18 +87,13 @@ class BahasaController extends Controller
                          ->with('success', 'Data bahasa berhasil dihapus.');
     }
 
-    /**
-     * Generate ID bahasa berurutan (BS01, BS02, dll.)
-     */
     private function generateNextId()
     {
-        // Ambil MAX angka dari id_bahasa (SUBSTRING setelah 'BS', cast ke UNSIGNED)
-        // Jika table kosong, maxNum = null → fallback ke 0
         $maxNum = Bahasa::selectRaw('MAX(CAST(SUBSTRING(id_bahasa, 3) AS UNSIGNED)) as max_num')
                         ->value('max_num') ?? 0;
         $nextNumber = $maxNum + 1;
         
-        // Format: BS + 2 digit dengan leading zero (BS01, BS02, ..., BS10, dll.)
+        // Format ID: BS + 2 digit 
         return 'BS' . str_pad($nextNumber, 2, '0', STR_PAD_LEFT);
     }
 }

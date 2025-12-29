@@ -9,7 +9,7 @@
         <p class="text-sm text-gray-500 mt-1 text-left">Daftar agen ekspedisi dan kontak</p>
     </div>
 
-    {{-- Kontrol: Show (kiri) + Search & Tambah (kanan atas di desktop, berdampingan di mobile seperti Data Bahasa) --}}
+    {{-- Show + Search & Tambah --}}
     <div class="flex flex-col items-start mb-4 gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div class="flex items-center gap-2 w-full sm:w-auto">
             <form method="GET" action="{{ route('master.data-agen-ekspedisi.index') }}" class="flex items-center gap-2">

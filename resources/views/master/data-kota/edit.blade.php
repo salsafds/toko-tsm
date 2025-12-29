@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function () {
     provinsi: provinsiSelect?.value || ''
   };
 
-  // Dynamic province loading
+  // Provinsi Loading
   negaraSelect.addEventListener('change', function () {
     const idNegara = this.value;
     const provinsisUrl = form.dataset.provinsisUrl.replace(':id_negara', idNegara);

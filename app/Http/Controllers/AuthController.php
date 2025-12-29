@@ -9,7 +9,6 @@ class AuthController extends Controller
 {
     public function showLoginForm()
     {
-        // Kalau sudah login, langsung arahkan ke dashboard sesuai role
         if (Auth::check()) {
             $user = Auth::user();
             return $this->redirectByRole($user->id_role);

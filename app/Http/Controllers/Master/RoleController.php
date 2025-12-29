@@ -8,9 +8,6 @@ use App\Models\Role;
 
 class RoleController extends Controller
 {
-    /**
-     * Index: list roles with search + per_page
-     */
     public function index(Request $request)
     {
         $query = Role::query();
@@ -29,18 +26,12 @@ class RoleController extends Controller
         return view('master.data-role.index', compact('roles'));
     }
 
-    /**
-     * Show create form. Generate preview ID.
-     */
     public function create()
     {
         $nextId = $this->generateNextId();
         return view('master.data-role.create', compact('nextId'));
     }
 
-    /**
-     * Store new role
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -65,18 +56,12 @@ class RoleController extends Controller
                          ->with('success', 'Data role berhasil ditambahkan.');
     }
 
-    /**
-     * Edit form
-     */
     public function edit($id)
     {
         $role = Role::findOrFail($id);
         return view('master.data-role.edit', compact('role'));
     }
 
-    /**
-     * Update existing role
-     */
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -101,9 +86,6 @@ class RoleController extends Controller
                          ->with('success', 'Data role berhasil diperbarui.');
     }
 
-    /**
-     * Destroy (delete)
-     */
     public function destroy($id)
     {
         $role = Role::findOrFail($id);
@@ -113,9 +95,7 @@ class RoleController extends Controller
                          ->with('success', 'Data role berhasil dihapus.');
     }
 
-    /**
-     * Generate next ID in format RL01, RL02, ...
-     */
+    //GENERATE ID ROLE
     private function generateNextId()
     {
         $maxNum = Role::selectRaw('MAX(CAST(SUBSTRING(id_role, 3) AS UNSIGNED)) as max_num')

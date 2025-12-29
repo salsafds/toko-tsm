@@ -9,7 +9,7 @@
         <p class="text-sm text-gray-500 mt-1 text-left">Daftar pengguna sistem</p>
     </div>
 
-    {{-- Kontrol: Show (kiri) + Search & Tambah (kanan atas di desktop, berdampingan di mobile seperti Data Bahasa) --}}
+    {{-- Show + Search & Tambah --}}
     <div class="flex flex-col items-start mb-4 gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div class="flex items-center gap-2 w-full sm:w-auto">
             <form method="GET" action="{{ route('master.data-user.index') }}" class="flex items-center gap-2">
@@ -51,7 +51,7 @@
         </div>
     @endif
 
-    {{-- Table – dengan horizontal scroll di mobile --}}
+    {{-- Tabel --}}
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-auto">
         <div class="min-w-[800px]">
             <table class="min-w-full divide-y divide-gray-200 table-auto">

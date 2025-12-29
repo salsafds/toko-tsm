@@ -93,9 +93,6 @@ class SupplierController extends Controller
                          ->with('success', 'Data supplier berhasil ditambahkan.');
     }
 
-    /**
-     * Form edit
-     */
     public function edit($id)
     {
         $supplier = Supplier::findOrFail($id);
@@ -106,9 +103,6 @@ class SupplierController extends Controller
         return view('master.data-supplier.edit', compact('supplier', 'negara', 'provinsi', 'kota'));
     }
 
-    /**
-     * Update data supplier
-     */
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -153,9 +147,6 @@ class SupplierController extends Controller
                          ->with('success', 'Data supplier berhasil diperbarui.');
     }
 
-    /**
-     * Hapus data supplier
-     */
     public function destroy($id)
     {
         $supplier = Supplier::findOrFail($id);
@@ -165,9 +156,7 @@ class SupplierController extends Controller
                          ->with('success', 'Data supplier berhasil dihapus.');
     }
 
-    /**
-     * Generate next ID format SP001, SP002, ...
-     */
+    // GENERATE ID SUPPLIER
     private function generateNextId()
     {
         $maxNum = Supplier::selectRaw('MAX(CAST(SUBSTRING(id_supplier, 3) AS UNSIGNED)) as max_num')
@@ -177,9 +166,7 @@ class SupplierController extends Controller
         return 'SP' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
     }
 
-    /**
-     * Fetch provinsi by negara
-     */
+    //PROVINSI BY NEGARA
     public function getProvinsiByNegara($id_negara)
     {
         $provinsis = Provinsi::where('id_negara', $id_negara)
@@ -188,9 +175,7 @@ class SupplierController extends Controller
         return response()->json($provinsis);
     }
 
-    /**
-     * Fetch kota by provinsi
-     */
+    //KOTA BY PROVINSI
     public function getKotaByProvinsi($id_provinsi)
     {
         $kotas = Kota::where('id_provinsi', $id_provinsi)

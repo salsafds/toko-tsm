@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
-    // Store initial values for edit mode
+    // Initial store saat edit mode
     const initial = {
         nama: namaPelangganInput?.value.trim() || '',
         telepon: nomorTeleponInput?.value.trim() || '',
@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function () {
         alamat: alamatPelangganInput?.value.trim() || ''
     };
 
-    // Dynamic dropdown logic
+    // Logika Dropdown
     function updateProvinsiOptions(id_negara, selectedProvinsi = '') {
         if (!id_negara) {
             provinsiSelect.innerHTML = '<option value="">-- Pilih Provinsi --</option>';
@@ -153,13 +153,13 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
 
-    // Initialize dropdowns on page load
+    // Inisialisasi dropdown saat load
     if (negaraSelect.value) {
         console.log('Initializing with negara:', negaraSelect.value, 'provinsi:', provinsiSelect.dataset.selected);
         updateProvinsiOptions(negaraSelect.value, provinsiSelect.dataset.selected || '');
     }
 
-    // Event listeners for dropdown changes
+    // Event listeners untuk perubahan dropdown
     negaraSelect.addEventListener('change', () => {
         console.log('Negara changed to:', negaraSelect.value);
         updateProvinsiOptions(negaraSelect.value);
@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', function () {
         checkChanges();
     });
 
-    // Check for changes in edit mode
+    // Cek perubahan di edit mode
     function checkChanges() {
         const current = {
             nama: namaPelangganInput?.value.trim() || '',
@@ -189,14 +189,14 @@ document.addEventListener('DOMContentLoaded', function () {
         submitButton.classList.toggle('opacity-50', same);
     }
 
-    // Add change listeners for inputs
+    // Add change listeners untuk inputan
     [namaPelangganInput, nomorTeleponInput, kategoriPelangganSelect, emailPelangganInput, negaraSelect, provinsiSelect, kotaSelect, alamatPelangganInput].forEach(el => {
         if (!el) return;
         el.addEventListener('input', checkChanges);
         el.addEventListener('change', checkChanges);
     });
 
-    // Form submission with validation
+    // Form submit + validasi
     form.addEventListener('submit', function (e) {
         e.preventDefault();
 
@@ -307,8 +307,6 @@ document.addEventListener('DOMContentLoaded', function () {
             form.submit();
         }
     });
-
-    // Initial check for edit mode
     checkChanges();
 });
 </script>

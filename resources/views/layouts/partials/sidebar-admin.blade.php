@@ -3,17 +3,17 @@
     display: none !important;
   }
   aside {
-    width: 18rem; /* Fallback untuk w-72 */
+    width: 18rem; // Fallback untuk w-72 
   }
   aside.w-16 {
-    width: 4rem; /* Fallback untuk w-16 */
+    width: 4rem; // Fallback untuk w-16
   }
   aside:not(.w-72) .overflow-y-auto::-webkit-scrollbar {
     display: none;
   }
   aside:not(.w-72) .overflow-y-auto {
-    -ms-overflow-style: none; /* Untuk Internet Explorer dan Edge */
-    scrollbar-width: none; /* Untuk Firefox */
+    -ms-overflow-style: none; // Untuk Internet Explorer dan Edge 
+    scrollbar-width: none; // Untuk Firefox 
   }
   @media (max-width: 640px) {
     aside {
@@ -65,7 +65,7 @@
   aria-label="Sidebar Admin"
   style="scrollbar-gutter: stable;"
 >
-  <!-- Sidebar Header -->
+  {{-- Sidebar Header --}}
   <div 
     class="flex pt-4"
     :class="{ 'px-8 items-center gap-3': isOpen, 'px-2 justify-center': !isOpen }"
@@ -99,7 +99,7 @@
 
   <hr class="mx-4 my-2 border-gray-200" x-show="isOpen" x-cloak>
 
-  <!-- Quick links under header -->
+  {{-- links dibawah header --}}
   <div class="p-4 space-y-2" :class="{ 'px-2': !isOpen }" x-show="isOpen || isDesktop">
     @php
       $dashboardRoute = route('dashboard-admin');
@@ -127,12 +127,12 @@
 
   <hr class="mx-4 my-2 border-gray-200" x-show="isOpen" x-cloak>
 
-  <!-- Sidebar Body -->
+  {{-- Sidebar Body --}}
   <div class="flex-1 overflow-y-auto" x-show="isOpen || isDesktop">
     <nav class="p-4 space-y-2" aria-label="Main navigation" :class="{ 'px-2': !isOpen && isDesktop }">
       <div class="text-xs font-semibold text-gray-500 uppercase px-2" x-show="isOpen" x-cloak>Main</div>
 
-      <!-- Penjualan -->
+      {{-- Penjualan --}}
       @php $penjualanActive = request()->routeIs('admin.penjualan.*'); @endphp
       <a 
         href="{{ route('admin.penjualan.index') ?? '#' }}"
@@ -162,7 +162,7 @@
         </span>
       </a>
 
-      <!-- Pembelian -->
+      {{-- Pembelian --}}
       @php $pembelianActive = request()->routeIs('admin.pembelian.*'); @endphp
       <a 
         href="{{ route('admin.pembelian.index') ?? '#' }}" 
@@ -196,7 +196,7 @@
 
       <div class="text-xs font-semibold text-gray-500 uppercase px-2" x-show="isOpen">Others</div>
 
-      <!-- Daftar Barang -->
+      {{-- Daftar Barang --}}
       @php $barangActive = request()->routeIs('admin.data-barang.*'); @endphp
       <a 
         href="{{ route('admin.data-barang.index') ?? '#' }}" 
@@ -228,7 +228,7 @@
     </nav>
   </div>
 
-  <!-- Sidebar Footer -->
+  {{-- Sidebar Footer --}}
   <div class="border-t p-2" :class="{ 'px-2 ml-4': !isOpen }" x-show="isOpen || isDesktop">
     @php
         $user = Auth::user();

@@ -139,13 +139,13 @@ document.addEventListener('DOMContentLoaded', function () {
       });
   }
 
-  // Initialize dropdowns on page load
+  // Inisialisasi dropdown saat load
   if (negaraSelect.value) {
     console.log('Initializing with negara:', negaraSelect.value, 'provinsi:', provinsiSelect.dataset.selected); // Debug log
     updateProvinsiOptions(negaraSelect.value, provinsiSelect.dataset.selected || '');
   }
 
-  // Event listeners for dropdown changes
+  // Event listeners untuk perubahan pada dropdown
   negaraSelect.addEventListener('change', () => {
     console.log('Negara changed to:', negaraSelect.value); // Debug log
     updateProvinsiOptions(negaraSelect.value);
@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', function () {
     updateKotaOptions(provinsiSelect.value);
   });
 
-  // Form submission with validation
+  // Form submit + validasi
   form.addEventListener('submit', function (e) {
     e.preventDefault();
 

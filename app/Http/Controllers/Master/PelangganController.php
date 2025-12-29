@@ -8,7 +8,6 @@ use App\Models\Pelanggan;
 use App\Models\Negara;
 use App\Models\Provinsi;
 use App\Models\Kota;
-use Illuminate\Support\Str;
 
 class PelangganController extends Controller
 {
@@ -176,9 +175,7 @@ class PelangganController extends Controller
         return 'PLG' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
     }
 
-    /**
-     * Fetch provinsi by negara
-     */
+    //PROVINSI BY NEGARA
     public function getProvinsiByNegara($id_negara)
     {
         $provinsis = Provinsi::where('id_negara', $id_negara)
@@ -187,9 +184,7 @@ class PelangganController extends Controller
         return response()->json($provinsis);
     }
 
-    /**
-     * Fetch kota by provinsi
-     */
+    //KOTA BY PROVINSI
     public function getKotaByProvinsi($id_provinsi)
     {
         $kotas = Kota::where('id_provinsi', $id_provinsi)

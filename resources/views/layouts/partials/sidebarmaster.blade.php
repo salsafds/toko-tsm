@@ -12,8 +12,8 @@
     display: none;
   }
   aside:not(.w-72) .overflow-y-auto {
-    -ms-overflow-style: none; /* Untuk Internet Explorer dan Edge */
-    scrollbar-width: none; /* Untuk Firefox */
+    -ms-overflow-style: none; // Untuk Internet Explorer dan Edge
+    scrollbar-width: none; // Untuk Firefox 
   }
   @media (max-width: 640px) {
     aside {
@@ -65,8 +65,6 @@
         $dispatch('sidebar-toggled', { isOpen: false });
       }
     });
-
-    // Kembalikan scroll saat halaman dimuat
     restoreScrollPosition();
   "
   @resize.window.debounce.250ms="isDesktop = window.innerWidth >= 640"
@@ -115,14 +113,14 @@
 
   <hr class="mx-4 my-2 border-gray-200" x-show="isOpen" x-cloak>
 
-<!-- Quick links under header -->
+{{-- Quick links under header --}}
 <div class="p-4 space-y-2" :class="{ 'px-2': !isOpen }" x-show="isOpen || isDesktop">
   @php
     $dashboardMasterActive = request()->routeIs('dashboard-master');
     $isLaporanActive = request()->is('laporan/stok*') || request()->is('laporan/bulanan*');
   @endphp
 
-  <!-- Dashboard -->
+  {{-- Dashboard --}}
   <a
     href="{{ route('dashboard-master') ?? '#' }}"
     @click="saveScrollPosition()"
@@ -138,7 +136,7 @@
     <span x-show="!isOpen && isDesktop" x-cloak class="absolute left-full ml-2 bg-gray-800 text-white text-xs rounded-lg py-1 px-2 hidden group-hover:block z-10">Dashboard</span>
   </a>
 
-  <!-- Laporan dengan Submenu (dropdown ke bawah, aman untuk scroll) -->
+  {{-- Laporan dengan Submenu --}}
   <div x-data="{ laporanOpen: {{ $isLaporanActive ? 'true' : 'false' }} }">
     <a
       href="javascript:void(0)"
@@ -153,26 +151,26 @@
       <img src="{{ asset('img/icon/iconLaporan.png') }}" alt="Icon Laporan" class="h-5 w-5 object-contain min-h-[20px] min-w-[20px]">
       <span class="text-sm" x-show="isOpen" x-cloak>Laporan</span>
 
-      <!-- Panah dropdown -->
+      {{-- Panah dropdown --}}
       <svg x-show="isOpen" x-cloak class="w-4 h-4 ml-auto transition-transform duration-200"
            :class="{ 'rotate-90': laporanOpen }"
            fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
       </svg>
 
-      <!-- Tooltip saat sidebar mini -->
+      {{-- Tooltip saat sidebar mini --}}
       <span x-show="!isOpen && isDesktop" x-cloak
             class="absolute left-full ml-2 bg-gray-900 text-white text-xs rounded-lg py-1 px-3 whitespace-nowrap hidden group-hover:block z-10">
         Laporan
       </span>
     </a>
 
-    <!-- Submenu - pakai x-collapse agar animasi smooth & tinggi nggak ganggu scroll -->
+    {{-- Submenu - pakai x-collapse agar animasi smooth & tinggi nggak ganggu scroll --}}
     <div x-show="isOpen && (laporanOpen || {{ $isLaporanActive ? 'true' : 'false' }})"
          x-collapse
          class="mt-1 space-y-1 pl-8 border-l-2 border-gray-200">
       
-      <!-- Laporan Bulanan -->
+      {{-- Laporan Bulanan --}}
       <a href="{{ route('master.laporan.bulanan') }}"
          @click="saveScrollPosition()"
          class="flex items-center px-3 py-2 rounded-lg text-sm transition-colors"
@@ -183,7 +181,7 @@
         <span>Laporan Bulanan</span>
       </a>
 
-      <!-- Laporan Mutasi -->
+      {{-- Laporan Mutasi --}}
       <a href="{{ route('master.mutasi.index') }}"
          @click="saveScrollPosition()"
          class="flex items-center px-3 py-2 rounded-lg text-sm transition-colors"
@@ -199,7 +197,7 @@
 
 <hr class="mx-4 my-2 border-gray-200" x-show="isOpen" x-cloak>
 
-  <!-- Sidebar Body (Dengan x-ref untuk scroll) -->
+  {{-- Sidebar Body --}}
   <div 
     class="flex-1 overflow-y-auto" 
     x-ref="sidebarBody"
@@ -209,7 +207,7 @@
     <nav class="p-4 space-y-2" aria-label="Main navigation" :class="{ 'px-2': !isOpen && isDesktop }">
       <div class="text-xs font-semibold text-gray-500 uppercase px-2" x-show="isOpen" x-cloak>Main</div>
 
-      <!-- CRUD Data Supplier -->
+      {{-- CRUD Data Supplier --}}
       @php $supplierActive = request()->routeIs('master.data-supplier.*'); @endphp
       <a 
         href="{{ route('master.data-supplier.index') ?? '#' }}" 
@@ -240,7 +238,7 @@
         </span>
       </a>
 
-      <!-- CRUD Data Pelanggan -->
+      {{-- CRUD Data Pelanggan --}}
       @php $pelangganActive = request()->routeIs('master.data-pelanggan.*'); @endphp
       <a 
         href="{{ route('master.data-pelanggan.index') ?? '#' }}" 
@@ -271,7 +269,7 @@
         </span>
       </a>
 
-      <!-- CRUD Data Karyawan -->
+      {{-- CRUD Data Karyawan --}}
       @php $karyawanActive = request()->routeIs('master.data-user.*'); @endphp
       <a 
         href="{{ route('master.data-user.index') ?? '#' }}" 
@@ -306,7 +304,7 @@
 
       <div class="text-xs font-semibold text-gray-500 uppercase px-2" x-show="isOpen">Data Konfigurasi</div>
 
-      <!-- Data Satuan -->
+      {{-- Data Satuan --}}
       @php $satuanActive = request()->routeIs('master.data-satuan.*'); @endphp
       <a 
         href="{{ route('master.data-satuan.index') ?? '#' }}" 
@@ -337,7 +335,7 @@
         </span>
       </a>
 
-      <!-- Data Role -->
+      {{-- Data Role --}}
       @php $roleActive = request()->routeIs('master.data-role.*'); @endphp
       <a 
         href="{{ route('master.data-role.index') ?? '#' }}" 
@@ -368,7 +366,7 @@
         </span>
       </a>
 
-      <!-- Data Jabatan -->
+      {{-- Data Jabatan --}}
       @php $jabatanActive = request()->routeIs('master.data-jabatan.*'); @endphp
       <a 
         href="{{ route('master.data-jabatan.index') ?? '#' }}" 
@@ -399,7 +397,7 @@
         </span>
       </a>
 
-      <!-- Data Kategori Barang -->
+      {{-- Data Kategori Barang --}}
       @php $kategoriActive = request()->routeIs('master.data-kategori-barang.*'); @endphp
       <a 
         href="{{ route('master.data-kategori-barang.index') ?? '#' }}" 
@@ -430,7 +428,7 @@
         </span>
       </a>
 
-      <!-- Data Pendidikan -->
+      {{-- Data Pendidikan --}}
       @php $pendidikanActive = request()->routeIs('master.data-pendidikan.*'); @endphp
       <a 
         href="{{ route('master.data-pendidikan.index') ?? '#' }}" 
@@ -461,7 +459,7 @@
         </span>
       </a>
 
-      <!-- Data Negara -->
+      {{-- Data Negara --}}
       @php $negaraActive = request()->routeIs('master.data-negara.*'); @endphp
       <a 
         href="{{ route('master.data-negara.index') ?? '#' }}" 
@@ -492,7 +490,7 @@
         </span>
       </a>
 
-      <!-- Data Provinsi -->
+      {{-- Data Provinsi --}}
       @php $provinsiActive = request()->routeIs('master.data-provinsi.*'); @endphp
       <a 
         href="{{ route('master.data-provinsi.index') ?? '#' }}" 
@@ -523,7 +521,7 @@
         </span>
       </a>
 
-      <!-- Data Kota -->
+      {{-- Data Kota --}}
       @php $kotaActive = request()->routeIs('master.data-kota.*'); @endphp
       <a 
         href="{{ route('master.data-kota.index') ?? '#' }}" 
@@ -554,7 +552,7 @@
         </span>
       </a>
 
-      <!-- Data Bahasa -->
+      {{-- Data Bahasa --}}
       @php $bahasaActive = request()->routeIs('master.data-bahasa.*'); @endphp
       <a 
         href="{{ route('master.data-bahasa.index') ?? '#' }}" 
@@ -585,7 +583,7 @@
         </span>
       </a>
 
-      <!-- Data Agen Ekspedisi -->
+      {{-- Data Agen Ekspedisi --}}
       @php $ekspedisiActive = request()->routeIs('master.data-agen-ekspedisi.*'); @endphp
       <a 
         href="{{ route('master.data-agen-ekspedisi.index') ?? '#' }}" 
@@ -618,7 +616,7 @@
     </nav>
   </div>
 
-  <!-- Sidebar Footer -->
+  {{-- Sidebar Footer --}}
   <div class="border-t p-2" :class="{ 'px-2 ml-4': !isOpen }" x-show="isOpen || isDesktop">
     @php
         $user = Auth::user();

@@ -11,9 +11,6 @@ use App\Models\User;
 
 class ProfileController extends Controller
 {
-    /**
-     * Menampilkan form edit profil
-     */
     public function edit()
     {
         /** @var User $user */
@@ -21,9 +18,6 @@ class ProfileController extends Controller
         return view('layouts.profile.edit', compact('user'));
     }
 
-    /**
-     * Update profil user
-     */
     public function update(Request $request)
     {
         /** @var User $user */
@@ -34,7 +28,6 @@ class ProfileController extends Controller
             'foto_user' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ];
 
-        // Hanya tambahkan rule password jika password diisi
         if ($request->filled('password')) {
             $rules['password'] = 'required|min:6|confirmed';
         }

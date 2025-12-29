@@ -15,7 +15,7 @@
       >
     </button>
 
-    <!-- Left: brand name + alamat -->
+    {{-- Nama Toko + Alamat --}}
     <div class="flex items-start gap-3">
       <div class="bg-transparent flex items-center">
         <img src="{{ asset('img/logotsm.png') }}" alt="Logo Koperasi"

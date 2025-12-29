@@ -41,7 +41,8 @@ class MutasiController extends Controller
         $namaFile = 'Laporan_Mutasi_Barang_' . $periodText . '_' . $nowWIB->format('d-m-Y_H-i');
 
         if ($format === 'excel') {
-            return Excel::download(new class($data['allRows'], $periodText, $nowWIB) implements \Maatwebsite\Excel\Concerns\FromView {
+            return Excel::download(new class($data['allRows'], $periodText, $nowWIB) 
+            implements \Maatwebsite\Excel\Concerns\FromView {
                 protected $rows;
                 protected $periodText;
                 protected $nowWIB;

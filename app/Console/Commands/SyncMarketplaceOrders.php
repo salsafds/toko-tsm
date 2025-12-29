@@ -68,7 +68,8 @@ class SyncMarketplaceOrders extends Command
                         throw new \Exception("SKU {$detail['sku']} tidak ditemukan di sistem toko.");
                     }
                     if ($barang->stok < $detail['kuantitas']) {
-                        throw new \Exception("Stok {$barang->nama_barang} tidak cukup. Tersedia: {$barang->stok}, diminta: {$detail['kuantitas']}");
+                        throw new \Exception("Stok {$barang->nama_barang} tidak cukup. 
+                        Tersedia: {$barang->stok}, diminta: {$detail['kuantitas']}");
                     }
 
                     $sub_total_item = $barang->retail * $detail['kuantitas'];
@@ -86,7 +87,7 @@ class SyncMarketplaceOrders extends Command
                     ];
                 }
 
-                // Asumsi: tidak ada ongkir, diskon = 0, PPN sesuai setting default toko
+                
                 $diskonPersen = 0;
                 $tarif_ppn = 11;
                 $biayaPengiriman = 0;
@@ -97,7 +98,7 @@ class SyncMarketplaceOrders extends Command
                 $total_ppn = round($dppSetelahDiskon * $tarif_ppn / 100);
                 $totalHarga = $subTotalBarangDanOngkir - $diskonNilai + $total_ppn;
 
-                // Buat Penjualan
+                // Create Penjualan
                 $penjualan = Penjualan::create([
                     'id_penjualan' => $idPenjualan,
                     'id_pelanggan' => null,
@@ -117,7 +118,7 @@ class SyncMarketplaceOrders extends Command
                     'catatan' => 'Sync otomatis dari Marketplace - Order ID: ' . $orderData['id_penjualan'],
                 ]);
 
-                // Buat detail + kurangi stok
+                // Create detail + kurangi stok
                 foreach ($itemsProcessed as $item) {
                     DetailPenjualan::create([
                         'id_detail_penjualan' => $this->generateDetailId(),
@@ -133,12 +134,12 @@ class SyncMarketplaceOrders extends Command
                     );
                 }
 
-                // Commit sync lokal dulu (sebelum update ke marketplace)
+                // Commit sync lokal 
                 DB::commit();
 
                 $this->info("Berhasil sync order lokal: {$orderData['id_penjualan']}");
 
-                // Sekarang coba update status ke marketplace (di luar transaction)
+                // Update Status
                 try {
                     $updateResponse = Http::post($this->updateUrl, [
                         'id' => $orderData['id_penjualan'],

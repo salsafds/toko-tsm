@@ -43,7 +43,6 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        // Validasi + simpan hasilnya ke $validated
         $validated = $request->validate([
             'nama_lengkap' => 'required|string|max:255',
             'username' => 'required|string|max:100|unique:users,username|regex:/^\S+$/',
@@ -72,7 +71,7 @@ class UserController extends Controller
             'telepon.regex' => 'Telepon harus berisi angka saja.',
         ]);
 
-        // Tambahkan ID otomatis
+        // Tambah ID otomatis
         $validated['id_user'] = $this->generateNextId();
 
         // Hash password
@@ -98,10 +97,8 @@ class UserController extends Controller
 
     public function update(Request $request, $id)
     {
-        // Cari user dulu
         $user = User::findOrFail($id);
 
-        // Validasi
         $validated = $request->validate([
             'nama_lengkap' => 'required|string|max:255',
             'username' => 'required|string|max:100|unique:users,username|regex:/^\S+$/',
@@ -129,7 +126,6 @@ class UserController extends Controller
             'telepon.regex' => 'Telepon harus berisi angka saja.',
         ]);
 
-        // Hanya update password jika diisi
         if (!empty($validated['password'])) {
             $validated['password'] = Hash::make($validated['password']);
         } else {

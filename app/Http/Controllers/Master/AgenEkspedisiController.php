@@ -123,7 +123,7 @@ class AgenEkspedisiController extends Controller
         ]);
 
         return redirect()->route('master.data-agen-ekspedisi.index')
-                        ->with('success', 'Data agen ekspedisi berhasil diperbarui.');
+                         ->with('success', 'Data agen ekspedisi berhasil diperbarui.');
     }
 
     public function destroy($id)
@@ -132,13 +132,12 @@ class AgenEkspedisiController extends Controller
         $agen->delete();
 
         return redirect()->route('master.data-agen-ekspedisi.index')
-                        ->with('success', 'Data agen ekspedisi berhasil dihapus.');
+                         ->with('success', 'Data agen ekspedisi berhasil dihapus.');
     }
 
     private function generateNextId()
     {
-        $maxNum = AgenEkspedisi::selectRaw('MAX(CAST(SUBSTRING(id_ekspedisi, 3) AS UNSIGNED)) as max_num')
-                               ->value('max_num') ?? 0;
+        $maxNum = AgenEkspedisi::selectRaw('MAX(CAST(SUBSTRING(id_ekspedisi, 3) AS UNSIGNED)) as max_num')->value('max_num') ?? 0;
         $nextNumber = $maxNum + 1;
         return 'AE' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
     }

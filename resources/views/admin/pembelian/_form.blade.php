@@ -1,18 +1,17 @@
 <style>
-    /* Custom Scrollbar */
+    // Custom Scrollbar 
     .custom-scrollbar::-webkit-scrollbar { width: 6px; }
     .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
     .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
     
-    /* Modal Animation */
+    // Modal Animation 
     .transition-all { transition-property: all; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 300ms; }
     .scale-95 { transform: scale(0.95); }
     .scale-100 { transform: scale(1); }
     .opacity-0 { opacity: 0; }
     .opacity-100 { opacity: 1; }
 </style>
-
 <form action="{{ isset($pembelian) ? route('admin.pembelian.update', $pembelian->id_pembelian) : route('admin.pembelian.store') }}"
       method="POST" class="space-y-6" id="pembelianForm">
   @csrf
@@ -52,7 +51,7 @@
   {{-- SECTION 2: POS INTERFACE --}}
   <div id="posContainer" class="space-y-6 pt-4 border-t border-gray-200">
     
-    {{-- CARD A: PRODUCT CATALOG --}}
+    {{-- PRODUCT CATALOG --}}
     <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
         <div class="bg-gray-50 px-4 py-3 border-b border-gray-200 flex justify-between items-center">
             <h3 class="text-sm font-bold text-gray-700 uppercase tracking-wider flex items-center gap-2">
@@ -77,7 +76,7 @@
         </div>
     </div>
 
-    {{-- CARD B: SHOPPING CART --}}
+    {{-- KERANJANG BELANJA --}}
     <div class="bg-white rounded-lg border border-blue-200 shadow-md overflow-hidden">
         <div class="bg-blue-50 px-4 py-3 border-b border-blue-200 flex justify-between items-center">
             <h3 class="text-sm font-bold text-blue-800 uppercase tracking-wider flex items-center gap-2">
@@ -107,7 +106,7 @@
                 </table>
             </div>
         </div>
-        {{-- Hidden Container for Form Submission --}}
+        {{-- Hidden Container buat submit form --}}
         <div id="hiddenInputsContainer"></div>
         <div id="barang_error" class="p-3 bg-red-50 text-red-600 text-sm border-t border-red-100 hidden"></div>
     </div>
@@ -171,7 +170,7 @@
     <textarea name="catatan" id="catatan" rows="3" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200" placeholder="Keterangan pembelian...">{{ old('catatan', $pembelian->catatan ?? '') }}</textarea>
   </div>
 
-  {{-- Tombol --}}
+  {{-- Tombol Submit --}}
   <div class="flex items-center gap-3 pt-4 border-t border-gray-100">
     <button id="submitButton" type="submit" 
             class="inline-flex items-center px-6 py-2 bg-blue-700 text-white text-sm font-bold rounded-md hover:bg-blue-800 shadow-sm transition-all 
@@ -183,7 +182,7 @@
   </div>
 </form>
 
-{{-- SECTION 4: TAMBAH BARANG BARU (COLLAPSIBLE) --}}
+{{-- SECTION 4: TAMBAH BARANG BARU --}}
 <div class="border-t pt-6 mt-10">
   <div class="flex items-center mb-4 bg-gray-50 p-3 rounded-lg border border-gray-200 cursor-pointer hover:bg-gray-100 transition" onclick="document.getElementById('tambah_barang').click()">
     <input id="tambah_barang" type="checkbox" name="tambah_barang" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 pointer-events-none">
@@ -291,7 +290,7 @@
       @endif
     </div>
 
-    {{-- Kena PPN? -- DIPINDAHKAN KE SAMPING KANAN MARGIN --}}
+    {{-- PPN --}}
     <div>
       <label class="block text-sm font-medium text-gray-700">
         Kena PPN? <span class="text-rose-600">*</span>
@@ -328,7 +327,7 @@
   </form>
 </div>
 
-{{-- === CUSTOM MODAL COMPONENT === --}}
+{{-- CUSTOM MODAL COMPONENT (Pop Up)  --}}
 <div id="customModal" class="fixed inset-0 z-50 items-center justify-center bg-black bg-opacity-50 hidden transition-opacity duration-300">
   <div class="bg-white rounded-lg shadow-xl w-full max-w-sm mx-4 overflow-hidden transform transition-all duration-300 scale-95 opacity-0" id="customModalContent">
     <div class="p-5 text-center">
@@ -465,7 +464,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-        // Tampilkan semua barang saat pertama kali load (sama seperti di penjualan)
         function renderAllProducts() {
           resultsContainer.innerHTML = '';
           if (allProducts.length === 0) {
@@ -530,7 +528,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (existingItem) {
             existingItem.qty++;
         } else {
-        // Untuk setiap penambahan item baru (baik create maupun edit), reset harga beli ke 0
+        //  reset harga beli ke 0
         cart.push({
           id: product.id_barang,
           name: product.nama_barang,
@@ -551,7 +549,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const newPrice = unformatRupiah(value);
             item.buy_price = newPrice;
         }
-        hitungTotal(); // Recalc and check state
+        hitungTotal(); 
     }
     
     window.changeQty = function(id, delta) {
@@ -701,7 +699,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if(el) { el.addEventListener('input', updateButtonState); el.addEventListener('change', updateButtonState); }
     });
     
-    // Formatting Biaya Pengiriman - lebih rapi & handle nilai 0
+    // Formatting Biaya Pengiriman 
 biayaPengirimanInput.addEventListener('input', function(e) {
     let val = e.target.value.replace(/\D/g, '');
     if (val === '' || val === '0') {
@@ -719,7 +717,7 @@ biayaPengirimanInput.addEventListener('blur', function() {
     hitungTotal();
 });
 
-// Format awal saat halaman dimuat (khusus mode edit)
+// Format awal saat halaman dimuat 
 if (isEditMode) {
     setTimeout(() => {
         if (!biayaPengirimanInput.value || biayaPengirimanInput.value === '0') {
@@ -792,12 +790,11 @@ if (isEditMode) {
             bErr.innerText = 'Keranjang belanja masih kosong!';
             hasError = true;
         }
-      // Validasi: pastikan setiap item memiliki harga beli > 0
+      // Validasi harga beli > 0
       const rows = document.querySelectorAll('#cartTableBody tr');
       cart.forEach((item, idx) => {
         if (!item.buy_price || Number(item.buy_price) <= 0) {
           hasError = true;
-          // Highlight input tampilan harga di baris terkait jika ada
           if (rows[idx]) {
             const priceInput = rows[idx].querySelector('input[type="text"]');
             if (priceInput) priceInput.classList.add('border-red-500', 'bg-red-50');
@@ -833,9 +830,8 @@ if (isEditMode) {
         });
     });
 
-    // --- INITIALIZATION ---
+    // --- INISIALISASI ---
     initCart();
-    // Tampilkan semua produk di area pencarian seperti di form penjualan
     renderAllProducts();
     if (isEditMode) {
         setTimeout(() => {

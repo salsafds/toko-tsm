@@ -20,7 +20,6 @@ document.addEventListener('DOMContentLoaded', function () {
   const form = document.querySelector('#barangForm');
   if (!form) return;
 
-  // Seleksi semua elemen yang dibutuhkan
   const namaInput       = document.querySelector('#nama_barang');
   const kategoriSelect  = document.querySelector('#id_kategori_barang');
   const supplierSelect  = document.querySelector('#id_supplier');
@@ -39,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
     return isNaN(num) ? 0 : num;
   }
 
-  // Format tampilan margin agar 0 atau 0.00 jadi "0", dan bilangan bulat tanpa desimal
+  // Format tampilan margin 
   function formatMarginDisplay() {
     if (!marginInput) return;
     const val = parseFloat(marginInput.value);
@@ -50,7 +49,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  // Nilai awal untuk deteksi perubahan
   const initial = {
     nama:       namaInput?.value.trim() || '',
     kategori:   kategoriSelect?.value || '',
@@ -62,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function () {
     kena_ppn:   document.querySelector('input[name="kena_ppn"]:checked')?.value || ''
   };
 
-  // === FITUR 1: Disable tombol Update kalau tidak ada perubahan ===
+  // FITUR 1: Disable tombol Update kalau tidak ada perubahan 
   if (isEdit) {
     submitButton.disabled = true;
     submitButton.classList.add('opacity-50', 'cursor-not-allowed');
@@ -91,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  // === FITUR 2: Format margin saat load dan saat interaksi ===
+  // FITUR 2: Format margin saat load dan saat interaksi 
   formatMarginDisplay(); // Jalankan sekali saat halaman load
 
   if (marginInput) {
@@ -99,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function () {
     marginInput.addEventListener('blur', formatMarginDisplay);
   }
 
-  // === Listener untuk deteksi perubahan pada semua field ===
+  // Listener deteksi perubahan 
   [namaInput, kategoriSelect, supplierSelect, satuanSelect, merkInput, beratInput, marginInput].forEach(el => {
     if (el) {
       el.addEventListener('input', checkChanges);

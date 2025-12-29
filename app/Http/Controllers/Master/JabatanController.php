@@ -5,8 +5,6 @@ namespace App\Http\Controllers\Master;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Jabatan;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class JabatanController extends Controller
 {
@@ -89,18 +87,14 @@ class JabatanController extends Controller
                          ->with('success', 'Data jabatan berhasil dihapus.');
     }
 
-    /**
-     * Generate ID jabatan berurutan (JB01, JB02, dll.)
-     */
+    //GENERATE ID JABATAN
     private function generateNextId()
     {
-        // Ambil MAX angka dari id_jabatan (SUBSTRING setelah 'JB', cast ke UNSIGNED)
-        // Jika table kosong, maxNum = null → fallback ke 0
         $maxNum = Jabatan::selectRaw('MAX(CAST(SUBSTRING(id_jabatan, 3) AS UNSIGNED)) as max_num')
                         ->value('max_num') ?? 0;
         $nextNumber = $maxNum + 1;
         
-        // Format: JB + 2 digit dengan leading zero (JB01, JB02, ..., JB10, dll.)
+        // Format ID: JB + 2 digit 
         return 'JB' . str_pad($nextNumber, 2, '0', STR_PAD_LEFT);
     }
 }
