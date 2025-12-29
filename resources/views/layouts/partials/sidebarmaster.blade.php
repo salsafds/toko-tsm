@@ -660,17 +660,6 @@
                 <img src="{{ asset('img/icon/iconSettingProfile.png') }}" alt="My Profile" class="h-4 w-4 text-gray-600">
                 <span class="text-sm text-gray-700">My profile</span>
             </a>
-            <a 
-                href="{{ route('dashboard-master') ?? '#' }}" 
-                class="flex items-center gap-3 px-3 py-2 hover:bg-gray-50"
-                x-tooltip="!isOpen && isDesktop ? 'Settings' : ''"
-            >
-                <svg class="h-4 w-4 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8a4 4 0 100 8 4 4 0 000-8z"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l-.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09c.34.06.66.22.93.46"/>
-                </svg>
-                <span class="text-sm text-gray-700">Settings</span>
-            </a>
             <div class="border-t"></div>
             <a 
                 href="{{ route('privacy-policy') ?? '#' }}" 
