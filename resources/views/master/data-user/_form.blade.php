@@ -242,7 +242,6 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-  // Pastikan saat edit, username tetap disimpan dari data lama jika ada
   const usernameInput = document.getElementById('username_input');
   const originalUsername = {!! json_encode($user->username ?? '') !!};
   if (usernameInput && originalUsername && usernameInput.value.trim() === '') {
