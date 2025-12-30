@@ -71,6 +71,17 @@
                     <p id="password_error" class="text-sm text-red-600 mt-1 hidden"></p>
                 </div>
             </div>
+            <!-- Password Strength Indicator -->
+            <div class="mt-4 col-span-1 md:col-span-2">
+                <p class="text-xs text-gray-600">Syarat password baru:</p>
+                <ul id="password_requirements" class="text-xs space-y-1 mt-2">
+                    <li id="req-length" class="text-red-600">✗ Minimal 8 karakter</li>
+                    <li id="req-upper" class="text-red-600">✗ Harus ada huruf BESAR (A-Z)</li>
+                    <li id="req-lower" class="text-red-600">✗ Harus ada huruf kecil (a-z)</li>
+                    <li id="req-number" class="text-red-600">✗ Harus ada angka (0-9)</li>
+                    <li id="req-symbol" class="text-red-600">✗ Harus ada simbol: - . @ # ! $ & % ^ * ( ) _ + =</li>
+                </ul>
+            </div>
 
             <hr class="my-6 border-gray-200">
 
@@ -132,23 +143,142 @@ document.addEventListener('DOMContentLoaded', function () {
     const passwordInput = document.getElementById('password');
     const passwordConfirm = document.getElementById('password_confirmation');
     const submitBtn = document.getElementById('submitBtn');
-    const passwordError = document.getElementById('password_error');
+    const passwordError = document.getElementById('password_error'); // untuk konfirmasi tidak cocok
+    const passwordStrengthError = document.getElementById('password_strength_error');
     const passwordModal = document.getElementById('passwordModal');
     const oldPasswordInput = document.getElementById('old_password');
     const oldPasswordError = document.getElementById('old_password_error');
 
-    if (!form || !usernameInput || !submitBtn || !passwordInput || !passwordConfirm || !passwordModal) {
-        console.error('ELEMEN TIDAK DITEMUKAN!');
-        return;
-    }
+    const requirements = {
+        length: document.getElementById('req-length'),
+        upper: document.getElementById('req-upper'),
+        lower: document.getElementById('req-lower'),
+        number: document.getElementById('req-number'),
+        symbol: document.getElementById('req-symbol')
+    };
 
-    // JANGAN RESET PASSWORD FIELD!
-    // Biarkan isinya tetap ada saat modal muncul
+    const symbolRegex = /[-.@#!$&%^()*_+=\[\]{}|\\:;"'<>,.?\/]/;
 
     const originalUsername = usernameInput.value.trim();
-    console.log('Original Username:', originalUsername);
 
-    // === MODAL FUNCTIONS ===
+    // === VALIDASI PASSWORD STRENGTH ===
+    function validatePasswordStrength(password) {
+        const checks = {
+            length: password.length >= 8,
+            upper: /[A-Z]/.test(password),
+            lower: /[a-z]/.test(password),
+            number: /\d/.test(password),
+            symbol: symbolRegex.test(password)
+        };
+
+        // Update indikator
+        Object.keys(checks).forEach(key => {
+            if (requirements[key]) {
+                const el = requirements[key];
+                const passed = checks[key];
+                el.textContent = el.textContent.replace(/^[✓✗]/, passed ? '✓' : '✗');
+                el.className = passed ? 'text-green-600' : 'text-red-600';
+            }
+        });
+
+        const allPassed = Object.values(checks).every(v => v);
+        if (password) {
+            if (allPassed) {
+                passwordStrengthError.classList.add('hidden');
+            } else {
+                passwordStrengthError.classList.remove('hidden');
+            }
+        } else {
+            passwordStrengthError.classList.add('hidden');
+        }
+
+        return allPassed;
+    }
+
+    // === CEK KONFIRMASI PASSWORD ===
+    function checkPasswordMatch() {
+        const pass = passwordInput.value;
+        const confirm = passwordConfirm.value;
+
+        if (pass && confirm) {
+            if (pass !== confirm) {
+                passwordError.textContent = 'Password tidak cocok.';
+                passwordError.classList.remove('hidden');
+                return false;
+            } else {
+                passwordError.classList.add('hidden');
+                return true;
+            }
+        }
+        passwordError.classList.add('hidden');
+        return true;
+    }
+
+    // === UPDATE TOMBOL (hanya aktif jika ada perubahan) ===
+    function updateSubmitButton() {
+        const usernameChanged = usernameInput.value.trim() !== originalUsername && usernameInput.value.trim() !== '';
+        const passwordFilled = passwordInput.value.trim() !== '';
+
+        const hasChanges = usernameChanged || passwordFilled;
+        submitBtn.disabled = !hasChanges;
+    }
+
+    // Event listeners
+    usernameInput.addEventListener('input', updateSubmitButton);
+    passwordInput.addEventListener('input', () => {
+        validatePasswordStrength(passwordInput.value);
+        checkPasswordMatch();
+        updateSubmitButton();
+    });
+    passwordConfirm.addEventListener('input', () => {
+        checkPasswordMatch();
+        updateSubmitButton();
+    });
+
+    // Reset indikator saat password kosong
+    passwordInput.addEventListener('input', function () {
+        if (!passwordInput.value) {
+            Object.values(requirements).forEach(el => {
+                if (el) {
+                    el.textContent = el.textContent.replace('✓', '✗');
+                    el.className = 'text-red-600';
+                }
+            });
+        }
+    });
+
+    // === SUBMIT HANDLER (logika lama tetap dipertahankan) ===
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const usernameChanged = usernameInput.value.trim() !== originalUsername && usernameInput.value.trim() !== '';
+        const passwordFilled = passwordInput.value.trim() !== '';
+
+        if (usernameChanged && passwordFilled) {
+            alert('Tidak boleh mengubah username dan password sekaligus.');
+            return;
+        }
+
+        if (usernameChanged) {
+            if (confirm('Yakin ingin mengubah username?')) {
+                form.submit();
+            }
+            return;
+        }
+
+        if (passwordFilled) {
+            if (!checkPasswordMatch()) {
+                return;
+            }
+            // Tidak perlu cek strength di sini → biarkan server yang validasi
+            openPasswordModal();
+            return;
+        }
+
+        alert('Tidak ada perubahan yang disimpan.');
+    });
+
+    // === MODAL FUNCTIONS (sama seperti sebelumnya) ===
     window.openPasswordModal = function () {
         passwordModal.classList.remove('hidden');
         oldPasswordInput.value = '';
@@ -164,7 +294,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     window.verifyOldPassword = async function () {
         const oldPass = oldPasswordInput.value.trim();
-
         if (!oldPass) {
             oldPasswordError.textContent = 'Password lama wajib diisi.';
             oldPasswordError.classList.remove('hidden');
@@ -185,7 +314,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (data.valid) {
                 closePasswordModal();
                 if (confirm('Yakin ingin mengubah password?')) {
-                    form.submit(); // SEKARANG DATA TERKIRIM!
+                    form.submit();
                 }
             } else {
                 oldPasswordError.textContent = 'Password lama salah. Hubungi admin master jika lupa password.';
@@ -197,73 +326,12 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     };
 
-    // === CEK PERUBAHAN ===
-    function updateSubmitButton() {
-        const currentUsername = usernameInput.value.trim();
-        const passwordValue = passwordInput.value.trim();
-
-        const usernameChanged = currentUsername !== originalUsername && currentUsername !== '';
-        const passwordFilled = passwordValue !== '';
-
-        const hasChanges = usernameChanged || passwordFilled;
-        submitBtn.disabled = !hasChanges;
-    }
-
-    usernameInput.addEventListener('input', updateSubmitButton);
-    passwordInput.addEventListener('input', updateSubmitButton);
-    passwordConfirm.addEventListener('input', updateSubmitButton);
-
-    // === CEK KONFIRMASI PASSWORD ===
-    function checkPasswordMatch() {
-        const pass = passwordInput.value;
-        const confirm = passwordConfirm.value;
-
-        if (pass && confirm && pass !== confirm) {
-            passwordError.textContent = 'Password tidak cocok.';
-            passwordError.classList.remove('hidden');
-        } else {
-            passwordError.classList.add('hidden');
-        }
-    }
-    passwordInput.addEventListener('input', checkPasswordMatch);
-    passwordConfirm.addEventListener('input', checkPasswordMatch);
-
-    // === SUBMIT HANDLER ===
-    form.addEventListener('submit', function (e) {
-        e.preventDefault();
-
-        const currentUsername = usernameInput.value.trim();
-        const passwordValue = passwordInput.value.trim();
-
-        const usernameChanged = currentUsername !== originalUsername && currentUsername !== '';
-        const passwordFilled = passwordValue !== '';
-
-        if (usernameChanged && passwordFilled) {
-            alert('Tidak boleh mengubah username dan password sekaligus.');
-            return;
-        }
-
-        if (usernameChanged) {
-            if (confirm('Yakin ingin mengubah username?')) {
-                form.submit(); // Langsung submit
-            }
-            return;
-        }
-
-        if (passwordFilled) {
-            if (passwordInput.value !== passwordConfirm.value) {
-                passwordError.textContent = 'Konfirmasi password tidak cocok.';
-                passwordError.classList.remove('hidden');
-                return;
-            }
-            openPasswordModal(); // Munculkan modal
-            return;
-        }
-
-        alert('Tidak ada perubahan yang disimpan.');
-    });
-
+    // Initial
     updateSubmitButton();
+    if (passwordInput.value) {
+        validatePasswordStrength(passwordInput.value);
+        checkPasswordMatch();
+    }
 });
 </script>
 @endsection

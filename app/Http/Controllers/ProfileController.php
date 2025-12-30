@@ -29,7 +29,15 @@ class ProfileController extends Controller
         ];
 
         if ($request->filled('password')) {
-            $rules['password'] = 'required|min:6|confirmed';
+            $rules['password'] = [
+                'required',
+                'confirmed',
+                'min:8',
+                'regex:/[A-Z]/',      // huruf besar
+                'regex:/[a-z]/',      // huruf kecil
+                'regex:/\d/',         // angka
+                'regex:/[-.@#!$&%^()*_+=\[\]{}|\\:;"\'<>,.?\/]/', // simbol yang diizinkan
+            ];
         }
 
         $request->validate($rules);
