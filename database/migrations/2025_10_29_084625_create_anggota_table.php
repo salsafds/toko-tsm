@@ -33,13 +33,11 @@ class CreateAnggotaTable extends Migration
             $table->enum('jabatan', ['KETUA','SEKRETARIS','BENDAHARA','PENGAWAS','KARYAWAN','PERUSAHAAN']);
             $table->enum('agama', ['ISLAM','KATOLIK','PROTESTAN','HINDU','BUDHA','LAINNYA'])->nullable();
             $table->enum('status_perkawinan', ['BELUM KAWIN','KAWIN','CERAI HIDUP','CERAI MATI','LAINNYA'])->nullable();
-            // default CURRENT_DATE mirip DEFAULT (curdate()) dari SQL dump
-            $table->timestamp('tanggal_registrasi')->useCurrent(); // ✅ otomatis isi waktu saat insert
+            $table->timestamp('tanggal_registrasi')->useCurrent();
             $table->date('tanggal_keluar')->nullable();
             $table->string('no_telepon', 20)->nullable();
             $table->enum('status_anggota', ['AKTIF','NON AKTIF'])->default('AKTIF');
             $table->string('foto', 255)->nullable();
-            // tidak menambahkan timestamps karena tabel asli tidak memiliki created_at/updated_at
         });
     }
 

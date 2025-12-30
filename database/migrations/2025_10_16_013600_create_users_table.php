@@ -27,7 +27,7 @@ return new class extends Migration
             $table->string('id_jabatan', 11)->nullable();
             $table->string('id_pendidikan')->nullable();
 
-            // Tambahkan constraint FK
+            // constraint FK
             $table->foreign('id_role')
                 ->references('id_role')
                 ->on('role')

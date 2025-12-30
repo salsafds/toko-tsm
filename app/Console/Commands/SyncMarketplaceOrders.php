@@ -57,7 +57,7 @@ class SyncMarketplaceOrders extends Command
             try {
                 $idPenjualan = $this->generatePenjualanId();
 
-                // Hitung total seperti di PenjualanController@store
+                // Hitung total 
                 $total_dpp = 0;
                 $total_non_ppn = 0;
                 $itemsProcessed = [];
