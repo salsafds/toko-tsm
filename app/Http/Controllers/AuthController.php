@@ -11,6 +11,14 @@ class AuthController extends Controller
     {
         if (Auth::check()) {
             $user = Auth::user();
+
+            // Tambahkan pengecekan status juga di showLoginForm
+            if ($user->status !== 'aktif') { // sesuaikan dengan nilai aktif di DB kamu
+                Auth::logout();
+                return redirect()->route('login')
+                    ->with('error_status', 'Akun anda sudah tidak aktif. Hubungi pihak terkait.');
+            }
+
             return $this->redirectByRole($user->id_role);
         }
 
@@ -29,9 +37,22 @@ class AuthController extends Controller
 
         $credentials = $request->only('username', 'password');
 
-        if (Auth::attempt($credentials)) {
+        // Tambahkan remember me jika ada checkbox nanti
+        if (Auth::attempt($credentials, $request->filled('remember'))) {
             $request->session()->regenerate();
+
             $user = Auth::user();
+
+            // === PENGECEKAN STATUS USER ===
+            if ($user->status !== 'aktif') { // ubah sesuai kolom & nilai di tabel users kamu
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                return redirect()->route('login')
+                    ->with('error_status', 'Akun anda sudah tidak aktif. Hubungi pihak terkait.');
+            }
+            // ==============================
 
             return $this->redirectByRole($user->id_role);
         }
