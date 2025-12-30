@@ -59,36 +59,58 @@
       @endif
     </div>
   </div>
-
-  {{-- Username dan Password --}}
-<div class="grid grid-cols-2 gap-3">
+  {{-- Username --}}
   <div class="grid grid-cols-1 gap-1">
     <label for="username_input" class="block text-sm font-medium text-gray-700">Username <span class="text-rose-600">*</span></label>
-   <input id="username_input" name="username" value="{{ old('username', $user->username ?? '') }}"
-       class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('username') ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-blue-500 focus:ring-blue-100' }}"
-       placeholder="Masukkan username"
-       autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-      @if($errors->has('username'))
-        <p class="text-sm text-red-600 mt-1">{{ $errors->first('username') }}</p>
+    <input id="username_input" name="username" value="{{ old('username', $user->username ?? '') }}"
+           class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('username') ? 'border-red-500 bg-red-50' : 'border-gray-200' }} focus:border-blue-500 focus:ring-blue-100"
+           placeholder="Masukkan username">
+     @if($errors->has('username'))
+       <p class="text-sm text-red-600 mt-1">{{ $errors->first('username') }}</p>
+     @else
+       <p id="username_error" class="text-sm text-red-600 mt-1 hidden"></p>
+     @endif
+  </div>
+  {{-- Password --}}
+  <div class="grid grid-cols-2 gap-3">
+    <div class="grid grid-cols-1 gap-1">
+      <label for="password_input" class="block text-sm font-medium text-gray-700">
+        Password <span class="text-rose-600">*</span>
+        @if(isset($user)) <span class="text-xs text-gray-500">(kosongkan jika tidak diganti)</span> @endif
+      </label>
+      <input id="password_input" name="password" type="password"
+            class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('password') ? 'border-red-500 bg-red-50' : 'border-gray-200' }} focus:border-blue-500"
+            placeholder="@if(isset($user)) Password baru (opsional) @else Masukkan password @endif"
+            autocomplete="new-password">
+      @if($errors->has('password'))
+        <p class="text-sm text-red-600 mt-1">{{ $errors->first('password') }}</p>
       @else
-        <p id="username_error" class="text-sm text-red-600 mt-1 hidden"></p>
+        <p id="password_error" class="text-sm text-red-600 mt-1 hidden"></p>
       @endif
+    </div>
+    {{-- Konfirmasi Password --}}
+    <div class="grid grid-cols-1 gap-1">
+      <label for="password_confirmation" class="block text-sm font-medium text-gray-700">
+        Konfirmasi Password <span class="text-rose-600">*</span>
+      </label>
+      <input id="password_confirmation" name="password_confirmation" type="password"
+            class="w-full rounded-md border px-3 py-2 text-sm border-gray-200 focus:border-blue-500"
+            placeholder="Ketik ulang password"
+            autocomplete="new-password">
+      <p id="password_confirmation_error" class="text-sm text-red-600 mt-1 hidden"></p>
+    </div>
   </div>
 
-  <div class="grid grid-cols-1 gap-1">
-    <label for="password_input" class="block text-sm font-medium text-gray-700">
-      Password <span class="text-rose-600">*</span> @if(isset($user)) <span class="text-xs text-gray-500"> (biarkan kosong jika tidak ingin mengganti)</span> @endif
-    </label>
-    <input id="password_input" name="password" type="password"
-           class="w-full rounded-md border px-3 py-2 text-sm {{ $errors->has('password') ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-blue-500 focus:ring-blue-100' }}"
-           placeholder="@if(isset($user)) Masukkan password baru (opsional) @else Masukkan password @endif"
-           autocomplete="new-password">
-    @if($errors->has('password'))
-      <p class="text-sm text-red-600 mt-1">{{ $errors->first('password') }}</p>
-    @else
-      <p id="password_error" class="text-sm text-red-600 mt-1 hidden"></p>
-    @endif
-  </div>
+<!-- Password Strength Indicator (opsional tapi bagus) -->
+<div class="mt-4">
+  <p class="text-xs text-gray-600">Syarat password:</p>
+  <ul id="password_requirements" class="text-xs space-y-1 mt-2">
+    <li id="req-length" class="text-red-600">✗ Minimal 8 karakter</li>
+    <li id="req-upper" class="text-red-600">✗ Harus ada huruf BESAR (A-Z)</li>
+    <li id="req-lower" class="text-red-600">✗ Harus ada huruf kecil (a-z)</li>
+    <li id="req-number" class="text-red-600">✗ Harus ada angka (0-9)</li>
+    <li id="req-symbol" class="text-red-600">✗ Harus ada simbol: - . @ # ! $ & % ^ * ( ) _ + =</li>
+  </ul>
 </div>
 
   {{-- Jenis Kelamin dan Status --}}
@@ -217,3 +239,113 @@
     <a href="{{ route('master.data-user.index') }}" class="inline-flex items-center px-4 py-2 border rounded-md text-sm text-gray-700 hover:bg-gray-50">Batal</a>
   </div>
 </form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const passwordInput = document.getElementById('password_input');
+    const confirmInput = document.getElementById('password_confirmation');
+    const passwordError = document.getElementById('password_error');
+    const confirmError = document.getElementById('password_confirmation_error');
+
+    const requirements = {
+        length: document.getElementById('req-length'),
+        upper: document.getElementById('req-upper'),
+        lower: document.getElementById('req-lower'),
+        number: document.getElementById('req-number'),
+        symbol: document.getElementById('req-symbol')
+    };
+
+    const symbolRegex = /[-.@#!$&%^()*_+=\[\]{}|\\:;"'<>,.?\/]/;
+
+    function validatePassword(password) {
+        const checks = {
+            length: password.length >= 8,
+            upper: /[A-Z]/.test(password),
+            lower: /[a-z]/.test(password),
+            number: /\d/.test(password),
+            symbol: symbolRegex.test(password)
+        };
+
+        // Update indikator visual
+        if (requirements.length) {
+            requirements.length.textContent = checks.length ? '✓ Minimal 8 karakter' : '✗ Minimal 8 karakter';
+            requirements.length.className = checks.length ? 'text-green-600' : 'text-red-600';
+        }
+        if (requirements.upper) {
+            requirements.upper.textContent = checks.upper ? '✓ Harus ada huruf BESAR' : '✗ Harus ada huruf BESAR';
+            requirements.upper.className = checks.upper ? 'text-green-600' : 'text-red-600';
+        }
+        if (requirements.lower) {
+            requirements.lower.textContent = checks.lower ? '✓ Harus ada huruf kecil' : '✗ Harus ada huruf kecil';
+            requirements.lower.className = checks.lower ? 'text-green-600' : 'text-red-600';
+        }
+        if (requirements.number) {
+            requirements.number.textContent = checks.number ? '✓ Harus ada angka' : '✗ Harus ada angka';
+            requirements.number.className = checks.number ? 'text-green-600' : 'text-red-600';
+        }
+        if (requirements.symbol) {
+            requirements.symbol.textContent = checks.symbol ? '✓ Harus ada simbol khusus' : '✗ Harus ada simbol: - . @ # ! $ & % ^ * ( ) _ + =';
+            requirements.symbol.className = checks.symbol ? 'text-green-600' : 'text-red-600';
+        }
+
+        return checks.length && checks.upper && checks.lower && checks.number && checks.symbol;
+    }
+
+    function checkPasswordMatch() {
+        if (!confirmInput.value) {
+            confirmError.textContent = '';
+            confirmError.classList.add('hidden');
+            return true;
+        }
+
+        if (passwordInput.value !== confirmInput.value) {
+            confirmError.textContent = 'Konfirmasi password tidak cocok';
+            confirmError.classList.remove('hidden');
+            return false;
+        } else {
+            confirmError.textContent = '';
+            confirmError.classList.add('hidden');
+            return true;
+        }
+    }
+
+    // Event: saat ketik password
+    passwordInput.addEventListener('input', function () {
+        const password = passwordInput.value.trim();
+
+        if (password === '') {
+            passwordError.textContent = '';
+            passwordError.classList.add('hidden');
+            // Reset semua requirement jadi merah
+            Object.values(requirements).forEach(el => {
+                if (el) {
+                    el.textContent = el.textContent.replace('✓', '✗');
+                    el.className = 'text-red-600';
+                }
+            });
+        } else {
+            if (validatePassword(password)) {
+                passwordError.textContent = '';
+                passwordError.classList.add('hidden');
+            } else {
+                passwordError.textContent = 'Password tidak memenuhi syarat';
+                passwordError.classList.remove('hidden');
+            }
+        }
+
+        checkPasswordMatch();
+        // TIDAK ADA updateSubmitButton() lagi → button selalu aktif
+    });
+
+    // Event: saat ketik konfirmasi
+    confirmInput.addEventListener('input', function () {
+        checkPasswordMatch();
+    });
+
+    // Initial load (jika ada value dari old input / error)
+    if (passwordInput.value.trim()) {
+        validatePassword(passwordInput.value);
+        checkPasswordMatch();
+    }
+});
+</script>
