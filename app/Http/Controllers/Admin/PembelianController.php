@@ -106,7 +106,7 @@ class PembelianController extends Controller
             'jenis_pembayaran' => $request->jenis_pembayaran,
             'diskon' => $request->diskon,
             'ppn' => $request->ppn,
-            'biaya_pengiriman' => $request->biaya_pengiriman,
+            'biaya_pengiriman' => $request->biaya_pengiriman ?? 0,
             'jumlah_bayar' => $jumlahBayar,
             'catatan' => $request->catatan,
         ]);
@@ -185,7 +185,7 @@ class PembelianController extends Controller
             'jenis_pembayaran' => $request->jenis_pembayaran,
             'diskon' => $request->diskon,
             'ppn' => $request->ppn,
-            'biaya_pengiriman' => $request->biaya_pengiriman,
+            'biaya_pengiriman' => $request->biaya_pengiriman ?? 0,
             'jumlah_bayar' => $jumlahBayar,
             'catatan' => $request->catatan,
         ]);

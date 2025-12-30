@@ -36,6 +36,11 @@ class Pembelian extends Model
         'biaya_pengiriman' => 'decimal:2',
         'jumlah_bayar' => 'decimal:2',
     ];
+    protected $attributes = [
+        'biaya_pengiriman' => 0,
+        'diskon' => 0,
+        'ppn' => 0,
+    ];
 
     public function supplier()
     {
