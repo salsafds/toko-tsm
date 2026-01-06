@@ -1,11 +1,8 @@
 <style>
-    /* Custom Scrollbar */
     .custom-scrollbar::-webkit-scrollbar { width: 6px; }
     .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
     .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
-    
-    /* TIDAK ADA ANIMASI MODAL SESUAI REQUEST */
 </style>
 
 <form action="{{ $action ?? '#' }}" method="POST" class="space-y-6" id="penjualanForm" novalidate>
