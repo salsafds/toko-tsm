@@ -219,11 +219,8 @@
             {{-- Jenis Pembayaran --}}
             <div class="md:col-span-2">
                 <label for="jenis_pembayaran" class="block text-sm font-medium text-gray-700">Jenis Pembayaran <span class="text-rose-600">*</span></label>
-                <select name="jenis_pembayaran" id="jenis_pembayaran" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200">
-                    <option value="">-- Pilih Pembayaran --</option>
-                    <option value="tunai" {{ old('jenis_pembayaran', $penjualan->jenis_pembayaran ?? '') == 'tunai' ? 'selected' : '' }}>Tunai</option>
-                    <option value="kredit" {{ old('jenis_pembayaran', $penjualan->jenis_pembayaran ?? '') == 'kredit' ? 'selected' : '' }}>Kredit</option>
-                </select>
+                <input type="hidden" name="jenis_pembayaran" id="jenis_pembayaran" value="{{ old('jenis_pembayaran', $penjualan->jenis_pembayaran ?? 'tunai') }}">
+                <input type="text" readonly value="Tunai" class="w-full rounded-md border bg-gray-100 px-3 py-2 text-sm font-medium text-gray-700 cursor-not-allowed">
                 <p id="jenis_pembayaran_error" class="text-sm text-red-600 mt-1 hidden"></p>
             </div>
             {{-- Uang Diterima dan Kembalian --}}

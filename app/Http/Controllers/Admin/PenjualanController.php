@@ -85,6 +85,9 @@ class PenjualanController extends Controller
 
     public function store(Request $request)
     {
+        if (!$request->has('jenis_pembayaran') || empty($request->jenis_pembayaran)) {
+            $request->merge(['jenis_pembayaran' => 'tunai']);
+        }
         $rules = [
             'id_pelanggan' => 'nullable|exists:pelanggan,id_pelanggan',
             'id_anggota' => 'nullable|exists:anggota,id_anggota',
@@ -93,7 +96,7 @@ class PenjualanController extends Controller
             'barang.*.kuantitas' => 'required|integer|min:1',
             'diskon_penjualan' => 'nullable|numeric|min:0|max:100',
             'tarif_ppn' => 'required|numeric|min:0|max:100',
-            'jenis_pembayaran' => 'required|in:tunai,kredit',
+            'jenis_pembayaran' => 'required|in:tunai',
             'uang_diterima' => 'nullable|numeric|min:0',
             'catatan' => 'nullable|string|max:255',
         ];
@@ -246,6 +249,10 @@ class PenjualanController extends Controller
             if ($penjualan->tanggal_selesai) {
                 return back()->withErrors(['error' => 'Transaksi sudah selesai dan tidak bisa diubah.']);
             }
+                if (!$request->has('jenis_pembayaran') || empty($request->jenis_pembayaran)) {
+                    $request->merge(['jenis_pembayaran' => 'tunai']);
+                }
+
                 $rules = [
                     'id_pelanggan' => 'nullable|exists:pelanggan,id_pelanggan',
                     'id_anggota' => 'nullable|exists:anggota,id_anggota',
@@ -254,7 +261,7 @@ class PenjualanController extends Controller
                     'barang.*.kuantitas' => 'required|integer|min:1',
                     'diskon_penjualan' => 'nullable|numeric|min:0|max:100',
                     'tarif_ppn' => 'required|numeric|min:0|max:100',
-                    'jenis_pembayaran' => 'required|in:tunai,kredit',
+                    'jenis_pembayaran' => 'required|in:tunai',
                     'uang_diterima' => 'nullable|numeric|min:0',
                     'catatan' => 'nullable|string|max:255',
                 ];

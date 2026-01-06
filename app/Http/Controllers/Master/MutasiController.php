@@ -87,7 +87,7 @@ class MutasiController extends Controller
 
     private function getMutasiData(Request $request, $allData = false)
     {
-        $perPage = $allData ? 999999 : $request->get('per_page', 25);
+        $perPage = $allData ? 999999 : $request->get('per_page', 10);
         $period  = $request->get('period', 'all');
 
         // Tentukan batas tanggal

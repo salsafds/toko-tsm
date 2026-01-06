@@ -67,10 +67,13 @@ class PembelianController extends Controller
 
     public function store(Request $request)
     {
+        if (!$request->has('jenis_pembayaran') || empty($request->jenis_pembayaran)) {
+            $request->merge(['jenis_pembayaran' => 'Cash']);
+        }
         $request->validate([
             'id_pembelian' => 'required|string|unique:pembelian,id_pembelian',
             'id_supplier' => 'required|exists:supplier,id_supplier',
-            'jenis_pembayaran' => 'required|in:Cash,Kredit',
+            'jenis_pembayaran' => 'required|in:Cash',
             'diskon' => 'nullable|numeric|min:0|max:100', 
             'ppn' => 'nullable|numeric|min:0|max:100', 
             'biaya_pengiriman' => 'nullable|numeric|min:0',
@@ -144,9 +147,12 @@ class PembelianController extends Controller
 
     public function update(Request $request, $id_pembelian)
     {
+        if (!$request->has('jenis_pembayaran') || empty($request->jenis_pembayaran)) {
+            $request->merge(['jenis_pembayaran' => 'Cash']);
+        }
         $request->validate([
             'id_supplier' => 'required|exists:supplier,id_supplier',
-            'jenis_pembayaran' => 'required|in:Cash,Kredit',
+            'jenis_pembayaran' => 'required|in:Cash',
             'diskon' => 'nullable|numeric|min:0|max:100',  
             'ppn' => 'nullable|numeric|min:0|max:100', 
             'biaya_pengiriman' => 'nullable|numeric|min:0',

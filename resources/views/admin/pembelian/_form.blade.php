@@ -1,11 +1,9 @@
 <style>
-    // Custom Scrollbar 
     .custom-scrollbar::-webkit-scrollbar { width: 6px; }
     .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
     .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
-    
-    // Modal Animation 
+
     .transition-all { transition-property: all; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 300ms; }
     .scale-95 { transform: scale(0.95); }
     .scale-100 { transform: scale(1); }
@@ -155,11 +153,8 @@
 
       <div>
         <label for="jenis_pembayaran" class="block text-sm font-medium text-gray-700">Jenis Pembayaran <span class="text-rose-600">*</span></label>
-        <select name="jenis_pembayaran" id="jenis_pembayaran" class="w-full rounded-md border px-3 py-2 text-sm border-gray-200">
-            <option value="">-- Pilih Jenis --</option>
-            <option value="Cash" {{ old('jenis_pembayaran', $pembelian->jenis_pembayaran ?? '') == 'Cash' ? 'selected' : '' }}>Tunai</option>
-            <option value="Kredit" {{ old('jenis_pembayaran', $pembelian->jenis_pembayaran ?? '') == 'Kredit' ? 'selected' : '' }}>Kredit</option>
-        </select>
+        <input type="hidden" name="jenis_pembayaran" id="jenis_pembayaran" value="Cash">
+        <input type="text" readonly class="w-full rounded-md border bg-gray-100 px-3 py-2 text-sm text-gray-700 cursor-not-allowed" value="Tunai">
         <p id="jenis_pembayaran_error" class="text-xs text-red-600 mt-1 hidden"></p>
       </div>
     </div>

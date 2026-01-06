@@ -11,11 +11,15 @@
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
         <div class="flex items-center gap-3">
             <form method="GET" class="flex items-center gap-2">
+                @php
+                    $currentPerPage = request()->query('per_page', 10);
+                @endphp
                 <label class="text-sm text-gray-600">Show</label>
                 <select name="per_page" onchange="this.form.submit()" class="rounded border px-3 py-1 text-sm">
-                    @foreach([10,25,50,100] as $val)
-                        <option value="{{ $val }}" {{ request('per_page',25) == $val ? 'selected' : '' }}>{{ $val }}</option>
-                    @endforeach
+                    <option value="5" {{ $currentPerPage == 5 ? 'selected' : '' }}>5</option>
+                    <option value="10" {{ $currentPerPage == 10 ? 'selected' : '' }}>10</option>
+                    <option value="25" {{ $currentPerPage == 25 ? 'selected' : '' }}>25</option>
+                    <option value="50" {{ $currentPerPage == 50 ? 'selected' : '' }}>50</option>
                 </select>
                 @if(request()->has('period'))   <input type="hidden" name="period" value="{{ request('period') }}"> @endif
                 @if(request()->has('sort'))     <input type="hidden" name="sort" value="{{ request('sort') }}"> @endif
@@ -93,7 +97,7 @@
                     </th>
                     <th class="px-4 py-3 text-right border-r">
                         <a href="{{ $sortLink('harga_beli') }}" class="flex items-center justify-end hover:text-gray-900">
-                            Harga Beli
+                            Harga Satuan
                             <span class="ml-1 text-xs text-gray-400 font-bold">{{ $icon('harga_beli') }}</span>
                         </a>
                     </th>
@@ -125,7 +129,7 @@
                     <th class="px-4 py-3 text-center border-r text-red-600 font-bold">Keluar</th>
                     <th class="px-4 py-3 text-center border-r">
                         <a href="{{ $sortLink('saldo_akhir') }}" class="flex items-center justify-center hover:text-gray-900">
-                            Saldo Akhir
+                            Stok Akhir
                             <span class="ml-1 text-xs text-gray-400 font-bold">{{ $icon('saldo_akhir') }}</span>
                         </a>
                     </th>
@@ -173,10 +177,14 @@
     {{-- Pagination --}}
     <div class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div class="text-sm text-gray-600">
-            Menampilkan {{ $paginated->firstItem() ?? 0 }} sampai {{ $paginated->lastItem() ?? 0 }} dari {{ $paginated->total() }} transaksi
+            @if(isset($paginated) && $paginated->total())
+                Menampilkan {{ $paginated->firstItem() }} sampai {{ $paginated->lastItem() }} dari {{ $paginated->total() }} transaksi
+            @endif
         </div>
         <div>
-            {{ $paginated->appends(request()->query())->links() }}
+            @if(isset($paginated) && method_exists($paginated, 'links'))
+                {{ $paginated->appends(request()->query())->links('vendor.pagination.custom') }}
+            @endif
         </div>
     </div>
 </div>
