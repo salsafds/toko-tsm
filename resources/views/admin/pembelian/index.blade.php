@@ -113,7 +113,7 @@
       <button type="button" 
               onclick="confirmAction(this.closest('form'), 'Selesaikan pembelian? Stok akan bertambah.')"
               class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 hover:bg-green-200 transition-colors">
-        Selesai
+        Terima
       </button>
     </form>
   @endif

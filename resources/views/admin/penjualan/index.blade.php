@@ -151,7 +151,7 @@
                   <button type="button" 
                           onclick="confirmAction(this.closest('form'), 'Tandai transaksi ini selesai? Stok akan dikurangi.')"
                           class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 hover:bg-green-200 transition-colors">
-                    Diterima
+                    Selesaikan
                   </button>
                 </form>
               @endif
